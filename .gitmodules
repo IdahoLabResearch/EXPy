@@ -1,0 +1,12 @@
+[submodule "extern/libcbv2g"]
+	path = extern/libcbv2g
+	url = https://github.com/EVerest/libcbv2g.git
+[submodule "extern/everest-cmake"]
+	path = extern/everest-cmake
+	url = https://github.com/EVerest/everest-cmake.git
+[submodule "extern/json"]
+	path = extern/json
+	url = https://github.com/nlohmann/json.git
+[submodule "extern/cxxopts"]
+	path = extern/cxxopts
+	url = https://github.com/jarro2783/cxxopts

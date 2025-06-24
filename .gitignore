@@ -1,0 +1,6 @@
+build/
+old/
+*test*.py
+__pycache__/
+.vscode/
+src/*.o
