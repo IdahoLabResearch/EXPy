@@ -1,9 +1,13 @@
-"""
+/*
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
-"""
+*/
 
+#include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
+#include <memory>
+#include <new>
 
 #include <cbv2g/din/din_msgDefDecoder.h>
 #include <cbv2g/din/din_msgDefEncoder.h>
