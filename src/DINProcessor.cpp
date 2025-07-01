@@ -417,6 +417,8 @@ extern "C" {
             outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.CableCheckRes.DC_EVSEStatus.EVSEStatusCode;
             outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.CableCheckRes.DC_EVSEStatus.NotificationMaxDelay;
             outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSENotification"] = body.CableCheckRes.DC_EVSEStatus.EVSENotification;
+        
+            outJson["Body"]["CableCheckRes"]["EVSEProcessing"] = body.CableCheckRes.EVSEProcessing;
         } else if (body.CertificateInstallationReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
         } else if (body.CertificateInstallationRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
