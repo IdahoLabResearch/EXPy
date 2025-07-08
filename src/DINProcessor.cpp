@@ -999,7 +999,8 @@ extern "C" {
             return "NOT IMPLEMENTED";
         }
 
-        static string jsonString = outJson.dump(4);
+        static string jsonString;
+        jsonString = outJson.dump(4);
 
         return jsonString.c_str();
     }
