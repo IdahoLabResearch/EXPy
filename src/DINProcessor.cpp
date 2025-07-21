@@ -1068,16 +1068,158 @@ extern "C" {
             body.CableCheckRes.DC_EVSEStatus.EVSENotification = static_cast<din_EVSENotificationType>(inJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
 
             body.CableCheckRes.EVSEProcessing = static_cast<din_EVSEProcessingType>(inJson["Body"]["CableCheckRes"]["EVSEProcessing"].template get<int>());
-        } else if (packetType == "CertificateInstallReq") {/////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        } else if (packetType == "CertificateInstallReq") {/////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        } else if (packetType == "CertificateInstallRes") {/////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+        } else if (packetType == "CertificateInstallationReq") {/////////////////////////////////////////////////////////////////////////////////////////////////
+            init_din_CertificateInstallationReqType(&body.CertificateInstallationReq);
+            body.CertificateInstallationReq_isUsed = true;
+
+            if (inJson["Body"]["CertificateInstallationReq"].contains("Id")) {
+                body.CertificateInstallationReq.Id_isUsed = true;
+                body.CertificateInstallationReq.Id.charactersLen = inJson["Body"]["CertificateInstallationReq"]["Id"]["charactersLen"].template get<uint16_t>();
+                for (int i=0; i<body.CertificateInstallationReq.Id.charactersLen; i++) {
+                    body.CertificateInstallationReq.Id.characters[i] = inJson["Body"]["CertificateInstallationReq"]["Id"]["characters"][i].template get<uint8_t>();
+                }
+            } else {
+                body.CertificateInstallationReq.Id_isUsed = false;
+            }
+
+            body.CertificateInstallationReq.OEMProvisioningCert.bytesLen = inJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationReq.OEMProvisioningCert.bytesLen; i++) {
+                body.CertificateInstallationReq.OEMProvisioningCert.bytes[i] = inJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytes"][i].template get<uint8_t>();
+            }
+
+            body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"].template get<uint8_t>();
+            for (int i=0; i<body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
+                body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["charactersLen"].template get<uint16_t>();
+                for (int j=0; j<body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen; j++) {
+                    body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].characters[j] = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["characters"][j].template get<uint8_t>();
+                }
+            }
+
+            body.CertificateInstallationReq.DHParams.bytesLen = inJson["Body"]["CertificateInstallationReq"]["DHParams"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationReq.DHParams.bytesLen; i++) {
+                body.CertificateInstallationReq.DHParams.bytes[i] = inJson["Body"]["CertificateInstallationReq"]["DHParams"]["bytes"][i].template get<uint8_t>();
+            }
+        } else if (packetType == "CertificateInstallationRes") {/////////////////////////////////////////////////////////////////////////////////////////////////
+            init_din_CertificateInstallationResType(&body.CertificateInstallationRes);
+            body.CertificateInstallationRes_isUsed = true;
+
+            body.CertificateInstallationRes.Id.charactersLen = inJson["Body"]["CertificateInstallationRes"]["Id"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationRes.Id.charactersLen; i++) {
+                body.CertificateInstallationRes.Id.characters[i] = inJson["Body"]["CertificateInstallationRes"]["Id"]["characters"][i].template get<uint8_t>();
+            }
+
+            body.CertificateInstallationRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["CertificateInstallationRes"]["ResponseCode"].template get<int>());
+
+            body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
+            }
+            
+            if (inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"].contains("SubCertificates")) {
+                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed = true;
+                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"].template get<uint16_t>();
+                for (int i=0; i<body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytes"][i].template get<uint8_t>();
+                }
+            } else {
+                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed = false;
+            }
+
+            body.CertificateInstallationRes.DHParams.bytesLen = inJson["Body"]["CertificateInstallationRes"]["DHParams"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationRes.DHParams.bytesLen; i++) {
+                body.CertificateInstallationRes.DHParams.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["DHParams"]["bytes"][i].template get<uint8_t>();
+            } 
+
+            body.CertificateInstallationRes.ContractID.charactersLen = inJson["Body"]["CertificateInstallationRes"]["ContractID"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateInstallationRes.ContractID.charactersLen; i++) {
+                body.CertificateInstallationRes.ContractID.characters[i] = inJson["Body"]["CertificateInstallationRes"]["ContractID"]["characters"][i].template get<uint8_t>();
+            }
         } else if (packetType == "CertificateUpdateReq") {//////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_CertificateUpdateReqType(&body.CertificateUpdateReq);
+            body.CertificateUpdateReq_isUsed = true;
+
+            if (inJson["Body"]["CertificateUpdateReq"].contains("Id")) {
+                body.CertificateUpdateReq.Id_isUsed = true;
+                body.CertificateUpdateReq.Id.charactersLen = inJson["Body"]["CertificateUpdateReq"]["Id"]["charactersLen"].template get<uint16_t>();
+                for (int i=0; i<body.CertificateUpdateReq.Id.charactersLen; i++) {
+                    body.CertificateUpdateReq.Id.characters[i] = inJson["Body"]["CertificateUpdateReq"]["Id"]["characters"][i].template get<uint8_t>();
+                }
+            } else {
+                body.CertificateUpdateReq.Id_isUsed = false;
+            }
+
+            body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
+            }
+            if (inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"].contains("SubCertificates")) {
+                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed = true;
+                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"].template get<uint16_t>();
+                for (int i=0; i<body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytes"][i].template get<uint8_t>();
+                }
+            } else {
+                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed = false;
+            }
+
+            body.CertificateUpdateReq.ContractID.charactersLen = inJson["Body"]["CertificateUpdateReq"]["ContractID"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateReq.ContractID.charactersLen; i++) {
+                body.CertificateUpdateReq.ContractID.characters[i] = inJson["Body"]["CertificateUpdateReq"]["ContractID"]["characters"][i].template get<uint8_t>();
+            }
+
+            body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"].template get<uint8_t>();
+            for (int i=0; i<body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
+                body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["charactersLen"].template get<uint16_t>();
+                for (int j=0; j<body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen; j++) {
+                    body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].characters[j] = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["characters"][j].template get<uint8_t>();
+                }
+            }
+
+            body.CertificateUpdateReq.DHParams.bytesLen = inJson["Body"]["CertificateUpdateReq"]["DHParams"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateReq.DHParams.bytesLen; i++) {
+                body.CertificateUpdateReq.DHParams.bytes[i] = inJson["Body"]["CertificateUpdateReq"]["DHParams"]["bytes"][i].template get<uint8_t>();
+            }
+
         } else if (packetType == "CertificateUpdateRes") {//////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_CertificateUpdateResType(&body.CertificateUpdateRes);
+            body.CertificateUpdateRes_isUsed = true;
+
+            body.CertificateUpdateRes.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["Id"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateRes.Id.charactersLen; i++) {
+                body.CertificateUpdateRes.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["Id"]["characters"][i].template get<uint8_t>();
+            }
+            body.CertificateUpdateRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["CertificateUpdateRes"]["ResponseCode"].template get<int>());
+
+            body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
+            }
+            if (inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"].contains("SubCertificates")) {
+                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed = true;
+                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"].template get<uint16_t>();
+                for (int i=0; i<body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytes"][i].template get<uint8_t>();
+                }
+            } else {
+                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed = false;
+            }
+
+            body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+                body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["bytes"][i].template get<uint8_t>();
+            }
+
+            body.CertificateUpdateRes.DHParams.bytesLen = inJson["Body"]["CertificateUpdateRes"]["DHParams"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateRes.DHParams.bytesLen; i++) {
+                body.CertificateUpdateRes.DHParams.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["DHParams"]["bytes"][i].template get<uint8_t>();
+            }
+
+            body.CertificateUpdateRes.ContractID.charactersLen = inJson["Body"]["CertificateUpdateRes"]["ContractID"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.CertificateUpdateRes.ContractID.charactersLen; i++) {
+                body.CertificateUpdateRes.ContractID.characters[i] = inJson["Body"]["CertificateUpdateRes"]["ContractID"]["characters"][i].template get<uint8_t>();
+            }
+
+            body.CertificateUpdateRes.RetryCounter = inJson["Body"]["CertificateUpdateRes"]["RetryCounter"].template get<uint8_t>();
         } else if (packetType == "ChargeParameterDiscoveryReq") {///////////////////////////////////////////////////////////////////////////////////////////
             init_din_ChargeParameterDiscoveryReqType(&body.ChargeParameterDiscoveryReq);
             body.ChargeParameterDiscoveryReq_isUsed = true;
@@ -1484,9 +1626,91 @@ extern "C" {
                 body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed = false;
             }
         } else if (packetType == "ChargingStatusReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_ChargingStatusReqType(&body.ChargingStatusReq);
+            body.ChargingStatusReq_isUsed = true;
+
+            body.ChargingStatusReq._unused = inJson["Body"]["ChargingStatusReq"]["_unused"].template get<int>();
         } else if (packetType == "ChargingStatusRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_ChargingStatusResType(&body.ChargingStatusRes);
+            body.ChargingStatusRes_isUsed = true;
+
+            body.ChargingStatusRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["ChargingStatusRes"]["ResponseCode"].template get<int>());
+
+            body.ChargingStatusRes.EVSEID.bytesLen = inJson["Body"]["ChargingStatusRes"]["EVSEID"]["bytesLen"].template get<uint8_t>();
+            for (int i=0; i<body.ChargingStatusRes.EVSEID.bytesLen; i++){
+                body.ChargingStatusRes.EVSEID.bytes[i] = inJson["Body"]["ChargingStatusRes"]["EVSEID"]["bytes"][i].template get<uint8_t>();
+            }
+
+            body.ChargingStatusRes.SAScheduleTupleID = inJson["Body"]["ChargingStatusRes"]["SAScheduleTupleID"].template get<uint16_t>();
+
+            if (inJson["Body"]["ChargingStatusRes"].contains("EVSEMaxCurrent")) {
+                body.ChargingStatusRes.EVSEMaxCurrent_isUsed = true;
+                body.ChargingStatusRes.EVSEMaxCurrent.Multiplier = inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Multiplier"].template get<uint8_t>();
+                if (inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"].contains("Unit")) {
+                    body.ChargingStatusRes.EVSEMaxCurrent.Unit_isUsed = true;
+                    body.ChargingStatusRes.EVSEMaxCurrent.Unit = static_cast<din_unitSymbolType>(inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Unit"].template get<int>());
+                } else {
+                    body.ChargingStatusRes.EVSEMaxCurrent.Unit_isUsed = false;
+                }
+                body.ChargingStatusRes.EVSEMaxCurrent.Value = inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Value"].template get<uint16_t>();
+            } else {
+                body.ChargingStatusRes.EVSEMaxCurrent_isUsed = false;
+            }
+
+            if (inJson["Body"]["ChargingStatusRes"].contains("MeterInfo")) {
+                body.ChargingStatusRes.MeterInfo_isUsed = true;
+                body.ChargingStatusRes.MeterInfo.MeterID.charactersLen = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["charactersLen"].template get<uint16_t>();
+                for (int i=0; i<body.ChargingStatusRes.MeterInfo.MeterID.charactersLen; i++){
+                    body.ChargingStatusRes.MeterInfo.MeterID.characters[i] = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["characters"][i].template get<uint8_t>();
+                }
+                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("MeterReading")) {
+                    body.ChargingStatusRes.MeterInfo.MeterReading_isUsed = true;
+                    body.ChargingStatusRes.MeterInfo.MeterReading.Multiplier = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Multiplier"].template get<uint8_t>();
+                    if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"].contains("Unit")) {
+                        body.ChargingStatusRes.MeterInfo.MeterReading.Unit_isUsed = true;
+                        body.ChargingStatusRes.MeterInfo.MeterReading.Unit = static_cast<din_unitSymbolType>(inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Unit"].template get<int>());
+                    } else {
+                        body.ChargingStatusRes.MeterInfo.MeterReading.Unit_isUsed = false;
+                    }
+                    body.ChargingStatusRes.MeterInfo.MeterReading.Value = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Value"].template get<uint32_t>();
+                } else {
+                    body.ChargingStatusRes.MeterInfo.MeterReading_isUsed = false;
+                }
+
+                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("SigMeterReading")) {
+                    body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed = true;
+                    body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"].template get<uint16_t>();
+                    for (int i=0; i<body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen; i++){
+                        body.ChargingStatusRes.MeterInfo.SigMeterReading.bytes[i] = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i].template get<uint8_t>();
+                    }
+                } else {
+                    body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed = false;
+                }
+
+                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("MeterStatus")) {
+                    body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed = true;
+                    body.ChargingStatusRes.MeterInfo.MeterStatus = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterStatus"].template get<uint16_t>();
+                } else {
+                    body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed = false;
+                }
+
+                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("TMeter")) {
+                    body.ChargingStatusRes.MeterInfo.TMeter_isUsed = true;
+                    body.ChargingStatusRes.MeterInfo.TMeter = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["TMeter"].template get<uint64_t>();
+                } else {
+                    body.ChargingStatusRes.MeterInfo.TMeter_isUsed = false;
+                }
+            } else {
+                body.ChargingStatusRes.MeterInfo_isUsed = false;
+            }
+
+            body.ChargingStatusRes.ReceiptRequired = inJson["Body"]["ChargingStatusRes"]["ReceiptRequired"].template get<int>();
+
+            body.ChargingStatusRes.AC_EVSEStatus.PowerSwitchClosed = inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["PowerSwitchClosed"].template get<int>();
+            body.ChargingStatusRes.AC_EVSEStatus.RCD = inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["RCD"].template get<int>();
+            body.ChargingStatusRes.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint32_t>();
+            body.ChargingStatusRes.AC_EVSEStatus.EVSENotification = static_cast<din_EVSENotificationType>(inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
+            
         } else if (packetType == "ContractAuthenticationReq") {/////////////////////////////////////////////////////////////////////////////////////////////
             init_din_ContractAuthenticationReqType(&body.ContractAuthenticationReq);
             body.ContractAuthenticationReq_isUsed = true;
@@ -1711,13 +1935,118 @@ extern "C" {
                 body.CurrentDemandRes.EVSEMaximumPowerLimit_isUsed = false;
             }
         } else if (packetType == "MeteringReceiptReq") {////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_MeteringReceiptReqType(&body.MeteringReceiptReq);
+            body.MeteringReceiptReq_isUsed = true;
+
+            if (inJson["Body"]["MeteringReceiptReq"].contains("Id")) {
+                body.MeteringReceiptReq.Id_isUsed = true;
+                body.MeteringReceiptReq.Id.charactersLen = inJson["Body"]["MeteringReceiptReq"]["Id"]["charactersLen"].template get<uint16_t>();
+                for (int i=0; i<body.MeteringReceiptReq.Id.charactersLen; i++){
+                    body.MeteringReceiptReq.Id.characters[i] = inJson["Body"]["MeteringReceiptReq"]["Id"]["characters"][i].template get<uint8_t>();
+                }
+            } else {
+                body.MeteringReceiptReq.Id_isUsed = false;
+            }
+
+            body.MeteringReceiptReq.SessionID.bytesLen = inJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytesLen"].template get<uint8_t>();
+            for (int i=0; i<body.MeteringReceiptReq.SessionID.bytesLen; i++){
+                body.MeteringReceiptReq.SessionID.bytes[i] = inJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytes"][i].template get<uint8_t>();
+            }
+
+            if (inJson["Body"]["MeteringReceiptReq"].contains("SAScheduleTupleID")) {
+                body.MeteringReceiptReq.SAScheduleTupleID_isUsed = true;
+                body.MeteringReceiptReq.SAScheduleTupleID = inJson["Body"]["MeteringReceiptReq"]["SAScheduleTupleID"].template get<uint16_t>();
+            } else {
+                body.MeteringReceiptReq.SAScheduleTupleID_isUsed = false;
+            }
+
+            body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen; i++){
+                body.MeteringReceiptReq.MeterInfo.MeterID.characters[i] = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["characters"][i].template get<uint8_t>();
+            }
+
+            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("MeterReading")) {
+                body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed = true;
+                body.MeteringReceiptReq.MeterInfo.MeterReading.Multiplier = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Multiplier"].template get<uint8_t>();
+                if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"].contains("Unit")) {
+                    body.MeteringReceiptReq.MeterInfo.MeterReading.Unit_isUsed = true;
+                    body.MeteringReceiptReq.MeterInfo.MeterReading.Unit = static_cast<din_unitSymbolType>(inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Unit"].template get<int>());
+                } else {
+                    body.MeteringReceiptReq.MeterInfo.MeterReading.Unit_isUsed = false;
+                }
+                body.MeteringReceiptReq.MeterInfo.MeterReading.Value = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Value"].template get<uint32_t>();
+            } else {
+                body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed = false;
+            }
+
+            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("SigMeterReading")) {
+                body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed = true;
+                body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytesLen"].template get<uint16_t>();
+                for (int i=0; i<body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen; i++){
+                    body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytes[i] = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytes"][i].template get<uint8_t>();
+                }
+            } else {
+                body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed = false;
+            }
+
+            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("MeterStatus")) {
+                body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed = true;
+                body.MeteringReceiptReq.MeterInfo.MeterStatus = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterStatus"].template get<uint16_t>();
+            } else {
+                body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed = false;
+            }
+
+            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("TMeter")) {
+                body.MeteringReceiptReq.MeterInfo.TMeter_isUsed = true;
+                body.MeteringReceiptReq.MeterInfo.TMeter = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["TMeter"].template get<uint64_t>();
+            } else {
+                body.MeteringReceiptReq.MeterInfo.TMeter_isUsed = false;
+            }
         } else if (packetType == "MeteringReceiptRes") {////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_MeteringReceiptResType(&body.MeteringReceiptRes);
+            body.MeteringReceiptRes_isUsed = true;
+
+            body.MeteringReceiptRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["MeteringReceiptRes"]["ResponseCode"].template get<int>());
+
+            body.MeteringReceiptRes.AC_EVSEStatus.PowerSwitchClosed = inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["PowerSwitchClosed"].template get<int>();
+            body.MeteringReceiptRes.AC_EVSEStatus.RCD = inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["RCD"].template get<int>();
+            body.MeteringReceiptRes.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint32_t>();
+            body.MeteringReceiptRes.AC_EVSEStatus.EVSENotification = static_cast<din_EVSENotificationType>(inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
         } else if (packetType == "PaymentDetailsReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_PaymentDetailsReqType(&body.PaymentDetailsReq);
+            body.PaymentDetailsReq_isUsed = true;
+
+            body.PaymentDetailsReq.ContractID.charactersLen = inJson["Body"]["PaymentDetailsReq"]["ContractID"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.PaymentDetailsReq.ContractID.charactersLen; i++){
+                body.PaymentDetailsReq.ContractID.characters[i] = inJson["Body"]["PaymentDetailsReq"]["ContractID"]["characters"][i].template get<uint8_t>();
+            }
+
+            body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
+            for (int i=0; i<body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen; i++){
+                body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
+            }
+
+            if (inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"].contains("SubCertificates")) {
+                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed = true;
+                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"].template get<uint16_t>();
+                for (int i=0; i<body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++){
+                    body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i] = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytes"][i].template get<uint8_t>();
+                }
+            } else {
+                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed = false;
+            }
         } else if (packetType == "PaymentDetailsRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_PaymentDetailsResType(&body.PaymentDetailsRes);
+            body.PaymentDetailsRes_isUsed = true;
+
+            body.PaymentDetailsRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["PaymentDetailsRes"]["ResponseCode"].template get<int>());
+
+            body.PaymentDetailsRes.GenChallenge.charactersLen = inJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["charactersLen"].template get<uint16_t>();
+            for (int i=0; i<body.PaymentDetailsRes.GenChallenge.charactersLen; i++){
+                body.PaymentDetailsRes.GenChallenge.characters[i] = inJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["characters"][i].template get<uint8_t>();
+            }
+
+            body.PaymentDetailsRes.DateTimeNow = inJson["Body"]["PaymentDetailsRes"]["DateTimeNow"].template get<uint64_t>();
         } else if (packetType == "PowerDeliveryReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////
             init_din_PowerDeliveryReqType(&body.PowerDeliveryReq);
             body.PowerDeliveryReq_isUsed = true;
@@ -1871,9 +2200,76 @@ extern "C" {
             body.PreChargeRes.EVSEPresentVoltage.Value = inJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Value"].template get<uint16_t>();
         
         } else if (packetType == "ServiceDetailReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_ServiceDetailReqType(&body.ServiceDetailReq);
+            body.ServiceDetailReq_isUsed = true;
+
+            body.ServiceDetailReq.ServiceID = inJson["Body"]["ServiceDetailReq"]["ServiceID"].template get<uint16_t>();
         } else if (packetType == "ServiceDetailRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_ServiceDetailResType(&body.ServiceDetailRes);
+            body.ServiceDetailRes_isUsed = true;
+
+            body.ServiceDetailRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["ServiceDetailRes"]["ResponseCode"].template get<int>());
+
+            body.ServiceDetailRes.ServiceID = inJson["Body"]["ServiceDetailRes"]["ServiceID"].template get<uint16_t>();
+
+            if (inJson["Body"]["ServiceDetailRes"].contains("ServiceParameterList")) {
+                body.ServiceDetailRes.ServiceParameterList_isUsed = true;
+                body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["arrayLen"].template get<uint16_t>();
+                for (int i=0; i<body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen; i++){
+                    body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].ParameterSetID = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["ParameterSetID"].template get<uint16_t>();
+                    body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.charactersLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["Name"]["charactersLen"].template get<uint16_t>();
+                    for (int j=0; j<body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.charactersLen; j++){
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.characters[j] = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["Name"]["characters"][j].template get<uint8_t>();
+                    }
+                    body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.ValueType = static_cast<din_valueType>(inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["ValueType"].template get<int>());
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("boolValye")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.boolValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.boolValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["boolValue"].template get<int>();
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.boolValue_isUsed = false;
+                    }
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("byteValue")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.byteValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.byteValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["byteValue"].template get<uint8_t>();
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.byteValue_isUsed = false;
+                    }
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("shortValue")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.shortValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.shortValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["shortValue"].template get<uint16_t>();
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.shortValue_isUsed = false;
+                    }
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("intValue")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.intValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.intValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["intValue"].template get<uint32_t>();
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.intValue_isUsed = false;
+                    }
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("physicalValue")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Multiplier = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Multiplier"].template get<uint8_t>();
+                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"].contains("Unit")) {
+                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Unit_isUsed = true;
+                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Unit = static_cast<din_unitSymbolType>(inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Unit"].template get<int>());
+                        } else {
+                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Unit_isUsed = false;
+                        }
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Value = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Value"].template get<uint32_t>();
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue_isUsed = false;
+                    }
+                    if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"].contains("stringValue")) {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue_isUsed = true;
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.charactersLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["stringValue"]["charactersLen"].template get<uint16_t>();
+                        for (int j=0; j<body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.charactersLen; j++){
+                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.characters[j] = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["stringValue"]["characters"][j].template get<uint8_t>();
+                        }
+                    } else {
+                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue_isUsed = false;
+                    }
+                }
+            }
         } else if (packetType == "ServiceDiscoveryReq") {///////////////////////////////////////////////////////////////////////////////////////////////////
             init_din_ServiceDiscoveryReqType(&body.ServiceDiscoveryReq);
             body.ServiceDiscoveryReq_isUsed = true;
@@ -1977,7 +2373,7 @@ extern "C" {
             init_din_SessionSetupReqType(&body.SessionSetupReq);
             body.SessionSetupReq_isUsed = true;
 
-            body.SessionSetupReq.EVCCID.bytesLen = inJson["Body"]["SessionSetupReq"]["EVCCID"]["bytesLen"].template get<uint16_t>();
+            body.SessionSetupReq.EVCCID.bytesLen = inJson["Body"]["SessionSetupReq"]["EVCCID"]["bytes"].size();
             for (int i=0; i<body.SessionSetupReq.EVCCID.bytesLen; i++){
                 body.SessionSetupReq.EVCCID.bytes[i] = inJson["Body"]["SessionSetupReq"]["EVCCID"]["bytes"][i].template get<uint8_t>();
             }
@@ -2010,13 +2406,47 @@ extern "C" {
 
             body.SessionStopRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["SessionStopRes"]["ResponseCode"].template get<int>());
         } else if (packetType == "WeldingDetectionReq") {///////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_WeldingDetectionReqType(&body.WeldingDetectionReq);
+            body.WeldingDetectionReq_isUsed = true;
+
+            body.WeldingDetectionReq.DC_EVStatus.EVReady = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVReady"].template get<int>();
+            if (inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"].contains("EVCabinConditioning")) {
+                body.WeldingDetectionReq.DC_EVStatus.EVCabinConditioning_isUsed = true;
+                body.WeldingDetectionReq.DC_EVStatus.EVCabinConditioning = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVCabinConditioning"].template get<int>();
+            } else {
+                body.WeldingDetectionReq.DC_EVStatus.EVCabinConditioning_isUsed = false;
+            }
+            if (inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"].contains("EVRESSConditioning")) {
+                body.WeldingDetectionReq.DC_EVStatus.EVRESSConditioning_isUsed = true;
+                body.WeldingDetectionReq.DC_EVStatus.EVRESSConditioning = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSConditioning"].template get<int>();
+            } else {
+                body.WeldingDetectionReq.DC_EVStatus.EVRESSConditioning_isUsed = false;
+            }
+            body.WeldingDetectionReq.DC_EVStatus.EVErrorCode = static_cast<din_DC_EVErrorCodeType>(inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
+            body.WeldingDetectionReq.DC_EVStatus.EVRESSSOC = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
         } else if (packetType == "WeldingDetectionRes") {///////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        } else if (packetType == "WeldingDetectionReq") {///////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        } else if (packetType == "WeldingDetectionRes") {///////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
+            init_din_WeldingDetectionResType(&body.WeldingDetectionRes);
+            body.WeldingDetectionRes_isUsed = true;
+
+            body.WeldingDetectionRes.ResponseCode = static_cast<din_responseCodeType>(inJson["Body"]["WeldingDetectionRes"]["ResponseCode"].template get<int>());
+            body.WeldingDetectionRes.DC_EVSEStatus.EVSEStatusCode = static_cast<din_DC_EVSEStatusCodeType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
+            if (inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
+                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
+                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<din_isolationLevelType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
+            } else {
+                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
+            }
+            body.WeldingDetectionRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint32_t>();
+            body.WeldingDetectionRes.DC_EVSEStatus.EVSENotification = static_cast<din_EVSENotificationType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
+
+            body.WeldingDetectionRes.EVSEPresentVoltage.Multiplier = inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Multiplier"].template get<uint8_t>();
+            if (inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"].contains("Unit")) {
+                body.WeldingDetectionRes.EVSEPresentVoltage.Unit_isUsed = true;
+                body.WeldingDetectionRes.EVSEPresentVoltage.Unit = static_cast<din_unitSymbolType>(inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Unit"].template get<int>());
+            } else {
+                body.WeldingDetectionRes.EVSEPresentVoltage.Unit_isUsed = false;
+            }
+            body.WeldingDetectionRes.EVSEPresentVoltage.Value = inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Value"].template get<uint16_t>();
         }
 
         uint8_t* stream = new uint8_t[256];  // Dynamically allocate buffer
