@@ -34,6 +34,8 @@ extern "C" {
 
         if (outDoc.supportedAppProtocolReq_isUsed) {
             for (int i = 0; i < outDoc.supportedAppProtocolReq.AppProtocol.arrayLen; ++i) {
+                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["charactersLen"] =
+                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen;
                 for (int j = 0; j < outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen; ++j) {
                     outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["characters"][j] =
                         outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.characters[j];
@@ -56,7 +58,8 @@ extern "C" {
             }
         }
 
-        static string jsonString = outJson.dump(4);
+        static string jsonString;
+        jsonString = outJson.dump(4);
 
         return jsonString.c_str();
     }
