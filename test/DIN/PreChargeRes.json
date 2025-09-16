@@ -1,0 +1,18 @@
+{
+    "Body": {
+        "PreChargeRes": {
+            "ResponseCode": 0,
+            "DC_EVSEStatus": {
+                "EVSEIsolationStatus": 0,
+                "EVSEStatusCode": 0,
+                "NotificationMaxDelay": 0,
+                "EVSENotification": 0
+            },
+            "EVSEPresentVoltage": {
+                "Multiplier": 0,
+                "Unit": 5,
+                "Value": 375
+            }
+        }
+    }
+}

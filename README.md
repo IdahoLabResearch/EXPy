@@ -7,6 +7,18 @@ library (libcbv2g).
 
 EXPy is a Python binding for the EXI (Efficient XML Interchange) format, leveraging the LF Energy EVerest implementation. It enables efficient XML processing in Python applications while maintaining compatibility with C/C++ codebases.
 
+## TODO
+
+Implement V2G Specifications
+- ~~Implement DIN 70121~~
+- Implement ISO 15118-2
+- Implement ISO 15118-20
+
+Add testing for each specification
+- Implement DIN 70121 Testing (In Progress)
+- Implement ISO 15118-2
+- Implement ISO 15118-20
+
 ## Requirements
 
 - Python

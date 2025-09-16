@@ -1,0 +1,45 @@
+{
+    "Body": {
+        "CurrentDemandReq": {
+            "DC_EVStatus": {
+                "EVReady": true,
+                "EVCabinConditioning": false,
+                "EVRESSConditioning": true,
+                "EVErrorCode": 0,
+                "EVRESSSOC": 27
+            },
+            "EVTargetCurrent": {
+                "Multiplier": 0,
+                "Unit": 3,
+                "Value": 0
+            },
+            "EVMaximumVoltageLimit": {
+                "Multiplier": -1,
+                "Unit": 5,
+                "Value": 4000
+            },
+            "EVMaximumCurrentLimit": {
+                "Multiplier": 0,
+                "Unit": 3,
+                "Value": 125
+            },
+            "BulkChargingComplete": false,
+            "ChargingComplete": false,
+            "RemainingTimeToFullSoC": {
+                "Multiplier": 0,
+                "Unit": 2,
+                "Value": 0
+            },
+            "RemainingTimeToBulkSoC": {
+                "Multiplier": 0,
+                "Unit": 2,
+                "Value": 0
+            },
+            "EVTargetVoltage": {
+                "Multiplier": -1,
+                "Unit": 5,
+                "Value": 4000
+            }
+        }
+    }
+}

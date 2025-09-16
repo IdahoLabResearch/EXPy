@@ -1,0 +1,116 @@
+{
+    "supportedAppProtocolReq": {
+        "AppProtocol": {
+            "array": [{
+                "ProtocolNamespace": {
+                        "charactersLen" : 25,
+                        "characters": [
+                            117,
+                            114,
+                            110,
+                            58,
+                            100,
+                            105,
+                            110,
+                            58,
+                            55,
+                            48,
+                            49,
+                            50,
+                            49,
+                            58,
+                            50,
+                            48,
+                            49,
+                            50,
+                            58,
+                            77,
+                            115,
+                            103,
+                            68,
+                            101,
+                            102
+                        ]
+                },
+                "VersionNumberMajor": 2,
+                "VersionNumberMinor": 0,
+                "SchemaID": 1,
+                "Priority": 1
+            },
+            {
+                "ProtocolNamespace": {
+                    "charactersLen" : 25,
+                    "characters": [
+                        117,
+                        114,
+                        110,
+                        58,
+                        116,
+                        101,
+                        115,
+                        108,
+                        97,
+                        58,
+                        100,
+                        105,
+                        110,
+                        58,
+                        50,
+                        48,
+                        49,
+                        56,
+                        58,
+                        77,
+                        115,
+                        103,
+                        68,
+                        101,
+                        102
+                        ]
+                },
+                "VersionNumberMajor": 0,
+                "VersionNumberMinor": 7,
+                "SchemaID": 2,
+                "Priority": 2
+            },
+            {
+                "ProtocolNamespace": {
+                    "charactersLen" : 27,
+                    "characters": [
+                        117,
+                        114,
+                        110,
+                        58,
+                        105,
+                        115,
+                        111,
+                        58,
+                        49,
+                        53,
+                        49,
+                        49,
+                        56,
+                        58,
+                        50,
+                        58,
+                        50,
+                        48,
+                        49,
+                        51,
+                        58,
+                        77,
+                        115,
+                        103,
+                        68,
+                        101,
+                        102
+                    ]
+                },
+                "VersionNumberMajor": 2,
+                "VersionNumberMinor": 0,
+                "SchemaID": 3,
+                "Priority": 3
+            }]
+        }
+    }
+}

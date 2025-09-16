@@ -1,0 +1,14 @@
+{
+    "Body": {
+        "CableCheckRes": {
+            "ResponseCode": 0,
+            "DC_EVSEStatus": {
+                "EVSEIsolationStatus": 0,
+                "EVSEStatusCode": 0,
+                "NotificationMaxDelay": 0,
+                "EVSENotification": 0
+            },
+            "EVSEProcessing": 0
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "Body": {
+        "PowerDeliveryReq": {
+            "ReadyToChargeState": true,
+            "DC_EVPowerDeliveryParameter": {
+                "DC_EVStatus": {
+                    "EVReady": true,
+                    "EVCabinConditioning": false,
+                    "EVRESSConditioning": true,
+                    "EVErrorCode": 0,
+                    "EVRESSSOC": 27
+                },
+                "ChargingComplete": false
+            }
+        }
+    }
+}

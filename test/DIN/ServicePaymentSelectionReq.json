@@ -1,0 +1,13 @@
+{
+    "Body": {
+        "ServicePaymentSelectionReq": {
+            "SelectedPaymentOption": 0,
+            "SelectedServiceList": {
+                "SelectedService": {
+                    "array": [{"ServiceID": 1}],
+                    "arrayLen": 1
+                }
+            }
+        }
+    }
+}

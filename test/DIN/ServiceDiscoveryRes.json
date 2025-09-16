@@ -1,0 +1,21 @@
+{
+    "Body": {
+        "ServiceDiscoveryRes": {
+            "ResponseCode": 0,
+            "PaymentOptions": {
+                "PaymentOption": {
+                    "array": [0],
+                    "arrayLen": 1
+                }
+            },
+            "ChargeService": {
+                "ServiceTag": {
+                    "ServiceID": 1,
+                    "ServiceCategory": 0
+                },
+                "FreeService": false,
+                "EnergyTransferType": 0
+            }
+        }
+    }
+}

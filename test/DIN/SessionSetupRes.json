@@ -1,0 +1,11 @@
+{
+    "Body": {
+        "SessionSetupRes": {
+            "ResponseCode": 0,
+            "EVSEID": {
+                "bytes": [123, 34, 56, 78, 90, 12, 34, 56],
+                "bytesLen": 8
+            }
+        }
+    }
+}

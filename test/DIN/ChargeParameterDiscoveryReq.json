@@ -1,0 +1,29 @@
+{
+    "Body": {
+        "ChargeParameterDiscoveryReq": {
+            "EVRequestedEnergyTransferType": 0,
+            "DC_EVChargeParameter": {
+                "DC_EVStatus": {
+                    "EVReady": true,
+                    "EVErrorCode": 0,
+                    "EVRESSSOC": 27
+                },
+                "EVMaximumCurrentLimit": {
+                    "Multiplier": -1,
+                    "Unit": 3,
+                    "Value": 500
+                },
+                "EVMaximumPowerLimit": {
+                    "Multiplier": -1,
+                    "Unit": 7,
+                    "Value": 21100
+                },
+                "EVMaximumVoltageLimit": {
+                    "Multiplier": -1,
+                    "Unit": 5,
+                    "Value": 4220
+                }
+            }
+        }
+    }
+}

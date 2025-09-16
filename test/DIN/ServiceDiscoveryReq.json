@@ -1,0 +1,7 @@
+{
+    "Body": {
+        "ServiceDiscoveryReq": {
+            "ServiceCategory": 0
+        }
+    }
+}

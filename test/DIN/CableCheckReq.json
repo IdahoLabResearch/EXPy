@@ -1,0 +1,11 @@
+{
+    "Body": {
+        "CableCheckReq": {
+            "DC_EVStatus": {
+                "EVReady": true,
+                "EVErrorCode": 0,
+                "EVRESSSOC": 27
+            }
+        }
+    }
+}

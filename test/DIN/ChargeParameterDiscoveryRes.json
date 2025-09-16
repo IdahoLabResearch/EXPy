@@ -1,0 +1,66 @@
+{
+    "Body": {
+        "ChargeParameterDiscoveryRes": {
+            "ResponseCode": 0,
+            "EVSEProcessing": 0,
+            "SAScheduleList": {
+                "SAScheduleTuple": {
+                    "array": [{
+                        "SAScheduleTupleID": 1,
+                        "PMaxSchedule": {
+                            "PMaxScheduleID": 1,
+                            "PMaxScheduleEntry": {
+                                "array": [{
+                                    "RelativeTimeInterval": {
+                                        "start": 0
+                                    },
+                                    "PMax": 32767
+                                }],
+                                "arrayLen": 1
+                            }
+                        }
+                    }],
+                    "arrayLen": 1
+                }
+            },
+            "DC_EVSEChargeParameter": {
+                "DC_EVSEStatus": {
+                    "EVSEIsolationStatus": 0,
+                    "EVSEStatusCode": 0,
+                    "NotificationMaxDelay": 0,
+                    "EVSENotification": 0
+                },
+                "EVSEMaximumCurrentLimit": {
+                    "Multiplier": 0,
+                    "Unit": 3,
+                    "Value": 125
+                },
+                "EVSEMaximumPowerLimit": {
+                    "Multiplier": 0,
+                    "Unit": 7,
+                    "Value": 5000
+                },
+                "EVSEMaximumVoltageLimit": {
+                    "Multiplier": 0,
+                    "Unit": 5,
+                    "Value": 440
+                },
+                "EVSEMinimumCurrentLimit": {
+                    "Multiplier": 0,
+                    "Unit": 3,
+                    "Value": 0
+                },
+                "EVSEMinimumVoltageLimit": {
+                    "Multiplier": 0,
+                    "Unit": 5,
+                    "Value": 50 
+                },
+                "EVSEPeakCurrentRipple": {
+                    "Multiplier": 0,
+                    "Unit": 3,
+                    "Value": 3
+                }
+            }
+        }
+    }
+}

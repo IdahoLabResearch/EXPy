@@ -1,0 +1,41 @@
+{
+    "Body": {
+        "CurrentDemandRes": {
+            "ResponseCode": 0,
+            "DC_EVSEStatus": {
+                "EVSEIsolationStatus": 0,
+                "EVSEStatusCode": 0,
+                "NotificationMaxDelay": 0,
+                "EVSENotification": 0
+            },
+            "EVSEPresentVoltage": {
+                "Multiplier": 0,
+                "Unit": 5,
+                "Value": 0
+            },
+            "EVSEPresentCurrent": {
+                "Multiplier": 0,
+                "Unit": 3,
+                "Value": 0
+            },
+            "EVSECurrentLimitAchieved": false,
+            "EVSEVoltageLimitAchieved": false,
+            "EVSEPowerLimitAchieved": false,
+            "EVSEMaximumVoltageLimit": {
+                "Multiplier": 0,
+                "Unit": 5,
+                "Value": 0
+            },
+            "EVSEMaximumCurrentLimit": {
+                "Multiplier": 0,
+                "Unit": 3,
+                "Value": 125
+            },
+            "EVSEMaximumPowerLimit": {
+                "Multiplier": 1,
+                "Unit": 7,
+                "Value": 5000
+            }
+        }
+    }
+}

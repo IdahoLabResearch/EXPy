@@ -1,0 +1,21 @@
+{
+    "Body": {
+        "PreChargeReq": {
+            "DC_EVStatus": {
+                "EVReady": true,
+                "EVErrorCode": 0,
+                "EVRESSSOC": 27
+            },
+            "EVTargetVoltage": {
+                "Multiplier": -1,
+                "Unit": 5,
+                "Value": 4000
+            },
+            "EVTargetCurrent": {
+                "Multiplier": 0,
+                "Unit": 3,
+                "Value": 0
+            }
+        }
+    }
+}
