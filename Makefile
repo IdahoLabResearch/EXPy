@@ -3,7 +3,7 @@ CXXFLAGS = -std=c++17 -Wall -g
 SHARED_FLAGS = -fPIC -shared
 INCLUDES = -I./extern/libcbv2g/include -I./extern/json/include -I./extern/cxxopts/include
 LDFLAGS = -L./extern/libcbv2g/build/lib/cbv2g
-LIBS = -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp -lcbv2g_iso2
+LIBS = -lcbv2g_iso2 -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp
 
 BUILD_DIR = build
 
