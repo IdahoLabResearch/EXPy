@@ -393,7 +393,6 @@ extern "C" {
         }
 
         if (body.CableCheckReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["CableCheckReq"]["isUsed"] = true;
             outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVReady"] = body.CableCheckReq.DC_EVStatus.EVReady;
 
             if (body.CableCheckReq.DC_EVStatus.EVCabinConditioning_isUsed) {
@@ -407,7 +406,6 @@ extern "C" {
             outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVErrorCode"] = body.CableCheckReq.DC_EVStatus.EVErrorCode;
             outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVRESSSOC"] = body.CableCheckReq.DC_EVStatus.EVRESSSOC;
         } else if (body.CableCheckRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["CableCheckRes"]["isUsed"] = true;
             outJson["Body"]["CableCheckRes"]["ResponseCode"] = body.CableCheckRes.ResponseCode;
 
             if (body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
@@ -428,8 +426,6 @@ extern "C" {
         } else if (body.CertificateUpdateRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
         } else if (body.ChargeParameterDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ChargeParameterDiscoveryReq"]["isUsed"] = true;
-
             outJson["Body"]["ChargeParameterDiscoveryReq"]["EVRequestedEnergyTransferType"] = body.ChargeParameterDiscoveryReq.EVRequestedEnergyTransferType;
 
             if (body.ChargeParameterDiscoveryReq.AC_EVChargeParameter_isUsed) {
@@ -496,10 +492,9 @@ extern "C" {
             }
 
             if (body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter_isUsed"]["_unused"] = body.ChargeParameterDiscoveryReq.EVChargeParameter._unused;
+                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter_isUsed"]["_unused"] = 0;
             }
         } else if (body.ChargeParameterDiscoveryRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ChargeParameterDiscoveryRes"]["isUsed"] = true;
             outJson["Body"]["ChargeParameterDiscoveryRes"]["ResponseCode"] = body.ChargeParameterDiscoveryRes.ResponseCode;
             outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEProcessing"] = body.ChargeParameterDiscoveryRes.EVSEProcessing;
 
@@ -515,7 +510,7 @@ extern "C" {
                             }
                         }
                         if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["TimeInterval"]["_unused"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval._unused;
+                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["TimeInterval"]["_unused"] = 0;
                         }
                         outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax;
                     }
@@ -542,7 +537,7 @@ extern "C" {
                                 }
                             }
                             if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["TimeInterval"]["_unused"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval._unused;
+                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["TimeInterval"]["_unused"] = 0;
                             }
                             outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["EPriceLevel"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel;
                             if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost_isUsed) {
@@ -562,7 +557,7 @@ extern "C" {
             }
 
             if (body.ChargeParameterDiscoveryRes.SASchedules_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["SASchedules"]["_unused"] = body.ChargeParameterDiscoveryRes.SASchedules._unused;
+                outJson["Body"]["ChargeParameterDiscoveryRes"]["SASchedules"]["_unused"] = 0;
             }
 
             if (body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter_isUsed) {
@@ -654,7 +649,7 @@ extern "C" {
             }
 
             if (body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEChargeParameter"]["_unused"] = body.ChargeParameterDiscoveryRes.EVSEChargeParameter._unused;
+                outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEChargeParameter"]["_unused"] = 0;
             }
         } else if (body.ChargingStatusReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
@@ -673,12 +668,9 @@ extern "C" {
                 outJson["Body"]["ContractAuthenticationReq"]["GenChallenge"]["charactersLen"] = body.ContractAuthenticationReq.GenChallenge.charactersLen;
             }
         } else if (body.ContractAuthenticationRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ContractAuthenticationRes"]["isUsed"] = true;
             outJson["Body"]["ContractAuthenticationRes"]["ResponseCode"] = body.ContractAuthenticationRes.ResponseCode;
             outJson["Body"]["ContractAuthenticationRes"]["EVSEProcessing"] = body.ContractAuthenticationRes.EVSEProcessing;
         } else if (body.CurrentDemandReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["CurrentDemandReq"]["isUsed"] = true;
-
             outJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVReady"] = body.CurrentDemandReq.DC_EVStatus.EVReady;
             if (body.CurrentDemandReq.DC_EVStatus.EVCabinConditioning_isUsed) {
                 outJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVCabinConditioning"] = body.CurrentDemandReq.DC_EVStatus.EVCabinConditioning;
@@ -747,7 +739,6 @@ extern "C" {
             }
             outJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Value"] = body.CurrentDemandReq.EVTargetVoltage.Value;
         } else if (body.CurrentDemandRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["CurrentDemandRes"]["isUsed"] = true;
             outJson["Body"]["CurrentDemandRes"]["ResponseCode"] = body.CurrentDemandRes.ResponseCode;
 
             if (body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
@@ -805,8 +796,6 @@ extern "C" {
         } else if (body.PaymentDetailsRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
         } else if (body.PowerDeliveryReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["PowerDeliveryReq"]["isUsed"] = true;
-
             outJson["Body"]["PowerDeliveryReq"]["ReadyToChargeState"] = body.PowerDeliveryReq.ReadyToChargeState;
 
             if (body.PowerDeliveryReq.ChargingProfile_isUsed) {
@@ -836,10 +825,9 @@ extern "C" {
             }
 
             if (body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed) {
-                outJson["Body"]["PowerDeliveryReq"]["EVPowerDeliveryParameter"]["_unused"] = body.PowerDeliveryReq.EVPowerDeliveryParameter._unused;
+                outJson["Body"]["PowerDeliveryReq"]["EVPowerDeliveryParameter"]["_unused"] = 0;
             }
         } else if (body.PowerDeliveryRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["PowerDeliveryRes"]["isUsed"] = true;
             outJson["Body"]["PowerDeliveryRes"]["ResponseCode"] = body.PowerDeliveryRes.ResponseCode;
 
             if (body.PowerDeliveryRes.AC_EVSEStatus_isUsed) {
@@ -857,11 +845,9 @@ extern "C" {
             }
 
             if (body.PowerDeliveryRes.EVSEStatus_isUsed) {
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["_unused"] = body.PowerDeliveryRes.EVSEStatus._unused;
+                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["_unused"] = 0;
             }
         } else if (body.PreChargeReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["PreChargeReq"]["isUsed"] = true;
-
             outJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVReady"] = body.PreChargeReq.DC_EVStatus.EVReady;
             if (body.PreChargeReq.DC_EVStatus.EVCabinConditioning_isUsed) {
                 outJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVCabinConditioning"] = body.PreChargeReq.DC_EVStatus.EVCabinConditioning;
@@ -884,8 +870,6 @@ extern "C" {
             }
             outJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Value"] = body.PreChargeReq.EVTargetCurrent.Value;
         } else if (body.PreChargeRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["PreChargeRes"]["isUsed"] = true;
-
             outJson["Body"]["PreChargeRes"]["ResponseCode"] = body.PreChargeRes.ResponseCode;
 
             outJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus;
@@ -903,8 +887,6 @@ extern "C" {
         } else if (body.ServiceDetailRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
         } else if (body.ServiceDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ServiceDiscoveryReq"]["isUsed"] = true;
-
             if (body.ServiceDiscoveryReq.ServiceScope_isUsed){
                 outJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["characters"] = body.ServiceDiscoveryReq.ServiceScope.characters;
                 outJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["charactersLen"] = body.ServiceDiscoveryReq.ServiceScope.charactersLen;
@@ -914,7 +896,6 @@ extern "C" {
                 outJson["Body"]["ServiceDiscoveryReq"]["ServiceCategory"] = body.ServiceDiscoveryReq.ServiceCategory;
             }
         } else if (body.ServiceDiscoveryRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ServiceDiscoveryRes"]["isUsed"] = true;
             outJson["Body"]["ServiceDiscoveryRes"]["ResponseCode"] = body.ServiceDiscoveryRes.ResponseCode;
 
             outJson["Body"]["ServiceDiscoveryRes"]["PaymentOptions"]["PaymentOption"]["arrayLen"] = body.ServiceDiscoveryRes.PaymentOptions.PaymentOption.arrayLen;
@@ -957,7 +938,6 @@ extern "C" {
                 outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["FreeService"] = body.ServiceDiscoveryRes.ServiceList.Service.FreeService;
             }
         } else if (body.ServicePaymentSelectionReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ServicePaymentSelectionReq"]["isUsed"] = true;
             outJson["Body"]["ServicePaymentSelectionReq"]["SelectedPaymentOption"] = body.ServicePaymentSelectionReq.SelectedPaymentOption;
 
             for (int i=0; i<body.ServicePaymentSelectionReq.SelectedServiceList.SelectedService.arrayLen; i++) {
@@ -968,15 +948,11 @@ extern "C" {
             }
             outJson["Body"]["ServicePaymentSelectionReq"]["SelectedServiceList"]["SelectedService"]["arrayLen"] = body.ServicePaymentSelectionReq.SelectedServiceList.SelectedService.arrayLen;
         } else if (body.ServicePaymentSelectionRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["ServicePaymentSelectionRes"]["isUsed"] = true;
             outJson["Body"]["ServicePaymentSelectionRes"]["ResponseCode"] = body.ServicePaymentSelectionRes.ResponseCode;
         } else if (body.SessionSetupReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["SessionSetupReq"]["isUsed"] = true;
             outJson["Body"]["SessionSetupReq"]["EVCCID"]["bytes"] = body.SessionSetupReq.EVCCID.bytes;
             outJson["Body"]["SessionSetupReq"]["EVCCID"]["bytesLen"] = body.SessionSetupReq.EVCCID.bytesLen;
         } else if (body.SessionSetupRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["SessionSetupRes"]["isUsed"] = true;
-
             outJson["Body"]["SessionSetupRes"]["ResponseCode"] = body.SessionSetupRes.ResponseCode;
 
             outJson["Body"]["SessionSetupRes"]["EVSEID"]["bytesLen"] = body.SessionSetupRes.EVSEID.bytesLen;
@@ -988,10 +964,8 @@ extern "C" {
                 outJson["Body"]["SessionSetupRes"]["DateTimeNow"] = body.SessionSetupRes.DateTimeNow;
             }
         } else if (body.SessionStopReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["SessionStopReq"]["isUsed"] = true;
-            outJson["Body"]["SessionStopReq"]["_unused"] = body.SessionStopReq._unused;
+            outJson["Body"]["SessionStopReq"]["_unused"] = 0;
         } else if (body.SessionStopRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            outJson["Body"]["SessionStopRes"]["isUsed"] = true;
             outJson["Body"]["SessionStopRes"]["ResponseCode"] = body.SessionStopRes.ResponseCode;
         } else if (body.WeldingDetectionReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
             return "NOT IMPLEMENTED";
@@ -1368,7 +1342,7 @@ extern "C" {
 
             if (inJson["Body"]["ChargeParameterDiscoveryReq"].contains("EVChargeParameter")) {
                 body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed = true;
-                // body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed._unused = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter_isUsed"]["_unused"];
+                body.ChargeParameterDiscoveryReq.EVChargeParameter._unused = 0;
             } else {
                 body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed = false;
             }
@@ -1402,7 +1376,7 @@ extern "C" {
                         }
                         if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j].contains("TimeInterval")){
                             body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval._unused = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["TimeInterval"]["_unused"].template get<int>();
+                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval._unused = 0;
                         } else {
                             body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval_isUsed = false;
                         }
@@ -1441,7 +1415,7 @@ extern "C" {
                             }
                             if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j].contains("TimeInterval")) {
                                 body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed = true;
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval._unused = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["TimeInterval"]["_unused"].template get<int>();
+                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval._unused = 0;
                             } else {
                                 body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed = false;
                             }
@@ -1476,7 +1450,7 @@ extern "C" {
 
             if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("SASchedules")) {
                 body.ChargeParameterDiscoveryRes.SASchedules_isUsed = true;
-                body.ChargeParameterDiscoveryRes.SASchedules._unused = inJson["Body"]["ChargeParameterDiscoveryRes"]["SASchedules"]["_unused"].template get<int>();
+                body.ChargeParameterDiscoveryRes.SASchedules._unused = 0;
             } else {
                 body.ChargeParameterDiscoveryRes.SASchedules_isUsed = false;
             }
@@ -1622,7 +1596,7 @@ extern "C" {
 
             if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("EVSEChargeParameter")) {
                 body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed = true;
-                body.ChargeParameterDiscoveryRes.EVSEChargeParameter._unused = inJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEChargeParameter"]["_unused"].template get<int>();
+                body.ChargeParameterDiscoveryRes.EVSEChargeParameter._unused = 0;
             } else {
                 body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed = false;
             }
@@ -1630,7 +1604,7 @@ extern "C" {
             init_din_ChargingStatusReqType(&body.ChargingStatusReq);
             body.ChargingStatusReq_isUsed = true;
 
-            body.ChargingStatusReq._unused = inJson["Body"]["ChargingStatusReq"]["_unused"].template get<int>();
+            body.ChargingStatusReq._unused = 0;
         } else if (packetType == "ChargingStatusRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////
             init_din_ChargingStatusResType(&body.ChargingStatusRes);
             body.ChargingStatusRes_isUsed = true;
@@ -2098,7 +2072,7 @@ extern "C" {
 
             if (inJson["Body"]["PowerDeliveryReq"].contains("EVPowerDeliveryParameter")) {
                 body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed = true;
-                body.PowerDeliveryReq.EVPowerDeliveryParameter._unused = inJson["Body"]["PowerDeliveryReq"]["EVPowerDeliveryParameter"]["_unused"].template get<int>();
+                body.PowerDeliveryReq.EVPowerDeliveryParameter._unused = 0;
             } else {
                 body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed = false;
             }
@@ -2135,7 +2109,7 @@ extern "C" {
 
             if (inJson["Body"]["PowerDeliveryRes"].contains("EVSEStatus")) {
                 body.PowerDeliveryRes.EVSEStatus_isUsed = true;
-                body.PowerDeliveryRes.EVSEStatus._unused = inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["_unused"].template get<int>();
+                body.PowerDeliveryRes.EVSEStatus._unused = 0;
             } else {
                 body.PowerDeliveryRes.EVSEStatus_isUsed = false;
             }
@@ -2400,7 +2374,7 @@ extern "C" {
             init_din_SessionStopType(&body.SessionStopReq);
             body.SessionStopReq_isUsed = true;
 
-            body.SessionStopReq._unused = inJson["Body"]["SessionStopReq"]["_unused"].template get<int>();
+            body.SessionStopReq._unused = 0;
         } else if (packetType == "SessionStopRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////
             init_din_SessionStopResType(&body.SessionStopRes);
             body.SessionStopRes_isUsed = true;
