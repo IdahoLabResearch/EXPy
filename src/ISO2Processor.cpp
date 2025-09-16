@@ -115,7 +115,7 @@ extern "C" {
                     outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j];
                 }
                 outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets_count"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count;
-                for (int k = 0; k < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
+                for (size_t k = 0; k < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
                     outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][k] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[k];
                 }
                 outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["is_negative"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative;
@@ -229,7 +229,7 @@ extern "C" {
                     outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j];
                 }
                 outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets_count"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count;
-                for (int k = 0; k < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
+                for (size_t k = 0; k < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
                     outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][k] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[k];
                 }
                 outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["is_negative"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative;
