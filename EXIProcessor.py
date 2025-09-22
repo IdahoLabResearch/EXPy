@@ -6,9 +6,18 @@ from ctypes import *
 import json
 import os
 
-class DINProcessor():
-    def __init__(self):
-        soFilePath = os.path.abspath(__file__ + "/../build/lib-DINProcessor.so")
+from enum import Enum
+
+class ProtocolEnum(Enum):
+    HANDSHAKE = "AppHandshake"
+    DIN = "DIN"
+    ISO2 = "ISO2"
+    ISO20 = "ISO20"
+
+class EXIProcessor():
+    def __init__(self, protocol: ProtocolEnum):
+        protocolString = protocol.value
+        soFilePath = os.path.abspath(__file__ + f"/../build/lib-{protocolString}Processor.so")
         self.lib = CDLL(soFilePath)
 
         self.lib.decodeFromPythonBytes.argtypes = [POINTER(c_uint8), c_size_t]

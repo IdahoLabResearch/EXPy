@@ -2,7 +2,7 @@
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
 """
 
-from DINProcessor import DINProcessor
+from EXIProcessor import *
 import json
 
 # EXI string for PreChargeRequest
@@ -41,8 +41,8 @@ jsonStringSessionSetupRes = """
     }
 }"""
 
-# Create instance of DINProcessor
-dinProcessor = DINProcessor()
+# Create instance of EXIProcessor
+dinProcessor = EXIProcessor(ProtocolEnum.DIN)
 
 # Decode the EXI bytes
 decodedJson = dinProcessor.decode(exiBytesPrechargeReq)
@@ -53,8 +53,6 @@ encodedEXIResult = dinProcessor.encode(json.loads(jsonStringSessionSetupRes))
 print("Encoded EXI for SessionSetupRes:", encodedEXIResult.hex())
 print("\n\n")
 
-
-from AppHandshakeProcessor import AppHandshakeProcessor
 
 # EXI string for supportedAppProtocolReq
 exiStringSupportedAppProtocolReq = b'8000dbab9371d3234b71d1b981899189d191818991d26b9b3a232b30020000040401b75726e3a7465736c613a64696e3a323031383a4d736744656600001c0100080'
@@ -70,7 +68,7 @@ jsonStringSupportedAppProtocolRes = """
 }"""
 
 # Create instance of AppHandshakeProcessor
-appHandshakeProcessor = AppHandshakeProcessor()
+appHandshakeProcessor = EXIProcessor(ProtocolEnum.HANDSHAKE)
 
 # Decode the EXI bytes for supportedAppProtocolReq
 decodedJsonSupportedAppProtocolReq = appHandshakeProcessor.decode(exiBytesSupportedAppProtocolReq)
