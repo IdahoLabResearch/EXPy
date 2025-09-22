@@ -418,13 +418,135 @@ extern "C" {
         
             outJson["Body"]["CableCheckRes"]["EVSEProcessing"] = body.CableCheckRes.EVSEProcessing;
         } else if (body.CertificateInstallationReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            if (body.CertificateInstallationReq.Id_isUsed) {
+                outJson["Body"]["CertificateInstallationReq"]["Id"]["charactersLen"] = body.CertificateInstallationReq.Id.charactersLen;
+                for (int i = 0; i < body.CertificateInstallationReq.Id.charactersLen; i++) {
+                    outJson["Body"]["CertificateInstallationReq"]["Id"][i] = body.CertificateInstallationReq.Id.characters[i];
+                }
+            }
+
+            outJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytesLen"] = body.CertificateInstallationReq.OEMProvisioningCert.bytesLen;
+            for (int i = 0; i < body.CertificateInstallationReq.OEMProvisioningCert.bytesLen; i++) {
+                outJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"][i] = body.CertificateInstallationReq.OEMProvisioningCert.bytes[i];
+            }
+
+            outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen;
+            for (int i = 0; i < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
+                outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"][i]["charactersLen"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen;
+                for (int j = 0; j < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen; j++) {
+                    outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"][i][j] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].characters[j];
+                }
+            }
+
+            outJson["Body"]["CertificateInstallationReq"]["DHParams"]["bytesLen"] = body.CertificateInstallationReq.DHParams.bytesLen;
+            for (int i = 0; i < body.CertificateInstallationReq.DHParams.bytesLen; i++) {
+                outJson["Body"]["CertificateInstallationReq"]["DHParams"][i] = body.CertificateInstallationReq.DHParams.bytes[i];
+            }
         } else if (body.CertificateInstallationRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["CertificateInstallationRes"]["Id"]["charactersLen"] = body.CertificateInstallationRes.Id.charactersLen;
+            for (int i = 0; i < body.CertificateInstallationRes.Id.charactersLen; i++) {
+                outJson["Body"]["CertificateInstallationRes"]["Id"][i] = body.CertificateInstallationRes.Id.characters[i];
+            }
+
+            outJson["Body"]["CertificateInstallationRes"]["ResponseCode"] = body.CertificateInstallationRes.ResponseCode;
+
+            outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen;
+            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"][i] = body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytes[i];
+            }
+
+            if (body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed) {
+                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen;
+                for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"][i] = body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i];
+                }
+            }
+
+            outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.bytesLen;
+            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"][i] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.bytes[i];
+            }
+
+            outJson["Body"]["CertificateInstallationRes"]["DHParams"]["bytesLen"] = body.CertificateInstallationRes.DHParams.bytesLen;
+            for (int i = 0; i < body.CertificateInstallationRes.DHParams.bytesLen; i++) {
+                outJson["Body"]["CertificateInstallationRes"]["DHParams"][i] = body.CertificateInstallationRes.DHParams.bytes[i];
+            }
+
+            outJson["Body"]["CertificateInstallationRes"]["ContractID"]["charactersLen"] = body.CertificateInstallationRes.ContractID.charactersLen;
+            for (int i = 0; i < body.CertificateInstallationRes.ContractID.charactersLen; i++) {
+                outJson["Body"]["CertificateInstallationRes"]["ContractID"][i] = body.CertificateInstallationRes.ContractID.characters[i];
+            }
         } else if (body.CertificateUpdateReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            if (body.CertificateUpdateReq.Id_isUsed) {
+                outJson["Body"]["CertificateUpdateReq"]["Id"]["charactersLen"] = body.CertificateUpdateReq.Id.charactersLen;
+                for (int i = 0; i < body.CertificateUpdateReq.Id.charactersLen; i++) {
+                    outJson["Body"]["CertificateUpdateReq"]["Id"][i] = body.CertificateUpdateReq.Id.characters[i];
+                }
+            }
+
+            outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen;
+            for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"][i] = body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytes[i];
+            }
+            if (body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed) {
+                outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen;
+                for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"][i] = body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i];
+                }
+            }
+
+            outJson["Body"]["CertificateUpdateReq"]["ContractID"]["charactersLen"] = body.CertificateUpdateReq.ContractID.charactersLen;
+            for (int i = 0; i < body.CertificateUpdateReq.ContractID.charactersLen; i++) {
+                outJson["Body"]["CertificateUpdateReq"]["ContractID"][i] = body.CertificateUpdateReq.ContractID.characters[i];
+            }
+
+            outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen;
+            for (int i = 0; i < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
+                outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"][i]["charactersLen"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen;
+                for (int j = 0; j < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].charactersLen; j++) {
+                    outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"][i][j] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].characters[j];
+                }
+            }
+
+            outJson["Body"]["CertificateUpdateReq"]["DHParams"]["bytesLen"] = body.CertificateUpdateReq.DHParams.bytesLen;
+            for (int i = 0; i < body.CertificateUpdateReq.DHParams.bytesLen; i++) {
+                outJson["Body"]["CertificateUpdateReq"]["DHParams"][i] = body.CertificateUpdateReq.DHParams.bytes[i];
+            }
         } else if (body.CertificateUpdateRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["CertificateUpdateRes"]["Id"]["charactersLen"] = body.CertificateUpdateRes.Id.charactersLen;
+            for (int i = 0; i < body.CertificateUpdateRes.Id.charactersLen; i++) {
+                outJson["Body"]["CertificateUpdateRes"]["Id"][i] = body.CertificateUpdateRes.Id.characters[i];
+            }
+
+            outJson["Body"]["CertificateUpdateRes"]["ResponseCode"] = body.CertificateUpdateRes.ResponseCode;
+
+            outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen;
+            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"][i] = body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytes[i];
+            }
+            if (body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed) {
+                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen;
+                for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"][i] = body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i];
+                }
+            }
+
+            outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytesLen;
+            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"][i] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.bytes[i];
+            }
+
+            outJson["Body"]["CertificateUpdateRes"]["DHParams"]["bytesLen"] = body.CertificateUpdateRes.DHParams.bytesLen;
+            for (int i = 0; i < body.CertificateUpdateRes.DHParams.bytesLen; i++) {
+                outJson["Body"]["CertificateUpdateRes"]["DHParams"][i] = body.CertificateUpdateRes.DHParams.bytes[i];
+            }
+
+            outJson["Body"]["CertificateUpdateRes"]["ContractID"]["charactersLen"] = body.CertificateUpdateRes.ContractID.charactersLen;
+            for (int i = 0; i < body.CertificateUpdateRes.ContractID.charactersLen; i++) {
+                outJson["Body"]["CertificateUpdateRes"]["ContractID"][i] = body.CertificateUpdateRes.ContractID.characters[i];
+            }
+
+            outJson["Body"]["CertificateUpdateRes"]["RetryCounter"] = body.CertificateUpdateRes.RetryCounter;
         } else if (body.ChargeParameterDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////
             outJson["Body"]["ChargeParameterDiscoveryReq"]["EVRequestedEnergyTransferType"] = body.ChargeParameterDiscoveryReq.EVRequestedEnergyTransferType;
 
@@ -652,9 +774,57 @@ extern "C" {
                 outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEChargeParameter"]["_unused"] = 0;
             }
         } else if (body.ChargingStatusReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["ChargingStatusReq"]["_unused"] = 0;
         } else if (body.ChargingStatusRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["ChargingStatusRes"]["ResponseCode"] = body.ChargingStatusRes.ResponseCode;
+
+            outJson["Body"]["ChargingStatusRes"]["EVSEID"]["bytesLen"] = body.ChargingStatusRes.EVSEID.bytesLen;
+            for (int i = 0; i < body.ChargingStatusRes.EVSEID.bytesLen; i++) {
+                outJson["Body"]["ChargingStatusRes"]["EVSEID"][i] = body.ChargingStatusRes.EVSEID.bytes[i];
+            }
+
+            outJson["Body"]["ChargingStatusRes"]["SAScheduleTupleID"] = body.ChargingStatusRes.SAScheduleTupleID;
+
+            if (body.ChargingStatusRes.EVSEMaxCurrent_isUsed) {
+                outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Multiplier"] = body.ChargingStatusRes.EVSEMaxCurrent.Multiplier;
+                if (body.ChargingStatusRes.EVSEMaxCurrent.Unit_isUsed) {
+                    outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Unit"] = body.ChargingStatusRes.EVSEMaxCurrent.Unit;
+                }
+                outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Value"] = body.ChargingStatusRes.EVSEMaxCurrent.Value;
+            }
+
+            if (body.ChargingStatusRes.MeterInfo_isUsed) {
+                outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["charactersLen"] = body.ChargingStatusRes.MeterInfo.MeterID.charactersLen;
+                for (int i = 0; i < body.ChargingStatusRes.MeterInfo.MeterID.charactersLen; i++) {
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["characters"][i] = body.ChargingStatusRes.MeterInfo.MeterID.characters[i];
+                }
+                if (body.ChargingStatusRes.MeterInfo.MeterReading_isUsed) {
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Multiplier"] = body.ChargingStatusRes.MeterInfo.MeterReading.Multiplier;
+                    if (body.ChargingStatusRes.MeterInfo.MeterReading.Unit_isUsed) {
+                        outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Unit"] = body.ChargingStatusRes.MeterInfo.MeterReading.Unit;
+                    }
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"]["Value"] = body.ChargingStatusRes.MeterInfo.MeterReading.Value;
+                }
+                if (body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed) {
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"] = body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen;
+                    for (int i = 0; i < body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen; i++) {
+                        outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i] = body.ChargingStatusRes.MeterInfo.SigMeterReading.bytes[i];
+                    }
+                }
+                if (body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed) {
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterStatus"] = body.ChargingStatusRes.MeterInfo.MeterStatus;
+                }
+                if (body.ChargingStatusRes.MeterInfo.TMeter_isUsed) {
+                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["TMeter"] = body.ChargingStatusRes.MeterInfo.TMeter;
+                }
+            }
+
+            outJson["Body"]["ChargingStatusRes"]["ReceiptRequired"] = body.ChargingStatusRes.ReceiptRequired;
+
+            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["PowerSwitchClosed"] = body.ChargingStatusRes.AC_EVSEStatus.PowerSwitchClosed;
+            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["RCD"] = body.ChargingStatusRes.AC_EVSEStatus.RCD;
+            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.ChargingStatusRes.AC_EVSEStatus.NotificationMaxDelay;
+            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["EVSENotification"] = body.ChargingStatusRes.AC_EVSEStatus.EVSENotification;
         } else if (body.ContractAuthenticationReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////
             outJson["Body"]["ContractAuthenticationReq"]["isUsed"] = true;
 
@@ -788,13 +958,78 @@ extern "C" {
                 outJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Value"] = body.CurrentDemandRes.EVSEMaximumPowerLimit.Value;
             }
         } else if (body.MeteringReceiptReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            if (body.MeteringReceiptReq.Id_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["Id"]["charactersLen"] = body.MeteringReceiptReq.Id.charactersLen;
+                for (int i = 0; i < body.MeteringReceiptReq.Id.charactersLen; i++) {
+                    outJson["Body"]["MeteringReceiptReq"]["Id"]["characters"][i] = body.MeteringReceiptReq.Id.characters[i];
+                }
+            }
+
+            outJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytesLen"] = body.MeteringReceiptReq.SessionID.bytesLen;
+            for (int i = 0; i < body.MeteringReceiptReq.SessionID.bytesLen; i++) {
+                outJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytes"][i] = body.MeteringReceiptReq.SessionID.bytes[i];
+            }
+
+            if (body.MeteringReceiptReq.SAScheduleTupleID_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["SAScheduleTupleID"] = body.MeteringReceiptReq.SAScheduleTupleID;
+            }
+
+            outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["charactersLen"] = body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen;
+            for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen; i++) {
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["characters"][i] = body.MeteringReceiptReq.MeterInfo.MeterID.characters[i];
+            }
+            if (body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Multiplier"] = body.MeteringReceiptReq.MeterInfo.MeterReading.Multiplier;
+                if (body.MeteringReceiptReq.MeterInfo.MeterReading.Unit_isUsed) {
+                    outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Unit"] = body.MeteringReceiptReq.MeterInfo.MeterReading.Unit;
+                }
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"]["Value"] = body.MeteringReceiptReq.MeterInfo.MeterReading.Value;
+            }
+            if (body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytesLen"] = body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen;
+                for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen; i++) {
+                    outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytes"][i] = body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytes[i];
+                }
+            }
+            if (body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterStatus"] = body.MeteringReceiptReq.MeterInfo.MeterStatus;
+            }
+            if (body.MeteringReceiptReq.MeterInfo.TMeter_isUsed) {
+                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["TMeter"] = body.MeteringReceiptReq.MeterInfo.TMeter;
+            }
+            
         } else if (body.MeteringReceiptRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["MeteringReceiptRes"]["ResponseCode"] = body.MeteringReceiptRes.ResponseCode;
+            
+            outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["PowerSwitchClosed"] = body.MeteringReceiptRes.AC_EVSEStatus.PowerSwitchClosed;
+            outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["RCD"] = body.MeteringReceiptRes.AC_EVSEStatus.RCD;
+            outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.AC_EVSEStatus.NotificationMaxDelay;
+            outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.AC_EVSEStatus.EVSENotification;
         } else if (body.PaymentDetailsReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["PaymentDetailsReq"]["ContractID"]["charactersLen"] = body.PaymentDetailsReq.ContractID.charactersLen;
+            for (int i = 0; i < body.PaymentDetailsReq.ContractID.charactersLen; i++) {
+                outJson["Body"]["PaymentDetailsReq"]["ContractID"]["characters"][i] = body.PaymentDetailsReq.ContractID.characters[i];
+            }
+
+            outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen;
+            for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
+                outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i] = body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytes[i];
+            }
+            if (body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed) {
+                outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytesLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen;
+                for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytesLen; i++) {
+                    outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["bytes"][i] = body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.bytes[i];
+                }
+            }
         } else if (body.PaymentDetailsRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["PaymentDetailsRes"]["ResponseCode"] = body.PaymentDetailsRes.ResponseCode;
+
+            outJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["charactersLen"] = body.PaymentDetailsRes.GenChallenge.charactersLen;
+            for (int i = 0; i < body.PaymentDetailsRes.GenChallenge.charactersLen; i++) {
+                outJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["characters"][i] = body.PaymentDetailsRes.GenChallenge.characters[i];
+            }
+
+            outJson["Body"]["PaymentDetailsRes"]["DateTimeNow"] = body.PaymentDetailsRes.DateTimeNow;
         } else if (body.PowerDeliveryReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
             outJson["Body"]["PowerDeliveryReq"]["ReadyToChargeState"] = body.PowerDeliveryReq.ReadyToChargeState;
 
@@ -883,9 +1118,48 @@ extern "C" {
             }
             outJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Value"] = body.PreChargeRes.EVSEPresentVoltage.Value;
         } else if (body.ServiceDetailReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["ServiceDetailReq"]["ServiceID"] = body.ServiceDetailReq.ServiceID;
         } else if (body.ServiceDetailRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["ServiceDetailRes"]["ResponseCode"] = body.ServiceDetailRes.ResponseCode;
+
+            outJson["Body"]["ServiceDetailRes"]["ServiceID"] = body.ServiceDetailRes.ServiceID;
+
+            if (body.ServiceDetailRes.ServiceParameterList_isUsed) {
+                outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["arrayLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen;
+                for (int i=0; i<body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen; i++) {
+                    outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["ParameterSetID"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].ParameterSetID;
+                    outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["Name"]["charactersLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.charactersLen;
+                    for (int j=0; j<body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.charactersLen; j++) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["Name"]["characters"][j] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.Name.characters[j];
+                    }
+                    outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["ValueType"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.ValueType;
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.boolValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["boolValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.boolValue;
+                    }
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.byteValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["byteValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.byteValue;
+                    }
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.shortValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["shortValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.shortValue;
+                    }
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.intValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["intValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.intValue;
+                    }
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Multiplier"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Multiplier;
+                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Unit_isUsed) {
+                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Unit"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Unit;
+                        }
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["physicalValue"]["Value"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.physicalValue.Value;
+                    }
+                    if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue_isUsed) {
+                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["stringValue"]["charactersLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.charactersLen;
+                        for (int j=0; j<body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.charactersLen; j++) {
+                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["stringValue"]["characters"][j] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.stringValue.characters[j];
+                        }
+                    }
+                }
+            }
         } else if (body.ServiceDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
             if (body.ServiceDiscoveryReq.ServiceScope_isUsed){
                 outJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["characters"] = body.ServiceDiscoveryReq.ServiceScope.characters;
@@ -968,9 +1242,30 @@ extern "C" {
         } else if (body.SessionStopRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////
             outJson["Body"]["SessionStopRes"]["ResponseCode"] = body.SessionStopRes.ResponseCode;
         } else if (body.WeldingDetectionReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVReady"] = body.WeldingDetectionReq.DC_EVStatus.EVReady;
+            if (body.WeldingDetectionReq.DC_EVStatus.EVCabinConditioning_isUsed) {
+                outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVCabinConditioning"] = body.WeldingDetectionReq.DC_EVStatus.EVCabinConditioning;
+            }
+            if (body.WeldingDetectionReq.DC_EVStatus.EVRESSConditioning_isUsed) {
+                outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSConditioning"] = body.WeldingDetectionReq.DC_EVStatus.EVRESSConditioning;
+            }
+            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVErrorCode"] = body.WeldingDetectionReq.DC_EVStatus.EVErrorCode;
+            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSSOC"] = body.WeldingDetectionReq.DC_EVStatus.EVRESSSOC;
         } else if (body.WeldingDetectionRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////
-            return "NOT IMPLEMENTED";
+            outJson["Body"]["WeldingDetectionRes"]["ResponseCode"] = body.WeldingDetectionRes.ResponseCode;
+
+            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus;
+            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSEStatusCode;
+            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.WeldingDetectionRes.DC_EVSEStatus.NotificationMaxDelay;
+            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSENotification"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSENotification;
+
+            outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Multiplier"] = body.WeldingDetectionRes.EVSEPresentVoltage.Multiplier;
+            if (body.WeldingDetectionRes.EVSEPresentVoltage.Unit_isUsed) {
+                outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Unit"] = body.WeldingDetectionRes.EVSEPresentVoltage.Unit;
+            }
+            outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Value"] = body.WeldingDetectionRes.EVSEPresentVoltage.Value;
+        } else {
+            return nullptr; // Unsupported packet type
         }
 
         static string jsonString;
