@@ -116,7 +116,7 @@ Usage:
 #### Python File
 
 ```python
-from DINProcessor import DINProcessor
+from EXIProcessor import *
 import json
 
 # EXI string for PreChargeRequest
@@ -155,8 +155,8 @@ jsonString = """
     }
 }"""
 
-# Create instance of DINProcessor
-dinProcessor = DINProcessor()
+# Create instance of EXIProcessor
+dinProcessor = EXIProcessor(ProtocolEnum.DIN)
 
 # Decode the EXI bytes
 decodedJson = dinProcessor.decode(exiBytes)
