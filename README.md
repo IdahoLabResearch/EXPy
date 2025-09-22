@@ -10,7 +10,7 @@ EXPy is a Python binding for the EXI (Efficient XML Interchange) format, leverag
 ## TODO
 
 Implement V2G Specifications
-- Implement DIN 70121 (In Progress)
+- ~~Implement DIN 70121~~
 - ~~Implement ISO 15118-2~~
 - Implement ISO 15118-20
 
