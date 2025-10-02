@@ -6,3 +6,4 @@ src/*.o
 
 # Ignore testing script
 test.py
+test.json
