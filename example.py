@@ -50,7 +50,10 @@ print("Decoded result for PreChargeRequest:\n", json.dumps(decodedJson, indent=4
 
 # Encode the json string
 encodedEXIResult = dinProcessor.encode(json.loads(jsonStringSessionSetupRes))
-print("Encoded EXI for SessionSetupRes:", encodedEXIResult.hex())
+if encodedEXIResult is not None:
+    print("Encoded EXI for SessionSetupRes:", encodedEXIResult.hex())
+else:
+    print("Encoding failed, result is None")
 print("\n\n")
 
 
@@ -76,4 +79,7 @@ print("Decoded result for supportedAppProtocolReq:\n", json.dumps(decodedJsonSup
 
 # Encode the json string for supportedAppProtocolRes
 encodedEXIResultSupportedAppProtocolRes = appHandshakeProcessor.encode(json.loads(jsonStringSupportedAppProtocolRes))
-print("Encoded EXI for supportedAppProtocolRes:", encodedEXIResultSupportedAppProtocolRes.hex())
+if encodedEXIResultSupportedAppProtocolRes is not None:
+    print("Encoded EXI for supportedAppProtocolRes:", encodedEXIResultSupportedAppProtocolRes.hex())
+else:
+    print("Encoding failed, result is None")

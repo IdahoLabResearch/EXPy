@@ -2,17 +2,19 @@
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
 """
 
-from ctypes import *
+from ctypes import CDLL, POINTER, Structure, c_char_p, c_size_t, c_uint8, cast
 import json
 import os
 
 from enum import Enum
+
 
 class ProtocolEnum(Enum):
     HANDSHAKE = "AppHandshake"
     DIN = "DIN"
     ISO2 = "ISO2"
     ISO20 = "ISO20"
+
 
 class EXIProcessor():
     def __init__(self, protocol: ProtocolEnum):
@@ -40,7 +42,7 @@ class EXIProcessor():
 
         return jsonObj
     
-    def encode(self, jsonObj: dict) -> bytes:
+    def encode(self, jsonObj: dict) -> bytes|None:
         jsonObjStr = json.dumps(jsonObj)
         c_input = c_char_p(jsonObjStr.encode('utf-8'))
 
