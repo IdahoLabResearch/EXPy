@@ -83,3 +83,25 @@ if encodedEXIResultSupportedAppProtocolRes is not None:
     print("Encoded EXI for supportedAppProtocolRes:", encodedEXIResultSupportedAppProtocolRes.hex())
 else:
     print("Encoding failed, result is None")
+
+# Using functions from V2Gjson package to create json payloads
+from V2Gjson.din import *
+
+Header = MessageHeaderType(SessionID=bytearray(b'DECAFBAD'))
+
+DC_EVStatus = DC_EVStatusType(EVReady=True, EVErrorCode=DC_EVErrorCodeType.NO_ERROR, EVRESSSOC=85)
+CableCheckReq = CableCheckReqType(DC_EVStatus=DC_EVStatus)
+
+Body = BodyType(CableCheckReq=CableCheckReq)
+
+V2Gpkt = V2G_Message(Header=Header, Body=Body)
+
+print("\n\nCreated V2G_Message using V2Gjson package:")
+print(json.dumps(V2Gpkt, indent=4))
+
+# Encode the created V2G_Message
+encodedEXIResultV2GMessage = dinProcessor.encode(V2Gpkt)
+if encodedEXIResultV2GMessage is not None:
+    print("Encoded EXI for created V2G_Message:", encodedEXIResultV2GMessage.hex())
+else:
+    print("Encoding failed, result is None")

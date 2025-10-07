@@ -276,7 +276,7 @@ def DSAKeyValueType(Y:bytearray, P:bytearray|None=None, Q:bytearray|None=None, G
     
     return j
 
-def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict)->dict[str, Any]:
+def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict[str, Any])->dict[str, Any]:
     """
     :param X509IssuerName: string
     :param X509SerialNumber: dict[exi_signed_t]
@@ -1538,7 +1538,7 @@ def AC_EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificatio
 
     return j
 
-def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationType, AC_EVSEStatus:dict[str, Any], DC_EVSEStatus:dict)->dict[str, Any]:
+def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationType, AC_EVSEStatus:dict[str, Any], DC_EVSEStatus:dict[str, Any])->dict[str, Any]:
     """
     :param NotificationMaxDelay: uint16/unsignedShort
     :param EVSENotification: EVSENotificationType
@@ -1555,7 +1555,7 @@ def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationTy
 
     return j
 
-def AC_EVSEChargeParameterType(AC_EVSEStatus:dict[str, Any], EVSENominalVoltage:dict[str, Any], EVSEMaxCurrent:dict)->dict[str, Any]:
+def AC_EVSEChargeParameterType(AC_EVSEStatus:dict[str, Any], EVSENominalVoltage:dict[str, Any], EVSEMaxCurrent:dict[str, Any])->dict[str, Any]:
     """
     :param AC_EVSEStatus: dict[AC_EVSEStatusType]
     :param EVSENominalVoltage: dict[PhysicalValueType]
@@ -1749,7 +1749,7 @@ def AuthorizationReqType(Id:str|None=None, GenChallenge:bytearray|None=None)->di
 
     return j
 
-def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any], EVTargetCurrent:dict)->dict[str, Any]:
+def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any], EVTargetCurrent:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     :param EVTargetVoltage: dict[PhysicalValueType]
@@ -1792,7 +1792,7 @@ def PaymentServiceSelectionResType(ResponseCode:responseCodeType)->dict[str, Any
 
     return j
 
-def CertificateUpdateReqType(Id:str, ContractSignatureCertChain:dict[str, Any], eMAID:dict[str, Any], ListOfRootCertificateIDs:dict)->dict[str, Any]:
+def CertificateUpdateReqType(Id:str, ContractSignatureCertChain:dict[str, Any], eMAID:dict[str, Any], ListOfRootCertificateIDs:dict[str, Any])->dict[str, Any]:
     """
     :param Id: string
     :param ContractSignatureCertChain: dict[CertificateChainType]
@@ -1826,7 +1826,7 @@ def SessionSetupResType(ResponseCode:responseCodeType, EVSEID:str, EVSETimeStamp
 
     return j
 
-def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOfRootCertificateIDs:dict)->dict[str, Any]:
+def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOfRootCertificateIDs:dict[str, Any])->dict[str, Any]:
     """
     :param Id: string
     :param OEMProvisioningCert: bytearray
@@ -1845,7 +1845,7 @@ def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOf
 
     return j
 
-def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioningCertChain:dict[str, Any], ContractSignatureCertChain:dict[str, Any], ContractSignatureEncryptedPrivateKey:dict[str, Any], DHpublickey:dict[str, Any], eMAID:dict)->dict[str, Any]:
+def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioningCertChain:dict[str, Any], ContractSignatureCertChain:dict[str, Any], ContractSignatureEncryptedPrivateKey:dict[str, Any], DHpublickey:dict[str, Any], eMAID:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param SAProvisioningCertChain: dict[CertificateChainType]
@@ -1866,7 +1866,7 @@ def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioning
 
     return j
 
-def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict)->dict[str, Any]:
+def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param DC_EVSEStatus: dict[DC_EVSEStatusType]
@@ -1922,7 +1922,7 @@ def CurrentDemandReqType(DC_EVStatus:dict[str, Any], EVTargetCurrent:dict[str, A
 
     return j
 
-def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict)->dict[str, Any]:
+def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param DC_EVSEStatus: dict[DC_EVSEStatusType]
@@ -2039,7 +2039,7 @@ def ChargeParameterDiscoveryReqType(RequestedEnergyTransferMode:EnergyTransferMo
 
     return j
 
-def CableCheckReqType(DC_EVStatus:dict)->dict[str, Any]:
+def CableCheckReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     """
@@ -2050,7 +2050,7 @@ def CableCheckReqType(DC_EVStatus:dict)->dict[str, Any]:
 
     return j
 
-def WeldingDetectionReqType(DC_EVStatus:dict)->dict[str, Any]:
+def WeldingDetectionReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     """
@@ -2117,7 +2117,7 @@ def ChargeParameterDiscoveryResType(ResponseCode:responseCodeType, EVSEProcessin
 
     return j
 
-def PaymentServiceSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:dict)->dict[str, Any]:
+def PaymentServiceSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:dict[str, Any])->dict[str, Any]:
     """
     :param SelectedPaymentOption: paymentOptionType
     :param SelectedServiceList: dict[ServiceListType]
@@ -2233,7 +2233,7 @@ def AuthorizationResType(ResponseCode:responseCodeType, EVSEProcessing:EVSEProce
     }
     return j
 
-def PaymentDetailsReqType(eMAID:str, ContractSignatureCertChain:dict)->dict[str, Any]:
+def PaymentDetailsReqType(eMAID:str, ContractSignatureCertChain:dict[str, Any])->dict[str, Any]:
     """
     :param eMAID: string
     :param ContractSignatureCertChain: dict[CertificateChainType]
@@ -2415,7 +2415,7 @@ def BodyType(AuthorizationReq:dict[str, Any]|None=None, AuthorizationRes:dict[st
 
     return j
 
-def V2G_Message(Header:dict[str, Any], Body:dict)->dict[str, Any]:
+def V2G_Message(Header:dict[str, Any], Body:dict[str, Any])->dict[str, Any]:
     """
     :param Header: dict[MessageHeaderType]
     :param Body: dict[BodyType]

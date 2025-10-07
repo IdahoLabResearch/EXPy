@@ -8,144 +8,144 @@ from typing import Any
 
 
 class costKindType(Enum):
-    relativePricePercentage = 0,
-    RenewableGenerationPercentage = 1,
+    relativePricePercentage = 0
+    RenewableGenerationPercentage = 1
     CarbonDioxideEmission = 2
 
 
 class isolationLevelType(Enum):
-    Invalid = 0,
-    Valid = 1,
-    Warning = 2,
+    Invalid = 0
+    Valid = 1
+    Warning = 2
     Fault = 3
 
 
 class paymentOptionType(Enum):
-    Contract = 0,
+    Contract = 0
     ExternalPayment = 1
 
 
 class DC_EVSEStatusCodeType(Enum):
-    EVSE_NotReady = 0,
-    EVSE_Ready = 1,
-    EVSE_Shutdown = 2,
-    EVSE_UtilityInterruptEvent = 3,
-    EVSE_IsolationMonitoringActive = 4,
-    EVSE_EmergencyShutdown = 5,
-    EVSE_Malfunction = 6,
-    Reserved_8 = 7,
-    Reserved_9 = 8,
-    Reserved_A = 9,
-    Reserved_B = 10,
+    EVSE_NotReady = 0
+    EVSE_Ready = 1
+    EVSE_Shutdown = 2
+    EVSE_UtilityInterruptEvent = 3
+    EVSE_IsolationMonitoringActive = 4
+    EVSE_EmergencyShutdown = 5
+    EVSE_Malfunction = 6
+    Reserved_8 = 7
+    Reserved_9 = 8
+    Reserved_A = 9
+    Reserved_B = 10
     Reserved_C = 11
 
 
 class unitSymbolType(Enum):
-    h = 0,
-    m = 1,
-    s = 2,
-    A = 3,
-    Ah = 4,
-    V = 5,
-    VA = 6,
-    W = 7,
-    W_s = 8,
+    h = 0
+    m = 1
+    s = 2
+    A = 3
+    Ah = 4
+    V = 5
+    VA = 6
+    W = 7
+    W_s = 8
     Wh = 9
 
 
 class EVSESupportedEnergyTransferType(Enum):
-    AC_single_phase_core = 0,
-    AC_three_phase_core = 1,
-    DC_core = 2,
-    DC_extended = 3,
-    DC_combo_core = 4,
-    DC_dual = 5,
-    AC_core1p_DC_extended = 6,
-    AC_single_DC_core = 7,
-    AC_single_phase_three_phase_core_DC_extended = 8,
+    AC_single_phase_core = 0
+    AC_three_phase_core = 1
+    DC_core = 2
+    DC_extended = 3
+    DC_combo_core = 4
+    DC_dual = 5
+    AC_core1p_DC_extended = 6
+    AC_single_DC_core = 7
+    AC_single_phase_three_phase_core_DC_extended = 8
     AC_core3p_DC_extended = 9
 
 
 class DC_EVErrorCodeType(Enum):
-    NO_ERROR = 0,
-    FAILED_RESSTemperatureInhibit = 1,
-    FAILED_EVShiftPosition = 2,
-    FAILED_ChargerConnectorLockFault = 3,
-    FAILED_EVRESSMalfunction = 4,
-    FAILED_ChargingCurrentdifferential = 5,
-    FAILED_ChargingVoltageOutOfRange = 6,
-    Reserved_A = 7,
-    Reserved_B = 8,
-    Reserved_C = 9,
-    FAILED_ChargingSystemIncompatibility = 10,
+    NO_ERROR = 0
+    FAILED_RESSTemperatureInhibit = 1
+    FAILED_EVShiftPosition = 2
+    FAILED_ChargerConnectorLockFault = 3
+    FAILED_EVRESSMalfunction = 4
+    FAILED_ChargingCurrentdifferential = 5
+    FAILED_ChargingVoltageOutOfRange = 6
+    Reserved_A = 7
+    Reserved_B = 8
+    Reserved_C = 9
+    FAILED_ChargingSystemIncompatibility = 10
     NoData = 11
 
 
 class EVSENotificationType(Enum):
-    None_ = 0,
-    StopCharging = 1,
+    None_ = 0
+    StopCharging = 1
     ReNegotiation = 2
 
 
 class faultCodeType(Enum):
-    ParsingError = 0,
-    NoTLSRootCertificatAvailable = 1,
+    ParsingError = 0
+    NoTLSRootCertificatAvailable = 1
     UnknownError = 2
 
 
 class responseCodeType(Enum):
-    OK = 0,
-    OK_NewSessionEstablished = 1,
-    OK_OldSessionJoined = 2,
-    OK_CertificateExpiresSoon = 3,
-    FAILED = 4,
-    FAILED_SequenceError = 5,
-    FAILED_ServiceIDInvalid = 6,
-    FAILED_UnknownSession = 7,
-    FAILED_ServiceSelectionInvalid = 8,
-    FAILED_PaymentSelectionInvalid = 9,
-    FAILED_CertificateExpired = 10,
-    FAILED_SignatureError = 11,
-    FAILED_NoCertificateAvailable = 12,
-    FAILED_CertChainError = 13,
-    FAILED_ChallengeInvalid = 14,
-    FAILED_ContractCanceled = 15,
-    FAILED_WrongChargeParameter = 16,
-    FAILED_PowerDeliveryNotApplied = 17,
-    FAILED_TariffSelectionInvalid = 18,
-    FAILED_ChargingProfileInvalid = 19,
-    FAILED_EVSEPresentVoltageToLow = 20,
-    FAILED_MeteringSignatureNotValid = 21,
+    OK = 0
+    OK_NewSessionEstablished = 1
+    OK_OldSessionJoined = 2
+    OK_CertificateExpiresSoon = 3
+    FAILED = 4
+    FAILED_SequenceError = 5
+    FAILED_ServiceIDInvalid = 6
+    FAILED_UnknownSession = 7
+    FAILED_ServiceSelectionInvalid = 8
+    FAILED_PaymentSelectionInvalid = 9
+    FAILED_CertificateExpired = 10
+    FAILED_SignatureError = 11
+    FAILED_NoCertificateAvailable = 12
+    FAILED_CertChainError = 13
+    FAILED_ChallengeInvalid = 14
+    FAILED_ContractCanceled = 15
+    FAILED_WrongChargeParameter = 16
+    FAILED_PowerDeliveryNotApplied = 17
+    FAILED_TariffSelectionInvalid = 18
+    FAILED_ChargingProfileInvalid = 19
+    FAILED_EVSEPresentVoltageToLow = 20
+    FAILED_MeteringSignatureNotValid = 21
     FAILED_WrongEnergyTransferType = 22
 
 
 class EVRequestedEnergyTransferType(Enum):
-    AC_single_phase_core = 0,
-    AC_three_phase_core = 1,
-    DC_core = 2,
-    DC_extended = 3,
-    DC_combo_core = 4,
+    AC_single_phase_core = 0
+    AC_three_phase_core = 1
+    DC_core = 2
+    DC_extended = 3
+    DC_combo_core = 4
     DC_unique = 5
 
 
 class serviceCategoryType(Enum):
-    EVCharging = 0,
-    Internet = 1,
-    ContractCertificate = 2,
+    EVCharging = 0
+    Internet = 1
+    ContractCertificate = 2
     OtherCustom = 3
 
 
 class EVSEProcessingType(Enum):
-    Finished = 0,
+    Finished = 0
     Ongoing = 1
 
 
 class valueType(Enum):
-    bool = 0,
-    byte = 1,
-    short = 2,
-    int = 3,
-    physicalValue = 4,
+    bool = 0
+    byte = 1
+    short = 2
+    int = 3
+    physicalValue = 4
     string = 5
 
 
@@ -280,7 +280,7 @@ def SalesTariffEntryType(EPriceLevel:int, RelativeTimeInterval:dict[str, Any]|No
 
     return j
 
-def TransformsType(Transform:dict)->dict[str, Any]:
+def TransformsType(Transform:dict[str, Any])->dict[str, Any]:
     """
     :param Transform: dict[TransformType]
     """
@@ -354,7 +354,7 @@ def DSAKeyValueType(Y:bytearray, P:bytearray|None=None, Q:bytearray|None=None, G
 
     return j
 
-def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict)->dict[str, Any]:
+def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict[str, Any])->dict[str, Any]:
     """
     :param X509IssuerName: string
     :param X509SerialNumber: dict[exi_signed_t]
@@ -1029,7 +1029,7 @@ def ParameterType(Name:str, ValueType:valueType, boolValue:int|None=None, byteVa
 
     return j
 
-def ParameterSetType(ParameterSetID:int, Parameter:dict)->dict[str, Any]:
+def ParameterSetType(ParameterSetID:int, Parameter:dict[str, Any])->dict[str, Any]:
     """
     :param ParameterSetID: int16/short
     :param Parameter: dict[ParameterType]
@@ -1087,7 +1087,7 @@ def SelectedServiceListType(SelectedService:list[dict])->dict[str, Any]:
 
     return j
 
-def AC_EVChargeParameterType(DepartureTime:int, EAmount:dict[str, Any], EMaxVoltage:dict[str, Any], EMaxCurrent:dict[str, Any], EMinCurrent:dict)->dict[str, Any]:
+def AC_EVChargeParameterType(DepartureTime:int, EAmount:dict[str, Any], EMaxVoltage:dict[str, Any], EMaxCurrent:dict[str, Any], EMinCurrent:dict[str, Any])->dict[str, Any]:
     """
     :param DepartureTime: uint32/unsignedInt
     :param EAmount: dict[PhysicalValueType]
@@ -1340,7 +1340,7 @@ def ObjectType(Encoding:str|None=None, Id:str|None=None, MimeType:str|None=None,
 
     return j
 
-def ServiceTagListType(Service:dict)->dict[str, Any]:
+def ServiceTagListType(Service:dict[str, Any])->dict[str, Any]:
     """
     :param Service: dict[ServiceType]
     """
@@ -1384,7 +1384,7 @@ def DC_EVSEChargeParameterType(DC_EVSEStatus:dict[str, Any], EVSEMaximumCurrentL
 
     return j
 
-def AC_EVSEChargeParameterType(AC_EVSEStatus:dict[str, Any], EVSEMaxVoltage:dict[str, Any], EVSEMaxCurrent:dict[str, Any], EVSEMinCurrent:dict)->dict[str, Any]:
+def AC_EVSEChargeParameterType(AC_EVSEStatus:dict[str, Any], EVSEMaxVoltage:dict[str, Any], EVSEMaxCurrent:dict[str, Any], EVSEMinCurrent:dict[str, Any])->dict[str, Any]:
     """
     :param AC_EVSEStatus: dict[AC_EVSEStatusType]
     :param EVSEMaxVoltage: dict[PhysicalValueType]
@@ -1485,7 +1485,7 @@ def CertificateInstallationResType(Id:str, ResponseCode:responseCodeType, Contra
 
     return j
 
-def CableCheckReqType(DC_EVStatus:dict)->dict[str, Any]:
+def CableCheckReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     """
@@ -1511,7 +1511,7 @@ def CableCheckResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any
 
     return j
 
-def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any], EVTargetCurrent:dict)->dict[str, Any]:
+def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any], EVTargetCurrent:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     :param EVTargetVoltage: dict[PhysicalValueType]
@@ -1526,7 +1526,7 @@ def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any],
 
     return j
 
-def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict)->dict[str, Any]:
+def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param DC_EVSEStatus: dict[DC_EVSEStatusType]
@@ -1617,7 +1617,7 @@ def CurrentDemandResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, 
 
     return j
 
-def WeldingDetectionReqType(DC_EVStatus:dict)->dict[str, Any]:
+def WeldingDetectionReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     """
     :param DC_EVStatus: dict[DC_EVStatusType]
     """
@@ -1628,7 +1628,7 @@ def WeldingDetectionReqType(DC_EVStatus:dict)->dict[str, Any]:
 
     return j
 
-def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict)->dict[str, Any]:
+def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param DC_EVSEStatus: dict[DC_EVSEStatusType]
@@ -1780,7 +1780,7 @@ def ServiceDetailResType(ResponseCode:responseCodeType, ServiceID:int, ServicePa
 
     return j
 
-def ServicePaymentSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:dict)->dict[str, Any]:
+def ServicePaymentSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:dict[str, Any])->dict[str, Any]:
     """
     :param SelectedPaymentOption: paymentOptionType
     :param SelectedServiceList: dict[SelectedServiceListType]
@@ -1804,7 +1804,7 @@ def ServicePaymentSelectionResType(ResponseCode:responseCodeType)->dict[str, Any
 
     return j
 
-def PaymentDetailsReqType(ContractID:str, ContractSignatureCertChain:dict)->dict[str, Any]:
+def PaymentDetailsReqType(ContractID:str, ContractSignatureCertChain:dict[str, Any])->dict[str, Any]:
     """
     :param ContractID: string
     :param ContractSignatureCertChain: dict[CertificateChainType]
@@ -2053,7 +2053,7 @@ def MeteringReceiptReqType(SessionID:bytearray, MeterInfo:dict[str, Any], Id:str
 
     return j
 
-def MeteringReceiptResType(ResponseCode:responseCodeType, AC_EVSEStatus:dict)->dict[str, Any]:
+def MeteringReceiptResType(ResponseCode:responseCodeType, AC_EVSEStatus:dict[str, Any])->dict[str, Any]:
     """
     :param ResponseCode: responseCodeType
     :param AC_EVSEStatus: dict[AC_EVSEStatusType]
@@ -2391,5 +2391,29 @@ def BodyType(BodyElement:dict[str, Any]|None=None, CableCheckReq:dict[str, Any]|
 
     if WeldingDetectionRes is not None:
         j["WeldingDetectionRes"] = WeldingDetectionRes
+
+    return j
+
+def V2G_Message(Header:dict[str, Any], Body:dict[str, Any])->dict[str, Any]:
+    """
+    :param Header: dict[MessageHeaderType]
+    :param Body: dict[BodyType]
+    """
+
+    j:dict[str,Any] = {
+        "Header": Header,
+        "Body": Body
+    }
+
+    return j
+
+def exiDocument(V2G_Message:dict[str, Any])->dict[str, Any]:
+    """
+    :param V2G_Message: dict[V2G_MessageType]
+    """
+
+    j:dict[str,Any] = {
+        "V2G_Message": V2G_Message
+    }
 
     return j
