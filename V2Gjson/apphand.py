@@ -8,18 +8,18 @@ from typing import Any
 
 
 class responseCodeType(Enum):
-    OK_SuccessfulNegotiation = 0,
-    OK_SuccessfulNegotiationWithMinorDeviation = 1,
+    OK_SuccessfulNegotiation = 0
+    OK_SuccessfulNegotiationWithMinorDeviation = 1
     Failed_NoNegotiation = 2
 
 
-def AppProtocolType(ProtocolNamespace:str, VersionNumberMajor:int, VersionNumberMinor:int, SchemaID:int, SchemaVersion:int)->dict[str, Any]:
+def AppProtocolType(ProtocolNamespace:str, VersionNumberMajor:int, VersionNumberMinor:int, SchemaID:int, Priority:int)->dict[str, Any]:
     """
     :param ProtocolNamespace: string
     :param VersionNumberMajor: uint32/unsignedInt
     :param VersionNumberMinor: uint32/unsignedInt
     :param SchemaID: uint8/unsignedByte
-    :param SchemaVersion: uint8/unsignedByte
+    :param Priority: uint8/unsignedByte
     """
 
     ProtocolNamespace_characters = [ord(c) for c in ProtocolNamespace]
@@ -32,7 +32,7 @@ def AppProtocolType(ProtocolNamespace:str, VersionNumberMajor:int, VersionNumber
         "VersionNumberMajor": VersionNumberMajor,
         "VersionNumberMinor": VersionNumberMinor,
         "SchemaID": SchemaID,
-        "SchemaVersion": SchemaVersion
+        "Priority": Priority
     }
 
     return j
@@ -66,7 +66,7 @@ def supportedAppProtocolRes(ResponseCode:responseCodeType, SchemaID:int|None=Non
 
     return j
 
-def exiDocument(AppProtocolReq:dict[str, Any]|None=None, SupportedAppProtocolRes:dict[str, Any]|None=None)->dict[str, Any]:
+def exiDocument(supportedAppProtocolReq:dict[str, Any]|None=None, supportedAppProtocolRes:dict[str, Any]|None=None)->dict[str, Any]:
     """
     :param AppProtocolReq: supportedAppProtocolReq (optional)
     :param SupportedAppProtocolRes: supportedAppProtocolRes (optional)
@@ -74,10 +74,10 @@ def exiDocument(AppProtocolReq:dict[str, Any]|None=None, SupportedAppProtocolRes
 
     j:dict[str, Any] = {}
 
-    if AppProtocolReq is not None:
-        j["AppProtocolReq"] = AppProtocolReq
+    if supportedAppProtocolReq is not None:
+        j["supportedAppProtocolReq"] = supportedAppProtocolReq
 
-    if SupportedAppProtocolRes is not None:
-        j["SupportedAppProtocolRes"] = SupportedAppProtocolRes
+    if supportedAppProtocolRes is not None:
+        j["supportedAppProtocolRes"] = supportedAppProtocolRes
 
     return j
