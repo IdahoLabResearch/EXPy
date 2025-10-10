@@ -6,7 +6,7 @@ import sys, os
 projectRoot = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append((projectRoot))
 
-from AppHandshakeProcessor import AppHandshakeProcessor
+from EXIProcessor import EXIProcessor, ProtocolEnum
 import json
 from glob import glob
 import binascii
@@ -22,8 +22,11 @@ def ordered(obj):
     
 def test(packetName, jsonString, results):
     try:
-        exiProcessor = AppHandshakeProcessor()
+        exiProcessor = EXIProcessor(ProtocolEnum.HANDSHAKE)
         exiString = exiProcessor.encode(jsonString)
+        if exiString is None:
+            results.append((packetName, "Failed", None))
+            return
         decodedJson = exiProcessor.decode(exiString)
         results.append((packetName, "Passed" if ordered(decodedJson) == ordered(jsonString) else "Failed", exiString))
     except Exception as e:
