@@ -7,7 +7,15 @@ library (libcbv2g).
 
 EXPy is a Python binding for the EXI (Efficient XML Interchange) format, leveraging the LF Energy EVerest implementation. It enables efficient XML processing in Python applications while maintaining compatibility with C/C++ codebases.
 
-There are also Python helper methods for creating V2G payloads from Python json objects.
+## Features
+
+- Executables and libraries for converting EXI bytes to Json strings and vice versa
+
+- Headers for EXI bytes to Json objects and vice versa in C++ projects
+
+- Python class for converting EXI bytes to Json objects and vice versa
+
+- Python module for creating Json payloads for V2G messages
 
 ## TODO
 
@@ -17,7 +25,7 @@ Implement V2G Specifications
 - Implement ISO 15118-20
 
 Add testing for each specification
-- Implement DIN 70121 Testing (In Progress)
+- Implement DIN 70121 Testing (In Progress -- NOT WORKING)
 - Implement ISO 15118-2 Testing
 - Implement ISO 15118-20 Testing
 
@@ -34,6 +42,12 @@ Add testing for each specification
 git clone --recurse-submodules <giturl>
 cd EXPy
 make
+```
+
+If you clone the project without the `--recurse-submodules` flag you can run the following command to initialized the submodules
+
+```bash
+git submodule update --init --recursive
 ```
 
 ## Usage from CMD
@@ -66,7 +80,7 @@ Usage:
 ./build/DINProcessor --encode='{"Body": {"SessionSetupRes": {"EVSEID": {"bytes": [0, 127, 0, 0, 16, 255, 119, 61, 253, 127, 0, 0, 90, 120, 167, 154, 129, 127, 0, 0, 92, 191, 184, 154, 129, 127, 0, 0, 176, 220, 184, 154], "bytesLen": 1}, "ResponseCode": 0, "isUsed": true}}, "Header": {"SessionID": {"bytes": [65, 66, 66, 48, 48, 48, 48, 49], "bytesLen": 8}}}'
 ```
 ```bash
-./build/DINProcessor -e -i inputFile.json
+./build/DINProcessor --encode --input='inputFile.json'
 ```
 #### Program Output
 ```
@@ -79,7 +93,7 @@ Usage:
 ./build/DINProcessor --decode='809a021050908c0c0c0c0c51e000040080'
 ```
 ```bash
-./build/DINProcessor -d -i inputFile.txt
+./build/DINProcessor --decode --input='inputFile.txt'
 ```
 #### Program Output
 ```
