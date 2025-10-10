@@ -1,19 +1,22 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -g
 SHARED_FLAGS = -fPIC -shared
-INCLUDES = -I./extern/libcbv2g/include -I./extern/json/include -I./extern/cxxopts/include
+INCLUDES = -I./extern/libcbv2g/include -I./extern/json/include -I./extern/cxxopts/include -I./include
 LDFLAGS = -L./extern/libcbv2g/build/lib/cbv2g
 LIBS = -lcbv2g_iso2 -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp
 
 BUILD_DIR = build
 
+COMMON_SRCS = src/common.cpp
+COMMON_OBJS = $(COMMON_SRCS:%.cpp=%.o)
+
 ISO2_SRCS = src/ISO2Processor.cpp
 DIN_SRCS = src/DINProcessor.cpp
 APP_SRCS = src/AppHandshakeProcessor.cpp
 
-ISO2_OBJS = $(ISO2_SRCS:%.cpp=%.o)
-DIN_OBJS = $(DIN_SRCS:%.cpp=%.o)
-APP_OBJS = $(APP_SRCS:%.cpp=%.o)
+ISO2_OBJS = $(ISO2_SRCS:%.cpp=%.o) $(COMMON_OBJS)
+DIN_OBJS = $(DIN_SRCS:%.cpp=%.o) $(COMMON_OBJS)
+APP_OBJS = $(APP_SRCS:%.cpp=%.o) $(COMMON_OBJS)
 
 EXEC = $(BUILD_DIR)/DINProcessor $(BUILD_DIR)/AppHandshakeProcessor $(BUILD_DIR)/ISO2Processor
 SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-AppHandshakeProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so

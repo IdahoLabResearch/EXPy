@@ -22,6 +22,106 @@ using json = nlohmann::json;
 #include <fstream>
 using namespace std;
 
+json getJson_AppProtocolType(const struct appHand_AppProtocolType& appProtocolDoc) {
+    json outJson;
+
+    outJson["ProtocolNamespace"]["charactersLen"] = appProtocolDoc.ProtocolNamespace.charactersLen;
+    for (uint16_t j = 0; j < appProtocolDoc.ProtocolNamespace.charactersLen; ++j) {
+        outJson["ProtocolNamespace"]["characters"][j] = appProtocolDoc.ProtocolNamespace.characters[j];
+    }
+    outJson["VersionNumberMajor"] = appProtocolDoc.VersionNumberMajor;
+    outJson["VersionNumberMinor"] = appProtocolDoc.VersionNumberMinor;
+    outJson["SchemaID"] = appProtocolDoc.SchemaID;
+    outJson["Priority"] = appProtocolDoc.Priority;
+    return outJson;
+}
+
+struct appHand_AppProtocolType getDoc_AppProtocolType(const json& appProtocolJson) {
+    struct appHand_AppProtocolType outDoc;
+    init_appHand_AppProtocolType(&outDoc);
+
+    outDoc.ProtocolNamespace.charactersLen = appProtocolJson["ProtocolNamespace"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t j = 0; j < outDoc.ProtocolNamespace.charactersLen; ++j) {
+        outDoc.ProtocolNamespace.characters[j] = appProtocolJson["ProtocolNamespace"]["characters"][j].template get<char>();
+    }
+    outDoc.VersionNumberMajor = appProtocolJson["VersionNumberMajor"].template get<uint32_t>();
+    outDoc.VersionNumberMinor = appProtocolJson["VersionNumberMinor"].template get<uint32_t>();
+    outDoc.SchemaID = appProtocolJson["SchemaID"].template get<uint8_t>();
+    outDoc.Priority = appProtocolJson["Priority"].template get<uint8_t>();
+    return outDoc;
+} 
+
+json getJson_supportedAppProtocolReq(const struct appHand_supportedAppProtocolReq& supportedAppProtocolReqDoc) {
+    json outJson;
+
+    outJson["AppProtocol"]["arrayLen"] = supportedAppProtocolReqDoc.AppProtocol.arrayLen;
+    for (uint16_t i = 0; i < supportedAppProtocolReqDoc.AppProtocol.arrayLen; ++i) {
+        outJson["AppProtocol"]["array"][i] = getJson_AppProtocolType(supportedAppProtocolReqDoc.AppProtocol.array[i]);
+    }
+    return outJson;
+}
+
+struct appHand_supportedAppProtocolReq getDoc_supportedAppProtocolReq(const json& supportedAppProtocolReqJson) {
+    struct appHand_supportedAppProtocolReq outDoc;
+    init_appHand_supportedAppProtocolReq(&outDoc);
+
+    outDoc.AppProtocol.arrayLen = supportedAppProtocolReqJson["AppProtocol"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.AppProtocol.arrayLen; ++i) {
+        outDoc.AppProtocol.array[i] = getDoc_AppProtocolType(supportedAppProtocolReqJson["AppProtocol"]["array"][i]);
+    }
+    return outDoc;
+}
+
+json getJson_supportedAppProtocolRes(const struct appHand_supportedAppProtocolRes& supportedAppProtocolResDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = supportedAppProtocolResDoc.ResponseCode;
+    if (supportedAppProtocolResDoc.SchemaID_isUsed) {
+        outJson["SchemaID"] = supportedAppProtocolResDoc.SchemaID;
+    }
+    return outJson;
+}
+
+struct appHand_supportedAppProtocolRes getDoc_supportedAppProtocolRes(const json& supportedAppProtocolResJson) {
+    struct appHand_supportedAppProtocolRes outDoc;
+    init_appHand_supportedAppProtocolRes(&outDoc);
+
+    outDoc.ResponseCode = supportedAppProtocolResJson["ResponseCode"].template get<appHand_responseCodeType>();
+    if (supportedAppProtocolResJson.contains("SchemaID")) {
+        outDoc.SchemaID_isUsed = 1;
+        outDoc.SchemaID = supportedAppProtocolResJson["SchemaID"].template get<uint8_t>();
+    } else {
+        outDoc.SchemaID_isUsed = 0;
+    }
+    return outDoc;
+}
+
+json getJson_exiDocument(const struct appHand_exiDocument& exiDoc) {
+    json outJson;
+
+    if (exiDoc.supportedAppProtocolReq_isUsed) {
+        outJson["supportedAppProtocolReq"] = getJson_supportedAppProtocolReq(exiDoc.supportedAppProtocolReq);
+    }
+    if (exiDoc.supportedAppProtocolRes_isUsed) {
+        outJson["supportedAppProtocolRes"] = getJson_supportedAppProtocolRes(exiDoc.supportedAppProtocolRes);
+    }
+    return outJson;
+}
+
+struct appHand_exiDocument getDoc_exiDocument(const json& exiJson) {
+    struct appHand_exiDocument outDoc;
+    init_appHand_exiDocument(&outDoc);
+
+    if (exiJson.contains("supportedAppProtocolReq")) {
+        outDoc.supportedAppProtocolReq_isUsed = 1;
+        outDoc.supportedAppProtocolReq = getDoc_supportedAppProtocolReq(exiJson["supportedAppProtocolReq"]);
+    } else if (exiJson.contains("supportedAppProtocolRes")) {
+        outDoc.supportedAppProtocolRes_isUsed = 1;
+        outDoc.supportedAppProtocolRes = getDoc_supportedAppProtocolRes(exiJson["supportedAppProtocolRes"]);
+    }
+    return outDoc;
+}
+
 extern "C" {
     const char* decodeFromPythonBytes(const uint8_t* data, size_t size) {
         appHand_exiDocument outDoc;
@@ -32,31 +132,7 @@ extern "C" {
         exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
         decode_appHand_exiDocument(&inEXI, &outDoc);
 
-        if (outDoc.supportedAppProtocolReq_isUsed) {
-            for (int i = 0; i < outDoc.supportedAppProtocolReq.AppProtocol.arrayLen; ++i) {
-                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["charactersLen"] =
-                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen;
-                for (int j = 0; j < outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen; ++j) {
-                    outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["characters"][j] =
-                        outDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.characters[j];
-                }
-                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["VersionNumberMajor"] =
-                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].VersionNumberMajor;
-                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["VersionNumberMinor"] =
-                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].VersionNumberMinor;
-                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["SchemaID"] =
-                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].SchemaID;
-                outJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["Priority"] =
-                    outDoc.supportedAppProtocolReq.AppProtocol.array[i].Priority;
-            }
-        }
-
-        if (outDoc.supportedAppProtocolRes_isUsed) {
-            outJson["supportedAppProtocolRes"]["ResponseCode"] = outDoc.supportedAppProtocolRes.ResponseCode;
-            if (outDoc.supportedAppProtocolRes.SchemaID_isUsed) {
-                outJson["supportedAppProtocolRes"]["SchemaID"] = outDoc.supportedAppProtocolRes.SchemaID;
-            }
-        }
+        outJson = getJson_exiDocument(outDoc);
 
         static string jsonString;
         jsonString = outJson.dump(4);
@@ -72,49 +148,19 @@ extern "C" {
     encoded_data* encodeFromPythonDict(const char* inString) {
         json inJson = json::parse(inString);
 
-        appHand_exiDocument inDoc;
-        init_appHand_exiDocument(&inDoc);
+        struct appHand_exiDocument outDoc;
+        init_appHand_exiDocument(&outDoc);
 
-        if (inJson.contains("supportedAppProtocolReq")) {
-            inDoc.supportedAppProtocolReq_isUsed = 1;
+        outDoc = getDoc_exiDocument(inJson);
 
-            inDoc.supportedAppProtocolReq.AppProtocol.arrayLen = inJson["supportedAppProtocolReq"]["AppProtocol"]["array"].size();
-            for (uint16_t i = 0; i < inDoc.supportedAppProtocolReq.AppProtocol.arrayLen; ++i) {
-                inDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen =
-                    inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["characters"].size();
-                for (uint16_t j = 0; j < inDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.charactersLen; ++j) {
-                    inDoc.supportedAppProtocolReq.AppProtocol.array[i].ProtocolNamespace.characters[j] =
-                        inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["ProtocolNamespace"]["characters"][j].template get<char>();
-                }
-                inDoc.supportedAppProtocolReq.AppProtocol.array[i].VersionNumberMajor =
-                    inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["VersionNumberMajor"].template get<uint32_t>();
-                inDoc.supportedAppProtocolReq.AppProtocol.array[i].VersionNumberMinor =
-                    inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["VersionNumberMinor"].template get<uint32_t>();
-                inDoc.supportedAppProtocolReq.AppProtocol.array[i].SchemaID =
-                    inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["SchemaID"].template get<uint8_t>();
-                inDoc.supportedAppProtocolReq.AppProtocol.array[i].Priority =
-                    inJson["supportedAppProtocolReq"]["AppProtocol"]["array"][i]["Priority"].template get<uint8_t>();
-            }
-        } else if (inJson.contains("supportedAppProtocolRes")) {
-            inDoc.supportedAppProtocolRes_isUsed = 1;
-
-            inDoc.supportedAppProtocolRes.ResponseCode =
-                inJson["supportedAppProtocolRes"]["ResponseCode"].template get<appHand_responseCodeType>();
-            if (inJson["supportedAppProtocolRes"].contains("SchemaID")) {
-                inDoc.supportedAppProtocolRes.SchemaID_isUsed = 1;
-                inDoc.supportedAppProtocolRes.SchemaID =
-                    inJson["supportedAppProtocolRes"]["SchemaID"].template get<uint8_t>();
-            } else {
-                inDoc.supportedAppProtocolRes.SchemaID_isUsed = 0;
-            }
-        }
-
-        uint8_t* stream = new uint8_t[256];  // Dynamically allocate buffer
+        uint8_t* stream = new uint8_t[256];
         exi_bitstream_t outEXI;
         size_t pos1 = 0;
 
         exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
-        encode_appHand_exiDocument(&outEXI, &inDoc);
+        encode_appHand_exiDocument(&outEXI, &outDoc);
+
+        cout << inJson.dump(4) << endl;
         
         encoded_data* result = new encoded_data;
         result->size = exi_bitstream_get_length(&outEXI);

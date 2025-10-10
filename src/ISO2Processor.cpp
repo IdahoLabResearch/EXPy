@@ -13,6 +13,8 @@
 #include <cbv2g/iso_2/iso2_msgDefEncoder.h>
 #include <cbv2g/iso_2/iso2_msgDefDatatypes.h>
 
+#include <common.hpp>
+
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -21,6 +23,4365 @@ using json = nlohmann::json;
 #include <iostream>
 #include <fstream>
 using namespace std;
+
+
+json getJson_CostType(const struct iso2_CostType& CostTypeDoc) {
+    json outJson;
+
+    outJson["costKind"] = CostTypeDoc.costKind;
+    outJson["amount"] = CostTypeDoc.amount;
+    if (CostTypeDoc.amountMultiplier_isUsed) {
+        outJson["amountMultiplier"] = CostTypeDoc.amountMultiplier;
+    }
+
+    return outJson;
+}
+
+struct iso2_CostType getDoc_CostType(const json& CostTypeJson) {
+    struct iso2_CostType outDoc;
+    init_iso2_CostType(&outDoc);
+
+    outDoc.costKind = CostTypeJson["costKind"].template get<iso2_costKindType>();
+    outDoc.amount = CostTypeJson["amount"].template get<uint32_t>();
+    if (CostTypeJson.contains("amountMultiplier")) {
+        outDoc.amountMultiplier_isUsed = 1;
+        outDoc.amountMultiplier = CostTypeJson["amountMultiplier"].template get<int8_t>();
+    } else {
+        outDoc.amountMultiplier_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_TransformType(const struct iso2_TransformType& TransformTypeDoc) {
+    json outJson;
+
+    outJson["Algorithm"]["charactersLen"] = TransformTypeDoc.Algorithm.charactersLen;
+    for (uint16_t i = 0; i < TransformTypeDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outJson["Algorithm"]["characters"][i] = TransformTypeDoc.Algorithm.characters[i];
+    }
+    if (TransformTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = TransformTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < TransformTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = TransformTypeDoc.ANY.bytes[i];
+        }
+    }
+    if (TransformTypeDoc.XPath_isUsed) {
+        outJson["XPath"]["charactersLen"] = TransformTypeDoc.XPath.charactersLen;
+        for (uint16_t i = 0; i < TransformTypeDoc.XPath.charactersLen && i < iso2_XPath_CHARACTER_SIZE; ++i) {
+            outJson["XPath"]["characters"][i] = TransformTypeDoc.XPath.characters[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_TransformType getDoc_TransformType(const json& TransformTypeJson) {
+    struct iso2_TransformType outDoc;
+    init_iso2_TransformType(&outDoc);
+
+    outDoc.Algorithm.charactersLen = TransformTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outDoc.Algorithm.characters[i] = TransformTypeJson["Algorithm"]["characters"][i].template get<char>();
+    }
+    if (TransformTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = TransformTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = TransformTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+    if (TransformTypeJson.contains("XPath")) {
+        outDoc.XPath_isUsed = 1;
+        outDoc.XPath.charactersLen = TransformTypeJson["XPath"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.XPath.charactersLen && i < iso2_XPath_CHARACTER_SIZE; ++i) {
+            outDoc.XPath.characters[i] = TransformTypeJson["XPath"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.XPath_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_IntervalType(const struct iso2_IntervalType& IntervalTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = IntervalTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_IntervalType getDoc_IntervalType(const json& IntervalTypeJson) {
+    struct iso2_IntervalType outDoc;
+    init_iso2_IntervalType(&outDoc);
+
+    outDoc._unused = IntervalTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_TransformsType(const struct iso2_TransformsType& TransformsTypeDoc) {
+    json outJson;
+
+    outJson["Transform"] = getJson_TransformType(TransformsTypeDoc.Transform);
+
+    return outJson;
+}
+
+struct iso2_TransformsType getDoc_TransformsType(const json& TransformsTypeJson) {
+    struct iso2_TransformsType outDoc;
+    init_iso2_TransformsType(&outDoc);
+
+    outDoc.Transform = getDoc_TransformType(TransformsTypeJson["Transform"]);
+
+    return outDoc;
+}
+
+json getJson_DSAKeyValueType(const struct iso2_DSAKeyValueType& DSAKeyValueTypeDoc) {
+    json outJson;
+
+    if (DSAKeyValueTypeDoc.P_isUsed) {
+        outJson["P"]["bytesLen"] = DSAKeyValueTypeDoc.P.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.P.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["P"]["bytes"][i] = DSAKeyValueTypeDoc.P.bytes[i];
+        }
+    }
+    if (DSAKeyValueTypeDoc.Q_isUsed) {
+        outJson["Q"]["bytesLen"] = DSAKeyValueTypeDoc.Q.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Q.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["Q"]["bytes"][i] = DSAKeyValueTypeDoc.Q.bytes[i];
+        }
+    }
+    if (DSAKeyValueTypeDoc.G_isUsed) {
+        outJson["G"]["bytesLen"] = DSAKeyValueTypeDoc.G.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.G.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["G"]["bytes"][i] = DSAKeyValueTypeDoc.G.bytes[i];
+        }
+    }
+    outJson["Y"]["bytesLen"] = DSAKeyValueTypeDoc.Y.bytesLen;
+    for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Y.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outJson["Y"]["bytes"][i] = DSAKeyValueTypeDoc.Y.bytes[i];
+    }
+    if (DSAKeyValueTypeDoc.J_isUsed) {
+        outJson["J"]["bytesLen"] = DSAKeyValueTypeDoc.J.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.J.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["J"]["bytes"][i] = DSAKeyValueTypeDoc.J.bytes[i];
+        }
+    }
+    if (DSAKeyValueTypeDoc.Seed_isUsed) {
+        outJson["Seed"]["bytesLen"] = DSAKeyValueTypeDoc.Seed.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Seed.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["Seed"]["bytes"][i] = DSAKeyValueTypeDoc.Seed.bytes[i];
+        }
+    }
+    if (DSAKeyValueTypeDoc.PgenCounter_isUsed) {
+        outJson["PgenCounter"]["bytesLen"] = DSAKeyValueTypeDoc.PgenCounter.bytesLen;
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.PgenCounter.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outJson["PgenCounter"]["bytes"][i] = DSAKeyValueTypeDoc.PgenCounter.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJson) {
+    struct iso2_DSAKeyValueType outDoc;
+    init_iso2_DSAKeyValueType(&outDoc);
+
+    if (DSAKeyValueTypeJson.contains("P")) {
+        outDoc.P_isUsed = 1;
+        outDoc.P.bytesLen = DSAKeyValueTypeJson["P"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.P.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.P.bytes[i] = DSAKeyValueTypeJson["P"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.P_isUsed = 0;
+    }
+    if (DSAKeyValueTypeJson.contains("Q")) {
+        outDoc.Q_isUsed = 1;
+        outDoc.Q.bytesLen = DSAKeyValueTypeJson["Q"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Q.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.Q.bytes[i] = DSAKeyValueTypeJson["Q"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.Q_isUsed = 0;
+    }
+    if (DSAKeyValueTypeJson.contains("G")) {
+        outDoc.G_isUsed = 1;
+        outDoc.G.bytesLen = DSAKeyValueTypeJson["G"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.G.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.G.bytes[i] = DSAKeyValueTypeJson["G"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.G_isUsed = 0;
+    }
+    outDoc.Y.bytesLen = DSAKeyValueTypeJson["Y"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Y.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outDoc.Y.bytes[i] = DSAKeyValueTypeJson["Y"]["bytes"][i].template get<uint8_t>();
+    }
+    if (DSAKeyValueTypeJson.contains("J")) {
+        outDoc.J_isUsed = 1;
+        outDoc.J.bytesLen = DSAKeyValueTypeJson["J"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.J.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.J.bytes[i] = DSAKeyValueTypeJson["J"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.J_isUsed = 0;
+    }
+    if (DSAKeyValueTypeJson.contains("Seed")) {
+        outDoc.Seed_isUsed = 1;
+        outDoc.Seed.bytesLen = DSAKeyValueTypeJson["Seed"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Seed.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.Seed.bytes[i] = DSAKeyValueTypeJson["Seed"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.Seed_isUsed = 0;
+    }
+    if (DSAKeyValueTypeJson.contains("PgenCounter")) {
+        outDoc.PgenCounter_isUsed = 1;
+        outDoc.PgenCounter.bytesLen = DSAKeyValueTypeJson["PgenCounter"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.PgenCounter.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+            outDoc.PgenCounter.bytes[i] = DSAKeyValueTypeJson["PgenCounter"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.PgenCounter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_X509IssuerSerialType(const struct iso2_X509IssuerSerialType& X509IssuerSerialTypeDoc) {
+    json outJson;
+
+    outJson["X509IssuerName"]["charactersLen"] = X509IssuerSerialTypeDoc.X509IssuerName.charactersLen;
+    for (uint16_t i = 0; i < X509IssuerSerialTypeDoc.X509IssuerName.charactersLen && i < iso2_X509IssuerName_CHARACTER_SIZE; ++i) {
+        outJson["X509IssuerName"]["characters"][i] = X509IssuerSerialTypeDoc.X509IssuerName.characters[i];
+    }
+    outJson["X509SerialNumber"] = getJson_exi_signed_t(X509IssuerSerialTypeDoc.X509SerialNumber);
+
+    return outJson;
+}
+
+struct iso2_X509IssuerSerialType getDoc_X509IssuerSerialType(const json& X509IssuerSerialTypeJson) {
+    struct iso2_X509IssuerSerialType outDoc;
+    init_iso2_X509IssuerSerialType(&outDoc);
+
+    outDoc.X509IssuerName.charactersLen = X509IssuerSerialTypeJson["X509IssuerName"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.X509IssuerName.charactersLen && i < iso2_X509IssuerName_CHARACTER_SIZE; ++i) {
+        outDoc.X509IssuerName.characters[i] = X509IssuerSerialTypeJson["X509IssuerName"]["characters"][i].template get<char>();
+    }
+    outDoc.X509SerialNumber = getDoc_exi_signed_t(X509IssuerSerialTypeJson["X509SerialNumber"]);
+
+    return outDoc;
+}
+
+json getJson_RelativeTimeIntervalType(const struct iso2_RelativeTimeIntervalType& RelativeTimeIntervalTypeDoc) {
+    json outJson;
+
+    outJson["start"] = RelativeTimeIntervalTypeDoc.start;
+    if (RelativeTimeIntervalTypeDoc.duration_isUsed) {
+        outJson["duration"] = RelativeTimeIntervalTypeDoc.duration;
+    }
+
+    return outJson;
+}
+
+struct iso2_RelativeTimeIntervalType getDoc_RelativeTimeIntervalType(const json& RelativeTimeIntervalTypeJson) {
+    struct iso2_RelativeTimeIntervalType outDoc;
+    init_iso2_RelativeTimeIntervalType(&outDoc);
+
+    outDoc.start = RelativeTimeIntervalTypeJson["start"].template get<uint32_t>();
+    if (RelativeTimeIntervalTypeJson.contains("duration")) {
+        outDoc.duration_isUsed = 1;
+        outDoc.duration = RelativeTimeIntervalTypeJson["duration"].template get<uint32_t>();
+    } else {
+        outDoc.duration_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_DigestMethodType(const struct iso2_DigestMethodType& DigestMethodTypeDoc) {
+    json outJson;
+
+    outJson["Algorithm"]["charactersLen"] = DigestMethodTypeDoc.Algorithm.charactersLen;
+    for (uint16_t i = 0; i < DigestMethodTypeDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outJson["Algorithm"]["characters"][i] = DigestMethodTypeDoc.Algorithm.characters[i];
+    }
+    if (DigestMethodTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = DigestMethodTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < DigestMethodTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = DigestMethodTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_DigestMethodType getDoc_DigestMethodType(const json& DigestMethodTypeJson) {
+    struct iso2_DigestMethodType outDoc;
+    init_iso2_DigestMethodType(&outDoc);
+
+    outDoc.Algorithm.charactersLen = DigestMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outDoc.Algorithm.characters[i] = DigestMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
+    }
+    if (DigestMethodTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = DigestMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = DigestMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_RSAKeyValueType(const struct iso2_RSAKeyValueType& RSAKeyValueTypeDoc) {
+    json outJson;
+
+    outJson["Modulus"]["bytesLen"] = RSAKeyValueTypeDoc.Modulus.bytesLen;
+    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Modulus.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outJson["Modulus"]["bytes"][i] = RSAKeyValueTypeDoc.Modulus.bytes[i];
+    }
+    outJson["Exponent"]["bytesLen"] = RSAKeyValueTypeDoc.Exponent.bytesLen;
+    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Exponent.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outJson["Exponent"]["bytes"][i] = RSAKeyValueTypeDoc.Exponent.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_RSAKeyValueType getDoc_RSAKeyValueType(const json& RSAKeyValueTypeJson) {
+    struct iso2_RSAKeyValueType outDoc;
+    init_iso2_RSAKeyValueType(&outDoc);
+
+    outDoc.Modulus.bytesLen = RSAKeyValueTypeJson["Modulus"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Modulus.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outDoc.Modulus.bytes[i] = RSAKeyValueTypeJson["Modulus"]["bytes"][i].template get<uint8_t>();
+    }
+    outDoc.Exponent.bytesLen = RSAKeyValueTypeJson["Exponent"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Exponent.bytesLen && i < iso2_CryptoBinary_BYTES_SIZE; ++i) {
+        outDoc.Exponent.bytes[i] = RSAKeyValueTypeJson["Exponent"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_CanonicalizationMethodType(const struct iso2_CanonicalizationMethodType& CanonicalizationMethodTypeDoc) {
+    json outJson;
+
+    outJson["Algorithm"]["charactersLen"] = CanonicalizationMethodTypeDoc.Algorithm.charactersLen;
+    for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outJson["Algorithm"]["characters"][i] = CanonicalizationMethodTypeDoc.Algorithm.characters[i];
+    }
+    if (CanonicalizationMethodTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = CanonicalizationMethodTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = CanonicalizationMethodTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_CanonicalizationMethodType getDoc_CanonicalizationMethodType(const json& CanonicalizationMethodTypeJson) {
+    struct iso2_CanonicalizationMethodType outDoc;
+    init_iso2_CanonicalizationMethodType(&outDoc);
+
+    outDoc.Algorithm.charactersLen = CanonicalizationMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outDoc.Algorithm.characters[i] = CanonicalizationMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
+    }
+    if (CanonicalizationMethodTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = CanonicalizationMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = CanonicalizationMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SignatureMethodType(const struct iso2_SignatureMethodType& SignatureMethodTypeDoc) {
+    json outJson;
+
+    outJson["Algorithm"]["charactersLen"] = SignatureMethodTypeDoc.Algorithm.charactersLen;
+    for (uint16_t i = 0; i < SignatureMethodTypeDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outJson["Algorithm"]["characters"][i] = SignatureMethodTypeDoc.Algorithm.characters[i];
+    }
+    if (SignatureMethodTypeDoc.HMACOutputLength_isUsed) {
+        outJson["HMACOutputLength"] = getJson_exi_signed_t(SignatureMethodTypeDoc.HMACOutputLength);
+    }
+    if (SignatureMethodTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = SignatureMethodTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < SignatureMethodTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = SignatureMethodTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_SignatureMethodType getDoc_SignatureMethodType(const json& SignatureMethodTypeJson) {
+    struct iso2_SignatureMethodType outDoc;
+    init_iso2_SignatureMethodType(&outDoc);
+
+    outDoc.Algorithm.charactersLen = SignatureMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < iso2_Algorithm_CHARACTER_SIZE; ++i) {
+        outDoc.Algorithm.characters[i] = SignatureMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
+    }
+    if (SignatureMethodTypeJson.contains("HMACOutputLength")) {
+        outDoc.HMACOutputLength_isUsed = 1;
+        outDoc.HMACOutputLength = getDoc_exi_signed_t(SignatureMethodTypeJson["HMACOutputLength"]);
+    } else {
+        outDoc.HMACOutputLength_isUsed = 0;
+    }
+    if (SignatureMethodTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = SignatureMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = SignatureMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_KeyValueType(const struct iso2_KeyValueType& KeyValueTypeDoc) {
+    json outJson;
+
+    if (KeyValueTypeDoc.DSAKeyValue_isUsed) {
+        outJson["DSAKeyValue"] = getJson_DSAKeyValueType(KeyValueTypeDoc.DSAKeyValue);
+    }
+    if (KeyValueTypeDoc.RSAKeyValue_isUsed) {
+        outJson["RSAKeyValue"] = getJson_RSAKeyValueType(KeyValueTypeDoc.RSAKeyValue);
+    }
+    if (KeyValueTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = KeyValueTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < KeyValueTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = KeyValueTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_KeyValueType getDoc_KeyValueType(const json& KeyValueTypeJson) {
+    struct iso2_KeyValueType outDoc;
+    init_iso2_KeyValueType(&outDoc);
+
+    if (KeyValueTypeJson.contains("DSAKeyValue")) {
+        outDoc.DSAKeyValue_isUsed = 1;
+        outDoc.DSAKeyValue = getDoc_DSAKeyValueType(KeyValueTypeJson["DSAKeyValue"]);
+    } else {
+        outDoc.DSAKeyValue_isUsed = 0;
+    }
+    if (KeyValueTypeJson.contains("RSAKeyValue")) {
+        outDoc.RSAKeyValue_isUsed = 1;
+        outDoc.RSAKeyValue = getDoc_RSAKeyValueType(KeyValueTypeJson["RSAKeyValue"]);
+    } else {
+        outDoc.RSAKeyValue_isUsed = 0;
+    }
+    if (KeyValueTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = KeyValueTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = KeyValueTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PhysicalValueType(const struct iso2_PhysicalValueType& PhysicalValueTypeDoc) {
+    json outJson;
+
+    outJson["Value"] = PhysicalValueTypeDoc.Value;
+    outJson["Multiplier"] = PhysicalValueTypeDoc.Multiplier;
+    outJson["Unit"] = PhysicalValueTypeDoc.Unit;
+
+    return outJson;
+}
+
+struct iso2_PhysicalValueType getDoc_PhysicalValueType(const json& PhysicalValueTypeJson) {
+    struct iso2_PhysicalValueType outDoc;
+    init_iso2_PhysicalValueType(&outDoc);
+
+    outDoc.Value = PhysicalValueTypeJson["Value"].template get<int16_t>();
+    outDoc.Multiplier = PhysicalValueTypeJson["Multiplier"].template get<int8_t>();
+    outDoc.Unit = PhysicalValueTypeJson["Unit"].template get<iso2_unitSymbolType>();
+
+    return outDoc;
+}
+
+json getJson_ConsumptionCostType(const struct iso2_ConsumptionCostType& ConsumptionCostTypeDoc) {
+    json outJson;
+
+    outJson["startValue"] = getJson_PhysicalValueType(ConsumptionCostTypeDoc.startValue);
+    outJson["Cost"]["arrayLen"] = ConsumptionCostTypeDoc.Cost.arrayLen;
+    for (uint16_t i = 0; i < ConsumptionCostTypeDoc.Cost.arrayLen && i < iso2_CostType_3_ARRAY_SIZE; ++i) {
+        outJson["Cost"]["array"][i] = getJson_CostType(ConsumptionCostTypeDoc.Cost.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ConsumptionCostType getDoc_ConsumptionCostType(const json& ConsumptionCostTypeJson) {
+    struct iso2_ConsumptionCostType outDoc;
+    init_iso2_ConsumptionCostType(&outDoc);
+
+    outDoc.startValue = getDoc_PhysicalValueType(ConsumptionCostTypeJson["startValue"]);
+    outDoc.Cost.arrayLen = ConsumptionCostTypeJson["Cost"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Cost.arrayLen && i < iso2_CostType_3_ARRAY_SIZE; ++i) {
+        outDoc.Cost.array[i] = getDoc_CostType(ConsumptionCostTypeJson["Cost"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getjson_PMaxScheduleEntryType(const struct iso2_PMaxScheduleEntryType& PMaxScheduleEntryTypeDoc) {
+    json outJson;
+
+    if (PMaxScheduleEntryTypeDoc.RelativeTimeInterval_isUsed) {
+        outJson["RelativeTimeInterval"] = getJson_RelativeTimeIntervalType(PMaxScheduleEntryTypeDoc.RelativeTimeInterval);
+    }
+    if (PMaxScheduleEntryTypeDoc.TimeInterval_isUsed) {
+        outJson["TimeInterval"] = getJson_IntervalType(PMaxScheduleEntryTypeDoc.TimeInterval);
+    }
+    outJson["PMax"] = getJson_PhysicalValueType(PMaxScheduleEntryTypeDoc.PMax);
+
+    return outJson;
+}
+
+struct iso2_PMaxScheduleEntryType getDoc_PMaxScheduleEntryType(const json& PMaxScheduleEntryTypeJson) {
+    struct iso2_PMaxScheduleEntryType outDoc;
+    init_iso2_PMaxScheduleEntryType(&outDoc);
+
+    if (PMaxScheduleEntryTypeJson.contains("RelativeTimeInterval")) {
+        outDoc.RelativeTimeInterval_isUsed = 1;
+        outDoc.RelativeTimeInterval = getDoc_RelativeTimeIntervalType(PMaxScheduleEntryTypeJson["RelativeTimeInterval"]);
+    } else {
+        outDoc.RelativeTimeInterval_isUsed = 0;
+    }
+    if (PMaxScheduleEntryTypeJson.contains("TimeInterval")) {
+        outDoc.TimeInterval_isUsed = 1;
+        outDoc.TimeInterval = getDoc_IntervalType(PMaxScheduleEntryTypeJson["TimeInterval"]);
+    } else {
+        outDoc.TimeInterval_isUsed = 0;
+    }
+    outDoc.PMax = getDoc_PhysicalValueType(PMaxScheduleEntryTypeJson["PMax"]);
+
+    return outDoc;
+}
+
+json getJson_SalesTariffEntryType(const struct iso2_SalesTariffEntryType& SalesTariffEntryTypeDoc) {
+    json outJson;
+
+    if (SalesTariffEntryTypeDoc.RelativeTimeInterval_isUsed) {
+        outJson["RelativeTimeInterval"] = getJson_RelativeTimeIntervalType(SalesTariffEntryTypeDoc.RelativeTimeInterval);
+    }
+    if (SalesTariffEntryTypeDoc.TimeInterval_isUsed) {
+        outJson["TimeInterval"] = getJson_IntervalType(SalesTariffEntryTypeDoc.TimeInterval);
+    }
+    if (SalesTariffEntryTypeDoc.EPriceLevel_isUsed) {
+        outJson["EPriceLevel"] = SalesTariffEntryTypeDoc.EPriceLevel;
+    }
+    outJson["ConsumptionCost"]["arrayLen"] = SalesTariffEntryTypeDoc.ConsumptionCost.arrayLen;
+    for (uint16_t i = 0; i < SalesTariffEntryTypeDoc.ConsumptionCost.arrayLen && i < iso2_ConsumptionCostType_3_ARRAY_SIZE; ++i) {
+        outJson["ConsumptionCost"]["array"][i] = getJson_ConsumptionCostType(SalesTariffEntryTypeDoc.ConsumptionCost.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_SalesTariffEntryType getDoc_SalesTariffEntryType(const json& SalesTariffEntryTypeJson) {
+    struct iso2_SalesTariffEntryType outDoc;
+    init_iso2_SalesTariffEntryType(&outDoc);
+
+    if (SalesTariffEntryTypeJson.contains("RelativeTimeInterval")) {
+        outDoc.RelativeTimeInterval_isUsed = 1;
+        outDoc.RelativeTimeInterval = getDoc_RelativeTimeIntervalType(SalesTariffEntryTypeJson["RelativeTimeInterval"]);
+    } else {
+        outDoc.RelativeTimeInterval_isUsed = 0;
+    }
+    if (SalesTariffEntryTypeJson.contains("TimeInterval")) {
+        outDoc.TimeInterval_isUsed = 1;
+        outDoc.TimeInterval = getDoc_IntervalType(SalesTariffEntryTypeJson["TimeInterval"]);
+    } else {
+        outDoc.TimeInterval_isUsed = 0;
+    }
+    if (SalesTariffEntryTypeJson.contains("EPriceLevel")) {
+        outDoc.EPriceLevel_isUsed = 1;
+        outDoc.EPriceLevel = SalesTariffEntryTypeJson["EPriceLevel"].template get<uint8_t>();
+    } else {
+        outDoc.EPriceLevel_isUsed = 0;
+    }
+    outDoc.ConsumptionCost.arrayLen = SalesTariffEntryTypeJson["ConsumptionCost"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.ConsumptionCost.arrayLen && i < iso2_ConsumptionCostType_3_ARRAY_SIZE; ++i) {
+        outDoc.ConsumptionCost.array[i] = getDoc_ConsumptionCostType(SalesTariffEntryTypeJson["ConsumptionCost"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ParameterType(const struct iso2_ParameterType& ParameterTypeDoc) {
+    json outJson;
+
+    outJson["Name"]["charactersLen"] = ParameterTypeDoc.Name.charactersLen;
+    for (uint16_t i = 0; i < ParameterTypeDoc.Name.charactersLen && i < iso2_Name_CHARACTER_SIZE; ++i) {
+        outJson["Name"]["characters"][i] = ParameterTypeDoc.Name.characters[i];
+    }
+    if (ParameterTypeDoc.boolValue_isUsed) {
+        outJson["boolValue"] = ParameterTypeDoc.boolValue;
+    }
+    if (ParameterTypeDoc.byteValue_isUsed) {
+        outJson["byteValue"] = ParameterTypeDoc.byteValue;
+    }
+    if (ParameterTypeDoc.shortValue_isUsed) {
+        outJson["shortValue"] = ParameterTypeDoc.shortValue;
+    }
+    if (ParameterTypeDoc.intValue_isUsed) {
+        outJson["intValue"] = ParameterTypeDoc.intValue;
+    }
+    if (ParameterTypeDoc.physicalValue_isUsed) {
+        outJson["physicalValue"] = getJson_PhysicalValueType(ParameterTypeDoc.physicalValue);
+    }
+    if (ParameterTypeDoc.stringValue_isUsed) {
+        outJson["stringValue"]["charactersLen"] = ParameterTypeDoc.stringValue.charactersLen;
+        for (uint16_t i = 0; i < ParameterTypeDoc.stringValue.charactersLen && i < iso2_stringValue_CHARACTER_SIZE; ++i) {
+            outJson["stringValue"]["characters"][i] = ParameterTypeDoc.stringValue.characters[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_ParameterType getDoc_ParameterType(const json& ParameterTypeJson) {
+    struct iso2_ParameterType outDoc;
+    init_iso2_ParameterType(&outDoc);
+
+    outDoc.Name.charactersLen = ParameterTypeJson["Name"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Name.charactersLen && i < iso2_Name_CHARACTER_SIZE; ++i) {
+        outDoc.Name.characters[i] = ParameterTypeJson["Name"]["characters"][i].template get<char>();
+    }
+    if (ParameterTypeJson.contains("boolValue")) {
+        outDoc.boolValue_isUsed = 1;
+        outDoc.boolValue = ParameterTypeJson["boolValue"].template get<int>();
+    } else {
+        outDoc.boolValue_isUsed = 0;
+    }
+    if (ParameterTypeJson.contains("byteValue")) {
+        outDoc.byteValue_isUsed = 1;
+        outDoc.byteValue = ParameterTypeJson["byteValue"].template get<uint8_t>();
+    } else {
+        outDoc.byteValue_isUsed = 0;
+    }
+    if (ParameterTypeJson.contains("shortValue")) {
+        outDoc.shortValue_isUsed = 1;
+        outDoc.shortValue = ParameterTypeJson["shortValue"].template get<int16_t>();
+    } else {
+        outDoc.shortValue_isUsed = 0;
+    }
+    if (ParameterTypeJson.contains("intValue")) {
+        outDoc.intValue_isUsed = 1;
+        outDoc.intValue = ParameterTypeJson["intValue"].template get<int32_t>();
+    } else {
+        outDoc.intValue_isUsed = 0;
+    }
+    if (ParameterTypeJson.contains("physicalValue")) {
+        outDoc.physicalValue_isUsed = 1;
+        outDoc.physicalValue = getDoc_PhysicalValueType(ParameterTypeJson["physicalValue"]);
+    } else {
+        outDoc.physicalValue_isUsed = 0;
+    }
+    if (ParameterTypeJson.contains("stringValue")) {
+        outDoc.stringValue_isUsed = 1;
+        outDoc.stringValue.charactersLen = ParameterTypeJson["stringValue"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.stringValue.charactersLen && i < iso2_stringValue_CHARACTER_SIZE; ++i) {
+            outDoc.stringValue.characters[i] = ParameterTypeJson["stringValue"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.stringValue_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PMaxScheduleType(const struct iso2_PMaxScheduleType& PMaxScheduleTypeDoc) {
+    json outJson;
+
+    outJson["PMaxScheduleEntry"]["arrayLen"] = PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen;
+    for (uint16_t i = 0; i < PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen && i < iso2_PMaxScheduleEntryType_12_ARRAY_SIZE; ++i) {
+        outJson["PMaxScheduleEntry"]["array"][i] = getjson_PMaxScheduleEntryType(PMaxScheduleTypeDoc.PMaxScheduleEntry.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_PMaxScheduleType getDoc_PMaxScheduleType(const json& PMaxScheduleTypeJson) {
+    struct iso2_PMaxScheduleType outDoc;
+    init_iso2_PMaxScheduleType(&outDoc);
+
+    outDoc.PMaxScheduleEntry.arrayLen = PMaxScheduleTypeJson["PMaxScheduleEntry"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.PMaxScheduleEntry.arrayLen && i < iso2_PMaxScheduleEntryType_12_ARRAY_SIZE; ++i) {
+        outDoc.PMaxScheduleEntry.array[i] = getDoc_PMaxScheduleEntryType(PMaxScheduleTypeJson["PMaxScheduleEntry"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ReferenceType(const struct iso2_ReferenceType& ReferenceTypeDoc) {
+    json outJson;
+
+    if (ReferenceTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = ReferenceTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < ReferenceTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = ReferenceTypeDoc.Id.characters[i];
+        }
+    }
+    if (ReferenceTypeDoc.Type_isUsed) {
+        outJson["Type"]["charactersLen"] = ReferenceTypeDoc.Type.charactersLen;
+        for (uint16_t i = 0; i < ReferenceTypeDoc.Type.charactersLen && i < iso2_Type_CHARACTER_SIZE; ++i) {
+            outJson["Type"]["characters"][i] = ReferenceTypeDoc.Type.characters[i];
+        }
+    }
+    if (ReferenceTypeDoc.URI_isUsed) {
+        outJson["URI"]["charactersLen"] = ReferenceTypeDoc.URI.charactersLen;
+        for (uint16_t i = 0; i < ReferenceTypeDoc.URI.charactersLen && i < iso2_URI_CHARACTER_SIZE; ++i) {
+            outJson["URI"]["characters"][i] = ReferenceTypeDoc.URI.characters[i];
+        }
+    }
+    if (ReferenceTypeDoc.Transforms_isUsed) {
+        outJson["Transforms"] = getJson_TransformsType(ReferenceTypeDoc.Transforms);
+    }
+    outJson["DigestMethod"] = getJson_DigestMethodType(ReferenceTypeDoc.DigestMethod);
+    outJson["DigestValue"]["bytesLen"] = ReferenceTypeDoc.DigestValue.bytesLen;
+    for (uint16_t i = 0; i < ReferenceTypeDoc.DigestValue.bytesLen && i < iso2_DigestValueType_BYTES_SIZE; ++i) {
+        outJson["DigestValue"]["bytes"][i] = ReferenceTypeDoc.DigestValue.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson) {
+    struct iso2_ReferenceType outDoc;
+    init_iso2_ReferenceType(&outDoc);
+
+    if (ReferenceTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = ReferenceTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = ReferenceTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    if (ReferenceTypeJson.contains("Type")) {
+        outDoc.Type_isUsed = 1;
+        outDoc.Type.charactersLen = ReferenceTypeJson["Type"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Type.charactersLen && i < iso2_Type_CHARACTER_SIZE; ++i) {
+            outDoc.Type.characters[i] = ReferenceTypeJson["Type"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Type_isUsed = 0;
+    }
+    if (ReferenceTypeJson.contains("URI")) {
+        outDoc.URI_isUsed = 1;
+        outDoc.URI.charactersLen = ReferenceTypeJson["URI"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.URI.charactersLen && i < iso2_URI_CHARACTER_SIZE; ++i) {
+            outDoc.URI.characters[i] = ReferenceTypeJson["URI"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.URI_isUsed = 0;
+    }
+    if (ReferenceTypeJson.contains("Transforms")) {
+        outDoc.Transforms_isUsed = 1;
+        outDoc.Transforms = getDoc_TransformsType(ReferenceTypeJson["Transforms"]);
+    } else {
+        outDoc.Transforms_isUsed = 0;
+    }
+    outDoc.DigestMethod = getDoc_DigestMethodType(ReferenceTypeJson["DigestMethod"]);
+    outDoc.DigestValue.bytesLen = ReferenceTypeJson["DigestValue"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.DigestValue.bytesLen && i < iso2_DigestValueType_BYTES_SIZE; ++i) {
+        outDoc.DigestValue.bytes[i] = ReferenceTypeJson["DigestValue"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_RetrievalMethodType(const struct iso2_RetrievalMethodType& RetrievalMethodTypeDoc) {
+    json outJson;
+
+    if (RetrievalMethodTypeDoc.Type_isUsed) {
+        outJson["Type"]["charactersLen"] = RetrievalMethodTypeDoc.Type.charactersLen;
+        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.Type.charactersLen && i < iso2_Type_CHARACTER_SIZE; ++i) {
+            outJson["Type"]["characters"][i] = RetrievalMethodTypeDoc.Type.characters[i];
+        }
+    }
+    if (RetrievalMethodTypeDoc.URI_isUsed) {
+        outJson["URI"]["charactersLen"] = RetrievalMethodTypeDoc.URI.charactersLen;
+        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.URI.charactersLen && i < iso2_URI_CHARACTER_SIZE; ++i) {
+            outJson["URI"]["characters"][i] = RetrievalMethodTypeDoc.URI.characters[i];
+        }
+    }
+    if (RetrievalMethodTypeDoc.Transforms_isUsed) {
+        outJson["Transforms"] = getJson_TransformsType(RetrievalMethodTypeDoc.Transforms);
+    }
+
+    return outJson;
+}
+
+struct iso2_RetrievalMethodType getDoc_RetrievalMethodType(const json& RetrievalMethodTypeJson) {
+    struct iso2_RetrievalMethodType outDoc;
+    init_iso2_RetrievalMethodType(&outDoc);
+
+    if (RetrievalMethodTypeJson.contains("Type")) {
+        outDoc.Type_isUsed = 1;
+        outDoc.Type.charactersLen = RetrievalMethodTypeJson["Type"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Type.charactersLen && i < iso2_Type_CHARACTER_SIZE; ++i) {
+            outDoc.Type.characters[i] = RetrievalMethodTypeJson["Type"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Type_isUsed = 0;
+    }
+    if (RetrievalMethodTypeJson.contains("URI")) {
+        outDoc.URI_isUsed = 1;
+        outDoc.URI.charactersLen = RetrievalMethodTypeJson["URI"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.URI.charactersLen && i < iso2_URI_CHARACTER_SIZE; ++i) {
+            outDoc.URI.characters[i] = RetrievalMethodTypeJson["URI"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.URI_isUsed = 0;
+    }
+    if (RetrievalMethodTypeJson.contains("Transforms")) {
+        outDoc.Transforms_isUsed = 1;
+        outDoc.Transforms = getDoc_TransformsType(RetrievalMethodTypeJson["Transforms"]);
+    } else {
+        outDoc.Transforms_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SalesTariffType(const struct iso2_SalesTariffType& SalesTariffTypeDoc) {
+    json outJson;
+
+    if (SalesTariffTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = SalesTariffTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < SalesTariffTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = SalesTariffTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["SalesTariffID"] = SalesTariffTypeDoc.SalesTariffID;
+    if (SalesTariffTypeDoc.SalesTariffDescription_isUsed) {
+        outJson["SalesTariffDescription"]["charactersLen"] = SalesTariffTypeDoc.SalesTariffDescription.charactersLen;
+        for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffDescription.charactersLen && i < iso2_SalesTariffDescription_CHARACTER_SIZE; ++i) {
+            outJson["SalesTariffDescription"]["characters"][i] = SalesTariffTypeDoc.SalesTariffDescription.characters[i];
+        }
+    }
+    if (SalesTariffTypeDoc.NumEPriceLevels_isUsed) {
+        outJson["NumEPriceLevels"] = SalesTariffTypeDoc.NumEPriceLevels;
+    }
+    outJson["SalesTariffEntry"]["arrayLen"] = SalesTariffTypeDoc.SalesTariffEntry.arrayLen;
+    for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffEntry.arrayLen && i < iso2_SalesTariffEntryType_12_ARRAY_SIZE; ++i) {
+        outJson["SalesTariffEntry"]["array"][i] = getJson_SalesTariffEntryType(SalesTariffTypeDoc.SalesTariffEntry.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_SalesTariffType getDoc_SalesTariffType(const json& SalesTariffTypeJson) {
+    struct iso2_SalesTariffType outDoc;
+    init_iso2_SalesTariffType(&outDoc);
+
+    if (SalesTariffTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = SalesTariffTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = SalesTariffTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.SalesTariffID = SalesTariffTypeJson["SalesTariffID"].template get<uint8_t>();
+    if (SalesTariffTypeJson.contains("SalesTariffDescription")) {
+        outDoc.SalesTariffDescription_isUsed = 1;
+        outDoc.SalesTariffDescription.charactersLen = SalesTariffTypeJson["SalesTariffDescription"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.SalesTariffDescription.charactersLen && i < iso2_SalesTariffDescription_CHARACTER_SIZE; ++i) {
+            outDoc.SalesTariffDescription.characters[i] = SalesTariffTypeJson["SalesTariffDescription"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.SalesTariffDescription_isUsed = 0;
+    }
+    if (SalesTariffTypeJson.contains("NumEPriceLevels")) {
+        outDoc.NumEPriceLevels_isUsed = 1;
+        outDoc.NumEPriceLevels = SalesTariffTypeJson["NumEPriceLevels"].template get<uint8_t>();
+    } else {
+        outDoc.NumEPriceLevels_isUsed = 0;
+    }
+    outDoc.SalesTariffEntry.arrayLen = SalesTariffTypeJson["SalesTariffEntry"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SalesTariffEntry.arrayLen && i < iso2_SalesTariffEntryType_12_ARRAY_SIZE; ++i) {
+        outDoc.SalesTariffEntry.array[i] = getDoc_SalesTariffEntryType(SalesTariffTypeJson["SalesTariffEntry"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_X509DataType(const struct iso2_X509DataType& X509DataTypeDoc) {
+    json outJson;
+
+    if (X509DataTypeDoc.X509IssuerSerial_isUsed) {
+        outJson["X509IssuerSerial"] = getJson_X509IssuerSerialType(X509DataTypeDoc.X509IssuerSerial);
+    }
+    if (X509DataTypeDoc.X509SKI_isUsed) {
+        outJson["X509SKI"]["bytesLen"] = X509DataTypeDoc.X509SKI.bytesLen;
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509SKI.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["X509SKI"]["bytes"][i] = X509DataTypeDoc.X509SKI.bytes[i];
+        }
+    }
+    if (X509DataTypeDoc.X509SubjectName_isUsed) {
+        outJson["X509SubjectName"]["charactersLen"] = X509DataTypeDoc.X509SubjectName.charactersLen;
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509SubjectName.charactersLen && i < iso2_X509SubjectName_CHARACTER_SIZE; ++i) {
+            outJson["X509SubjectName"]["characters"][i] = X509DataTypeDoc.X509SubjectName.characters[i];
+        }
+    }
+    if (X509DataTypeDoc.X509Certificate_isUsed) {
+        outJson["X509Certificate"]["bytesLen"] = X509DataTypeDoc.X509Certificate.bytesLen;
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509Certificate.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["X509Certificate"]["bytes"][i] = X509DataTypeDoc.X509Certificate.bytes[i];
+        }
+    }
+    if (X509DataTypeDoc.X509CRL_isUsed) {
+        outJson["X509CRL"]["bytesLen"] = X509DataTypeDoc.X509CRL.bytesLen;
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509CRL.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["X509CRL"]["bytes"][i] = X509DataTypeDoc.X509CRL.bytes[i];
+        }
+    }
+    if (X509DataTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = X509DataTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < X509DataTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = X509DataTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
+    struct iso2_X509DataType outDoc;
+    init_iso2_X509DataType(&outDoc);
+
+    if (X509DataTypeJson.contains("X509IssuerSerial")) {
+        outDoc.X509IssuerSerial_isUsed = 1;
+        outDoc.X509IssuerSerial = getDoc_X509IssuerSerialType(X509DataTypeJson["X509IssuerSerial"]);
+    } else {
+        outDoc.X509IssuerSerial_isUsed = 0;
+    }
+    if (X509DataTypeJson.contains("X509SKI")) {
+        outDoc.X509SKI_isUsed = 1;
+        outDoc.X509SKI.bytesLen = X509DataTypeJson["X509SKI"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.X509SKI.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.X509SKI.bytes[i] = X509DataTypeJson["X509SKI"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.X509SKI_isUsed = 0;
+    }
+    if (X509DataTypeJson.contains("X509SubjectName")) {
+        outDoc.X509SubjectName_isUsed = 1;
+        outDoc.X509SubjectName.charactersLen = X509DataTypeJson["X509SubjectName"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.X509SubjectName.charactersLen && i < iso2_X509SubjectName_CHARACTER_SIZE; ++i) {
+            outDoc.X509SubjectName.characters[i] = X509DataTypeJson["X509SubjectName"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.X509SubjectName_isUsed = 0;
+    }
+    if (X509DataTypeJson.contains("X509Certificate")) {
+        outDoc.X509Certificate_isUsed = 1;
+        outDoc.X509Certificate.bytesLen = X509DataTypeJson["X509Certificate"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.X509Certificate.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.X509Certificate.bytes[i] = X509DataTypeJson["X509Certificate"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.X509Certificate_isUsed = 0;
+    }
+    if (X509DataTypeJson.contains("X509CRL")) {
+        outDoc.X509CRL_isUsed = 1;
+        outDoc.X509CRL.bytesLen = X509DataTypeJson["X509CRL"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.X509CRL.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.X509CRL.bytes[i] = X509DataTypeJson["X509CRL"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.X509CRL_isUsed = 0;
+    }
+    if (X509DataTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = X509DataTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = X509DataTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PGPDataType(const struct iso2_PGPDataType& PGPDataTypeDoc) {
+    json outJson;
+
+    if (PGPDataTypeDoc.choice_1_isUsed) {
+        outJson["choice_1"]["PGPKeyID"]["bytesLen"] = PGPDataTypeDoc.choice_1.PGPKeyID.bytesLen;
+        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyID.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["choice_1"]["PGPKeyID"]["bytes"][i] = PGPDataTypeDoc.choice_1.PGPKeyID.bytes[i];
+        }
+        if (PGPDataTypeDoc.choice_1.PGPKeyPacket_isUsed) {
+            outJson["choice_1"]["PGPKeyPacket"]["bytesLen"] = PGPDataTypeDoc.choice_1.PGPKeyPacket.bytesLen;
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyPacket.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+                outJson["choice_1"]["PGPKeyPacket"]["bytes"][i] = PGPDataTypeDoc.choice_1.PGPKeyPacket.bytes[i];
+            }
+        }
+        if (PGPDataTypeDoc.choice_1.ANY_isUsed) {
+            outJson["choice_1"]["ANY"]["bytesLen"] = PGPDataTypeDoc.choice_1.ANY.bytesLen;
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+                outJson["choice_1"]["ANY"]["bytes"][i] = PGPDataTypeDoc.choice_1.ANY.bytes[i];
+            }
+        }
+    }
+    if (PGPDataTypeDoc.choice_2_isUsed) {
+        outJson["choice_2"]["PGPKeyPacket"]["bytesLen"] = PGPDataTypeDoc.choice_2.PGPKeyPacket.bytesLen;
+        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.PGPKeyPacket.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["choice_2"]["PGPKeyPacket"]["bytes"][i] = PGPDataTypeDoc.choice_2.PGPKeyPacket.bytes[i];
+        }
+        if (PGPDataTypeDoc.choice_2.ANY_isUsed) {
+            outJson["choice_2"]["ANY"]["bytesLen"] = PGPDataTypeDoc.choice_2.ANY.bytesLen;
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+                outJson["choice_2"]["ANY"]["bytes"][i] = PGPDataTypeDoc.choice_2.ANY.bytes[i];
+            }
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_PGPDataType getDoc_PGPDataType(const json& PGPDataTypeJson) {
+    struct iso2_PGPDataType outDoc;
+    init_iso2_PGPDataType(&outDoc);
+
+    if (PGPDataTypeJson.contains("choice_1")) {
+        outDoc.choice_1_isUsed = 1;
+        outDoc.choice_1.PGPKeyID.bytesLen = PGPDataTypeJson["choice_1"]["PGPKeyID"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyID.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.choice_1.PGPKeyID.bytes[i] = PGPDataTypeJson["choice_1"]["PGPKeyID"]["bytes"][i].template get<uint8_t>();
+        }
+        if (PGPDataTypeJson["choice_1"].contains("PGPKeyPacket")) {
+            outDoc.choice_1.PGPKeyPacket_isUsed = 1;
+            outDoc.choice_1.PGPKeyPacket.bytesLen = PGPDataTypeJson["choice_1"]["PGPKeyPacket"]["bytesLen"].template get<uint16_t>();
+            for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyPacket.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+                outDoc.choice_1.PGPKeyPacket.bytes[i] = PGPDataTypeJson["choice_1"]["PGPKeyPacket"]["bytes"][i].template get<uint8_t>();
+            }
+        } else {
+            outDoc.choice_1.PGPKeyPacket_isUsed = 0;
+        }
+        if (PGPDataTypeJson["choice_1"].contains("ANY")) {
+            outDoc.choice_1.ANY_isUsed = 1;
+            outDoc.choice_1.ANY.bytesLen = PGPDataTypeJson["choice_1"]["ANY"]["bytesLen"].template get<uint16_t>();
+            for (uint16_t i = 0; i < outDoc.choice_1.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+                outDoc.choice_1.ANY.bytes[i] = PGPDataTypeJson["choice_1"]["ANY"]["bytes"][i].template get<uint8_t>();
+            }
+        } else {
+            outDoc.choice_1.ANY_isUsed = 0;
+        }
+    } else {
+        outDoc.choice_1_isUsed = 0;
+    }
+    if (PGPDataTypeJson.contains("choice_2")) {
+        outDoc.choice_2_isUsed = 1;
+        outDoc.choice_2.PGPKeyPacket.bytesLen = PGPDataTypeJson["choice_2"]["PGPKeyPacket"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.choice_2.PGPKeyPacket.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.choice_2.PGPKeyPacket.bytes[i] = PGPDataTypeJson["choice_2"]["PGPKeyPacket"]["bytes"][i].template get<uint8_t>();
+        }
+        if (PGPDataTypeJson["choice_2"].contains("ANY")) {
+            outDoc.choice_2.ANY_isUsed = 1;
+            outDoc.choice_2.ANY.bytesLen = PGPDataTypeJson["choice_2"]["ANY"]["bytesLen"].template get<uint16_t>();
+            for (uint16_t i = 0; i < outDoc.choice_2.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+                outDoc.choice_2.ANY.bytes[i] = PGPDataTypeJson["choice_2"]["ANY"]["bytes"][i].template get<uint8_t>();
+            }
+        } else {
+            outDoc.choice_2.ANY_isUsed = 0;
+        }
+    } else {
+        outDoc.choice_2_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SPKIDataType(const struct iso2_SPKIDataType& SPKIDataTypeDoc) {
+    json outJson;
+
+    outJson["SPKISexp"]["bytesLen"] = SPKIDataTypeDoc.SPKISexp.bytesLen;
+    for (uint16_t i = 0; i < SPKIDataTypeDoc.SPKISexp.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["SPKISexp"]["bytes"][i] = SPKIDataTypeDoc.SPKISexp.bytes[i];
+    }
+    if (SPKIDataTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = SPKIDataTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < SPKIDataTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = SPKIDataTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_SPKIDataType getDoc_SPKIDataType(const json& SPKIDataTypeJson) {
+    struct iso2_SPKIDataType outDoc;
+    init_iso2_SPKIDataType(&outDoc);
+
+    outDoc.SPKISexp.bytesLen = SPKIDataTypeJson["SPKISexp"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SPKISexp.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.SPKISexp.bytes[i] = SPKIDataTypeJson["SPKISexp"]["bytes"][i].template get<uint8_t>();
+    }
+    if (SPKIDataTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = SPKIDataTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = SPKIDataTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SignedInfoType(const struct iso2_SignedInfoType& SignedInfoTypeDoc) {
+    json outJson;
+
+    if (SignedInfoTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = SignedInfoTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < SignedInfoTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = SignedInfoTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["CanonicalizationMethod"] = getJson_CanonicalizationMethodType(SignedInfoTypeDoc.CanonicalizationMethod);
+    outJson["SignatureMethod"] = getJson_SignatureMethodType(SignedInfoTypeDoc.SignatureMethod);
+    outJson["Reference"]["arrayLen"] = SignedInfoTypeDoc.Reference.arrayLen;
+    for (uint16_t i = 0; i < SignedInfoTypeDoc.Reference.arrayLen && i < iso2_ReferenceType_4_ARRAY_SIZE; ++i) {
+        outJson["Reference"]["array"][i] = getJson_ReferenceType(SignedInfoTypeDoc.Reference.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_SignedInfoType getDoc_SignedInfoType(const json& SignedInfoTypeJson) {
+    struct iso2_SignedInfoType outDoc;
+    init_iso2_SignedInfoType(&outDoc);
+
+    if (SignedInfoTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = SignedInfoTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = SignedInfoTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.CanonicalizationMethod = getDoc_CanonicalizationMethodType(SignedInfoTypeJson["CanonicalizationMethod"]);
+    outDoc.SignatureMethod = getDoc_SignatureMethodType(SignedInfoTypeJson["SignatureMethod"]);
+    outDoc.Reference.arrayLen = SignedInfoTypeJson["Reference"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Reference.arrayLen && i < iso2_ReferenceType_4_ARRAY_SIZE; ++i) {
+        outDoc.Reference.array[i] = getDoc_ReferenceType(SignedInfoTypeJson["Reference"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ProfileEntryType(const struct iso2_ProfileEntryType& ProfileEntryTypeDoc) {
+    json outJson;
+
+    outJson["ChargingProfileEntryStart"] = ProfileEntryTypeDoc.ChargingProfileEntryStart;
+    outJson["ChargingProfileEntryMaxPower"] = getJson_PhysicalValueType(ProfileEntryTypeDoc.ChargingProfileEntryMaxPower);
+    if (ProfileEntryTypeDoc.ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed) {
+        outJson["ChargingProfileEntryMaxNumberOfPhasesInUse"] = ProfileEntryTypeDoc.ChargingProfileEntryMaxNumberOfPhasesInUse;
+    }
+
+    return outJson;
+}
+
+struct iso2_ProfileEntryType getDoc_ProfileEntryType(const json& ProfileEntryTypeJson) {
+    struct iso2_ProfileEntryType outDoc;
+    init_iso2_ProfileEntryType(&outDoc);
+
+    outDoc.ChargingProfileEntryStart = ProfileEntryTypeJson["ChargingProfileEntryStart"].template get<uint32_t>();
+    outDoc.ChargingProfileEntryMaxPower = getDoc_PhysicalValueType(ProfileEntryTypeJson["ChargingProfileEntryMaxPower"]);
+    if (ProfileEntryTypeJson.contains("ChargingProfileEntryMaxNumberOfPhasesInUse")) {
+        outDoc.ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed = 1;
+        outDoc.ChargingProfileEntryMaxNumberOfPhasesInUse = ProfileEntryTypeJson["ChargingProfileEntryMaxNumberOfPhasesInUse"].template get<uint8_t>();
+    } else {
+        outDoc.ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_DC_EVStatusType(const struct iso2_DC_EVStatusType& DC_EVStatusTypeDoc) {
+    json outJson;
+
+    outJson["EVReady"] = DC_EVStatusTypeDoc.EVReady;
+    outJson["EVErrorCode"] = DC_EVStatusTypeDoc.EVErrorCode;
+    outJson["EVRESSSOC"] = DC_EVStatusTypeDoc.EVRESSSOC;
+
+    return outJson;
+}
+
+struct iso2_DC_EVStatusType getDoc_DC_EVStatusType(const json& DC_EVStatusTypeJson) {
+    struct iso2_DC_EVStatusType outDoc;
+    init_iso2_DC_EVStatusType(&outDoc);
+
+    outDoc.EVReady = DC_EVStatusTypeJson["EVReady"].template get<int>();
+    outDoc.EVErrorCode = DC_EVStatusTypeJson["EVErrorCode"].template get<iso2_DC_EVErrorCodeType>();
+    outDoc.EVRESSSOC = DC_EVStatusTypeJson["EVRESSSOC"].template get<uint8_t>();
+
+    return outDoc;
+}
+
+json getJson_ParameterSetType(const struct iso2_ParameterSetType& ParameterSetTypeDoc) {
+    json outJson;
+
+    outJson["ParameterSetID"] = ParameterSetTypeDoc.ParameterSetID;
+    outJson["Parameter"]["arrayLen"] = ParameterSetTypeDoc.Parameter.arrayLen;
+    for (uint16_t i = 0; i < ParameterSetTypeDoc.Parameter.arrayLen && i < iso2_ParameterType_16_ARRAY_SIZE; ++i) {
+        outJson["Parameter"]["array"][i] = getJson_ParameterType(ParameterSetTypeDoc.Parameter.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ParameterSetType getDoc_ParameterSetType(const json& ParameterSetTypeJson) {
+    struct iso2_ParameterSetType outDoc;
+    init_iso2_ParameterSetType(&outDoc);
+
+    outDoc.ParameterSetID = ParameterSetTypeJson["ParameterSetID"].template get<uint8_t>();
+    outDoc.Parameter.arrayLen = ParameterSetTypeJson["Parameter"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Parameter.arrayLen && i < iso2_ParameterType_16_ARRAY_SIZE; ++i) {
+        outDoc.Parameter.array[i] = getDoc_ParameterType(ParameterSetTypeJson["Parameter"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_SAScheduleTupleType(const struct iso2_SAScheduleTupleType& SAScheduleTupleTypeDoc) {
+    json outJson;
+
+    outJson["SAScheduleTupleID"] = SAScheduleTupleTypeDoc.SAScheduleTupleID;
+    outJson["PMaxSchedule"] = getJson_PMaxScheduleType(SAScheduleTupleTypeDoc.PMaxSchedule);
+    if (SAScheduleTupleTypeDoc.SalesTariff_isUsed) {
+        outJson["SalesTariff"] = getJson_SalesTariffType(SAScheduleTupleTypeDoc.SalesTariff);
+    }
+
+    return outJson;
+}
+
+struct iso2_SAScheduleTupleType getDoc_SAScheduleTupleType(const json& SAScheduleTupleTypeJson) {
+    struct iso2_SAScheduleTupleType outDoc;
+    init_iso2_SAScheduleTupleType(&outDoc);
+
+    outDoc.SAScheduleTupleID = SAScheduleTupleTypeJson["SAScheduleTupleID"].template get<uint8_t>();
+    outDoc.PMaxSchedule = getDoc_PMaxScheduleType(SAScheduleTupleTypeJson["PMaxSchedule"]);
+    if (SAScheduleTupleTypeJson.contains("SalesTariff")) {
+        outDoc.SalesTariff_isUsed = 1;
+        outDoc.SalesTariff = getDoc_SalesTariffType(SAScheduleTupleTypeJson["SalesTariff"]);
+    } else {
+        outDoc.SalesTariff_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SelectedServiceType(const struct iso2_SelectedServiceType& SelectedServiceTypeDoc) {
+    json outJson;
+
+    outJson["ServiceID"] = SelectedServiceTypeDoc.ServiceID;
+    if (SelectedServiceTypeDoc.ParameterSetID_isUsed) {
+        outJson["ParameterSetID"] = SelectedServiceTypeDoc.ParameterSetID;
+    }
+
+    return outJson;
+}
+
+struct iso2_SelectedServiceType getDoc_SelectedServiceType(const json& SelectedServiceTypeJson) {
+    struct iso2_SelectedServiceType outDoc;
+    init_iso2_SelectedServiceType(&outDoc);
+
+    outDoc.ServiceID = SelectedServiceTypeJson["ServiceID"].template get<uint8_t>();
+    if (SelectedServiceTypeJson.contains("ParameterSetID")) {
+        outDoc.ParameterSetID_isUsed = 1;
+        outDoc.ParameterSetID = SelectedServiceTypeJson["ParameterSetID"].template get<uint8_t>();
+    } else {
+        outDoc.ParameterSetID_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ServiceType(const struct iso2_ServiceType& ServiceTypeDoc) {
+    json outJson;
+
+    outJson["ServiceID"] = ServiceTypeDoc.ServiceID;
+    if (ServiceTypeDoc.ServiceName_isUsed) {
+        outJson["ServiceName"]["charactersLen"] = ServiceTypeDoc.ServiceName.charactersLen;
+        for (uint16_t i = 0; i < ServiceTypeDoc.ServiceName.charactersLen && i < iso2_ServiceName_CHARACTER_SIZE; ++i) {
+            outJson["ServiceName"]["characters"][i] = ServiceTypeDoc.ServiceName.characters[i];
+        }
+    }
+    outJson["ServiceCategory"] = ServiceTypeDoc.ServiceCategory;
+    if (ServiceTypeDoc.ServiceScope_isUsed) {
+        outJson["ServiceScope"]["charactersLen"] = ServiceTypeDoc.ServiceScope.charactersLen;
+        for (uint16_t i = 0; i < ServiceTypeDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outJson["ServiceScope"]["characters"][i] = ServiceTypeDoc.ServiceScope.characters[i];
+        }
+    }
+    outJson["FreeService"] = ServiceTypeDoc.FreeService;
+
+    return outJson;
+}
+
+struct iso2_ServiceType getDoc_ServiceType(const json& ServiceTypeJson) {
+    struct iso2_ServiceType outDoc;
+    init_iso2_ServiceType(&outDoc);
+
+    outDoc.ServiceID = ServiceTypeJson["ServiceID"].template get<uint8_t>();
+    if (ServiceTypeJson.contains("ServiceName")) {
+        outDoc.ServiceName_isUsed = 1;
+        outDoc.ServiceName.charactersLen = ServiceTypeJson["ServiceName"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ServiceName.charactersLen && i < iso2_ServiceName_CHARACTER_SIZE; ++i) {
+            outDoc.ServiceName.characters[i] = ServiceTypeJson["ServiceName"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.ServiceName_isUsed = 0;
+    }
+    outDoc.ServiceCategory = ServiceTypeJson["ServiceCategory"].template get<iso2_serviceCategoryType>();
+    if (ServiceTypeJson.contains("ServiceScope")) {
+        outDoc.ServiceScope_isUsed = 1;
+        outDoc.ServiceScope.charactersLen = ServiceTypeJson["ServiceScope"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outDoc.ServiceScope.characters[i] = ServiceTypeJson["ServiceScope"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.ServiceScope_isUsed = 0;
+    }
+    outDoc.FreeService = ServiceTypeJson["FreeService"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_SignatureValueType(const struct iso2_SignatureValueType& SignatureValueTypeDoc) {
+    json outJson;
+
+    if (SignatureValueTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = SignatureValueTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < SignatureValueTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = SignatureValueTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["CONTENT"]["bytesLen"] = SignatureValueTypeDoc.CONTENT.bytesLen;
+    for (uint16_t i = 0; i < SignatureValueTypeDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["CONTENT"]["bytes"][i] = SignatureValueTypeDoc.CONTENT.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_SignatureValueType getDoc_SignatureValueType(const json& SignatureValueTypeJson) {
+    struct iso2_SignatureValueType outDoc;
+    init_iso2_SignatureValueType(&outDoc);
+
+    if (SignatureValueTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = SignatureValueTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = SignatureValueTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.CONTENT.bytesLen = SignatureValueTypeJson["CONTENT"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.CONTENT.bytes[i] = SignatureValueTypeJson["CONTENT"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_SubCertificatesType(const struct iso2_SubCertificatesType& SubCertificatesTypeDoc) {
+    json outJson;
+
+    outJson["Certificate"]["arrayLen"] = SubCertificatesTypeDoc.Certificate.arrayLen;
+    for (uint16_t i = 0; i < SubCertificatesTypeDoc.Certificate.arrayLen && i < iso2_certificateType_4_ARRAY_SIZE; ++i) {
+        outJson["Certificate"]["array"][i]["bytesLen"] = SubCertificatesTypeDoc.Certificate.array[i].bytesLen;
+        for (uint16_t j = 0; j < SubCertificatesTypeDoc.Certificate.array[i].bytesLen && j < iso2_base64Binary_BYTES_SIZE; ++j) {
+            outJson["Certificate"]["array"][i]["bytes"][j] = SubCertificatesTypeDoc.Certificate.array[i].bytes[j];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_SubCertificatesType getDoc_SubCertificatesType(const json& SubCertificatesTypeJson) {
+    struct iso2_SubCertificatesType outDoc;
+    init_iso2_SubCertificatesType(&outDoc);
+
+    outDoc.Certificate.arrayLen = SubCertificatesTypeJson["Certificate"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Certificate.arrayLen && i < iso2_certificateType_4_ARRAY_SIZE; ++i) {
+        outDoc.Certificate.array[i].bytesLen = SubCertificatesTypeJson["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
+        for (uint16_t j = 0; j < outDoc.Certificate.array[i].bytesLen && j < iso2_base64Binary_BYTES_SIZE; ++j) {
+            outDoc.Certificate.array[i].bytes[j] = SubCertificatesTypeJson["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
+        }
+    }
+
+    return outDoc;
+}
+
+json getJson_KeyInfoType(const struct iso2_KeyInfoType& KeyInfoTypeDoc) {
+    json outJson;
+
+    if (KeyInfoTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = KeyInfoTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = KeyInfoTypeDoc.Id.characters[i];
+        }
+    }
+    if (KeyInfoTypeDoc.KeyName_isUsed) {
+        outJson["KeyName"]["charactersLen"] = KeyInfoTypeDoc.KeyName.charactersLen;
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.KeyName.charactersLen && i < iso2_KeyName_CHARACTER_SIZE; ++i) {
+            outJson["KeyName"]["characters"][i] = KeyInfoTypeDoc.KeyName.characters[i];
+        }
+    }
+    if (KeyInfoTypeDoc.KeyValue_isUsed) {
+        outJson["KeyValue"] = getJson_KeyValueType(KeyInfoTypeDoc.KeyValue);
+    }
+    if (KeyInfoTypeDoc.RetrievalMethod_isUsed) {
+        outJson["RetrievalMethod"] = getJson_RetrievalMethodType(KeyInfoTypeDoc.RetrievalMethod);
+    }
+    if (KeyInfoTypeDoc.X509Data_isUsed) {
+        outJson["X509Data"] = getJson_X509DataType(KeyInfoTypeDoc.X509Data);
+    }
+    if (KeyInfoTypeDoc.PGPData_isUsed) {
+        outJson["PGPData"] = getJson_PGPDataType(KeyInfoTypeDoc.PGPData);
+    }
+    if (KeyInfoTypeDoc.SPKIData_isUsed) {
+        outJson["SPKIData"] = getJson_SPKIDataType(KeyInfoTypeDoc.SPKIData);
+    }
+    if (KeyInfoTypeDoc.MgmtData_isUsed) {
+        outJson["MgmtData"]["charactersLen"] = KeyInfoTypeDoc.MgmtData.charactersLen;
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.MgmtData.charactersLen && i < iso2_MgmtData_CHARACTER_SIZE; ++i) {
+            outJson["MgmtData"]["characters"][i] = KeyInfoTypeDoc.MgmtData.characters[i];
+        }
+    }
+    if (KeyInfoTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = KeyInfoTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = KeyInfoTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson) {
+    struct iso2_KeyInfoType outDoc;
+    init_iso2_KeyInfoType(&outDoc);
+
+    if (KeyInfoTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = KeyInfoTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = KeyInfoTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("KeyName")) {
+        outDoc.KeyName_isUsed = 1;
+        outDoc.KeyName.charactersLen = KeyInfoTypeJson["KeyName"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.KeyName.charactersLen && i < iso2_KeyName_CHARACTER_SIZE; ++i) {
+            outDoc.KeyName.characters[i] = KeyInfoTypeJson["KeyName"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.KeyName_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("KeyValue")) {
+        outDoc.KeyValue_isUsed = 1;
+        outDoc.KeyValue = getDoc_KeyValueType(KeyInfoTypeJson["KeyValue"]);
+    } else {
+        outDoc.KeyValue_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("RetrievalMethod")) {
+        outDoc.RetrievalMethod_isUsed = 1;
+        outDoc.RetrievalMethod = getDoc_RetrievalMethodType(KeyInfoTypeJson["RetrievalMethod"]);
+    } else {
+        outDoc.RetrievalMethod_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("X509Data")) {
+        outDoc.X509Data_isUsed = 1;
+        outDoc.X509Data = getDoc_X509DataType(KeyInfoTypeJson["X509Data"]);
+    } else {
+        outDoc.X509Data_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("PGPData")) {
+        outDoc.PGPData_isUsed = 1;
+        outDoc.PGPData = getDoc_PGPDataType(KeyInfoTypeJson["PGPData"]);
+    } else {
+        outDoc.PGPData_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("SPKIData")) {
+        outDoc.SPKIData_isUsed = 1;
+        outDoc.SPKIData = getDoc_SPKIDataType(KeyInfoTypeJson["SPKIData"]);
+    } else {
+        outDoc.SPKIData_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("MgmtData")) {
+        outDoc.MgmtData_isUsed = 1;
+        outDoc.MgmtData.charactersLen = KeyInfoTypeJson["MgmtData"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.MgmtData.charactersLen && i < iso2_MgmtData_CHARACTER_SIZE; ++i) {
+            outDoc.MgmtData.characters[i] = KeyInfoTypeJson["MgmtData"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.MgmtData_isUsed = 0;
+    }
+    if (KeyInfoTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = KeyInfoTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = KeyInfoTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ObjectType(const struct iso2_ObjectType& ObjectTypeDoc) {
+    json outJson;
+
+    if (ObjectTypeDoc.Encoding_isUsed) {
+        outJson["Encoding"]["charactersLen"] = ObjectTypeDoc.Encoding.charactersLen;
+        for (uint16_t i = 0; i < ObjectTypeDoc.Encoding.charactersLen && i < iso2_Encoding_CHARACTER_SIZE; ++i) {
+            outJson["Encoding"]["characters"][i] = ObjectTypeDoc.Encoding.characters[i];
+        }
+    }
+    if (ObjectTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = ObjectTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < ObjectTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = ObjectTypeDoc.Id.characters[i];
+        }
+    }
+    if (ObjectTypeDoc.MimeType_isUsed) {
+        outJson["MimeType"]["charactersLen"] = ObjectTypeDoc.MimeType.charactersLen;
+        for (uint16_t i = 0; i < ObjectTypeDoc.MimeType.charactersLen && i < iso2_MimeType_CHARACTER_SIZE; ++i) {
+            outJson["MimeType"]["characters"][i] = ObjectTypeDoc.MimeType.characters[i];
+        }
+    }
+    if (ObjectTypeDoc.ANY_isUsed) {
+        outJson["ANY"]["bytesLen"] = ObjectTypeDoc.ANY.bytesLen;
+        for (uint16_t i = 0; i < ObjectTypeDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outJson["ANY"]["bytes"][i] = ObjectTypeDoc.ANY.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_ObjectType getDoc_ObjectType(const json& ObjectTypeJson) {
+    struct iso2_ObjectType outDoc;
+    init_iso2_ObjectType(&outDoc);
+
+    if (ObjectTypeJson.contains("Encoding")) {
+        outDoc.Encoding_isUsed = 1;
+        outDoc.Encoding.charactersLen = ObjectTypeJson["Encoding"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Encoding.charactersLen && i < iso2_Encoding_CHARACTER_SIZE; ++i) {
+            outDoc.Encoding.characters[i] = ObjectTypeJson["Encoding"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Encoding_isUsed = 0;
+    }
+    if (ObjectTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = ObjectTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = ObjectTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    if (ObjectTypeJson.contains("MimeType")) {
+        outDoc.MimeType_isUsed = 1;
+        outDoc.MimeType.charactersLen = ObjectTypeJson["MimeType"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.MimeType.charactersLen && i < iso2_MimeType_CHARACTER_SIZE; ++i) {
+            outDoc.MimeType.characters[i] = ObjectTypeJson["MimeType"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.MimeType_isUsed = 0;
+    }
+    if (ObjectTypeJson.contains("ANY")) {
+        outDoc.ANY_isUsed = 1;
+        outDoc.ANY.bytesLen = ObjectTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < iso2_anyType_BYTES_SIZE; ++i) {
+            outDoc.ANY.bytes[i] = ObjectTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.ANY_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_SupportedEnergyTransferModeType(const struct iso2_SupportedEnergyTransferModeType& SupportedEnergyTransferModeTypeDoc) {
+    json outJson;
+
+    outJson["EnergyTransferMode"]["arrayLen"] = SupportedEnergyTransferModeTypeDoc.EnergyTransferMode.arrayLen;
+    for (uint16_t i = 0; i < SupportedEnergyTransferModeTypeDoc.EnergyTransferMode.arrayLen && i < iso2_EnergyTransferModeType_6_ARRAY_SIZE; ++i) {
+        outJson["EnergyTransferMode"]["array"][i] = SupportedEnergyTransferModeTypeDoc.EnergyTransferMode.array[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_SupportedEnergyTransferModeType getDoc_SupportedEnergyTransferModeType(const json& SupportedEnergyTransferModeTypeJson) {
+    struct iso2_SupportedEnergyTransferModeType outDoc;
+    init_iso2_SupportedEnergyTransferModeType(&outDoc);
+
+    outDoc.EnergyTransferMode.arrayLen = SupportedEnergyTransferModeTypeJson["EnergyTransferMode"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.EnergyTransferMode.arrayLen && i < iso2_EnergyTransferModeType_6_ARRAY_SIZE; ++i) {
+        outDoc.EnergyTransferMode.array[i] = SupportedEnergyTransferModeTypeJson["EnergyTransferMode"]["array"][i].template get<iso2_EnergyTransferModeType>();
+    }
+
+    return outDoc;
+}
+
+json getJson_CertificateChainType(const struct iso2_CertificateChainType& CertificateChainTypeDoc) {
+    json outJson;
+
+    if (CertificateChainTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = CertificateChainTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < CertificateChainTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = CertificateChainTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["Certificate"]["bytesLen"] = CertificateChainTypeDoc.Certificate.bytesLen;
+    for (uint16_t i = 0; i < CertificateChainTypeDoc.Certificate.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["Certificate"]["bytes"][i] = CertificateChainTypeDoc.Certificate.bytes[i];
+    }
+    if (CertificateChainTypeDoc.SubCertificates_isUsed) {
+        outJson["SubCertificates"] = getJson_SubCertificatesType(CertificateChainTypeDoc.SubCertificates);
+    }
+
+    return outJson;
+}
+
+struct iso2_CertificateChainType getDoc_CertificateChainType(const json& CertificateChainTypeJson) {
+    struct iso2_CertificateChainType outDoc;
+    init_iso2_CertificateChainType(&outDoc);
+
+    if (CertificateChainTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = CertificateChainTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = CertificateChainTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.Certificate.bytesLen = CertificateChainTypeJson["Certificate"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Certificate.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.Certificate.bytes[i] = CertificateChainTypeJson["Certificate"]["bytes"][i].template get<uint8_t>();
+    }
+    if (CertificateChainTypeJson.contains("SubCertificates")) {
+        outDoc.SubCertificates_isUsed = 1;
+        outDoc.SubCertificates = getDoc_SubCertificatesType(CertificateChainTypeJson["SubCertificates"]);
+    } else {
+        outDoc.SubCertificates_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_BodyBaseType(const struct iso2_BodyBaseType& BodyBaseTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = BodyBaseTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_BodyBaseType getDoc_BodyBaseType(const json& BodyBaseTypeJson) {
+    struct iso2_BodyBaseType outDoc;
+    init_iso2_BodyBaseType(&outDoc);
+
+    outDoc._unused = BodyBaseTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_NotificationType(const struct iso2_NotificationType& NotificationTypeDoc) {
+    json outJson;
+
+    outJson["FaultCode"] = NotificationTypeDoc.FaultCode;
+    if (NotificationTypeDoc.FaultMsg_isUsed) {
+        outJson["FaultMsg"]["charactersLen"] = NotificationTypeDoc.FaultMsg.charactersLen;
+        for (uint16_t i = 0; i < NotificationTypeDoc.FaultMsg.charactersLen && i < iso2_FaultMsg_CHARACTER_SIZE; ++i) {
+            outJson["FaultMsg"]["characters"][i] = NotificationTypeDoc.FaultMsg.characters[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_NotificationType getDoc_NotificationType(const json& NotificationTypeJson) {
+    struct iso2_NotificationType outDoc;
+    init_iso2_NotificationType(&outDoc);
+
+    outDoc.FaultCode = NotificationTypeJson["FaultCode"].template get<iso2_faultCodeType>();
+    if (NotificationTypeJson.contains("FaultMsg")) {
+        outDoc.FaultMsg_isUsed = 1;
+        outDoc.FaultMsg.charactersLen = NotificationTypeJson["FaultMsg"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.FaultMsg.charactersLen && i < iso2_FaultMsg_CHARACTER_SIZE; ++i) {
+            outDoc.FaultMsg.characters[i] = NotificationTypeJson["FaultMsg"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.FaultMsg_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_DC_EVSEStatusType(const struct iso2_DC_EVSEStatusType& DC_EVSEStatusTypeDoc) {
+    json outJson;
+
+    outJson["NotificationMaxDelay"] = DC_EVSEStatusTypeDoc.NotificationMaxDelay;
+    outJson["EVSENotification"] = DC_EVSEStatusTypeDoc.EVSENotification;
+    if (DC_EVSEStatusTypeDoc.EVSEIsolationStatus_isUsed) {
+        outJson["EVSEIsolationStatus"] = DC_EVSEStatusTypeDoc.EVSEIsolationStatus;
+    }
+    outJson["EVSEStatusCode"] = DC_EVSEStatusTypeDoc.EVSEStatusCode;
+
+    return outJson;
+}
+
+struct iso2_DC_EVSEStatusType getDoc_DC_EVSEStatusType(const json& DC_EVSEStatusTypeJson) {
+    struct iso2_DC_EVSEStatusType outDoc;
+    init_iso2_DC_EVSEStatusType(&outDoc);
+
+    outDoc.NotificationMaxDelay = DC_EVSEStatusTypeJson["NotificationMaxDelay"].template get<uint16_t>();
+    outDoc.EVSENotification = DC_EVSEStatusTypeJson["EVSENotification"].template get<iso2_EVSENotificationType>();
+    if (DC_EVSEStatusTypeJson.contains("EVSEIsolationStatus")) {
+        outDoc.EVSEIsolationStatus_isUsed = 1;
+        outDoc.EVSEIsolationStatus = DC_EVSEStatusTypeJson["EVSEIsolationStatus"].template get<iso2_isolationLevelType>();
+    } else {
+        outDoc.EVSEIsolationStatus_isUsed = 0;
+    }
+    outDoc.EVSEStatusCode = DC_EVSEStatusTypeJson["EVSEStatusCode"].template get<iso2_DC_EVSEStatusCodeType>();
+
+    return outDoc;
+}
+
+json getJson_SelectedServiceListType(const struct iso2_SelectedServiceListType& SelectedServiceListTypeDoc) {
+    json outJson;
+
+    outJson["SelectedService"]["arrayLen"] = SelectedServiceListTypeDoc.SelectedService.arrayLen;
+    for (uint16_t i = 0; i < SelectedServiceListTypeDoc.SelectedService.arrayLen && i < iso2_SelectedServiceType_16_ARRAY_SIZE; ++i) {
+        outJson["SelectedService"]["array"][i] = getJson_SelectedServiceType(SelectedServiceListTypeDoc.SelectedService.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_SelectedServiceListType getDoc_SelectedServiceListType(const json& SelectedServiceListTypeJson) {
+    struct iso2_SelectedServiceListType outDoc;
+    init_iso2_SelectedServiceListType(&outDoc);
+
+    outDoc.SelectedService.arrayLen = SelectedServiceListTypeJson["SelectedService"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SelectedService.arrayLen && i < iso2_SelectedServiceType_16_ARRAY_SIZE; ++i) {
+        outDoc.SelectedService.array[i] = getDoc_SelectedServiceType(SelectedServiceListTypeJson["SelectedService"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_PaymentOptionListType(const struct iso2_PaymentOptionListType& PaymentOptionListTypeDoc) {
+    json outJson;
+
+    outJson["PaymentOption"]["arrayLen"] = PaymentOptionListTypeDoc.PaymentOption.arrayLen;
+    for (uint16_t i = 0; i < PaymentOptionListTypeDoc.PaymentOption.arrayLen && i < iso2_paymentOptionType_2_ARRAY_SIZE; ++i) {
+        outJson["PaymentOption"]["array"][i] = PaymentOptionListTypeDoc.PaymentOption.array[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_PaymentOptionListType getDoc_PaymentOptionListType(const json& PaymentOptionListTypeJson) {
+    struct iso2_PaymentOptionListType outDoc;
+    init_iso2_PaymentOptionListType(&outDoc);
+
+    outDoc.PaymentOption.arrayLen = PaymentOptionListTypeJson["PaymentOption"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.PaymentOption.arrayLen && i < iso2_paymentOptionType_2_ARRAY_SIZE; ++i) {
+        outDoc.PaymentOption.array[i] = PaymentOptionListTypeJson["PaymentOption"]["array"][i].template get<iso2_paymentOptionType>();
+    }
+
+    return outDoc;
+}
+
+json getJson_SignatureType(const struct iso2_SignatureType& SignatureTypeDoc) {
+    json outJson;
+
+    if (SignatureTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = SignatureTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < SignatureTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = SignatureTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["SignedInfo"] = getJson_SignedInfoType(SignatureTypeDoc.SignedInfo);
+    outJson["SignatureValue"] = getJson_SignatureValueType(SignatureTypeDoc.SignatureValue);
+    if (SignatureTypeDoc.KeyInfo_isUsed) {
+        outJson["KeyInfo"] = getJson_KeyInfoType(SignatureTypeDoc.KeyInfo);
+    }
+    if (SignatureTypeDoc.Object_isUsed) {
+        outJson["Object"] = getJson_ObjectType(SignatureTypeDoc.Object);
+    }
+
+    return outJson;
+}
+
+struct iso2_SignatureType getDoc_SignatureType(const json& SignatureTypeJson) {
+    struct iso2_SignatureType outDoc;
+    init_iso2_SignatureType(&outDoc);
+
+    if (SignatureTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = SignatureTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = SignatureTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.SignedInfo = getDoc_SignedInfoType(SignatureTypeJson["SignedInfo"]);
+    outDoc.SignatureValue = getDoc_SignatureValueType(SignatureTypeJson["SignatureValue"]);
+    if (SignatureTypeJson.contains("KeyInfo")) {
+        outDoc.KeyInfo_isUsed = 1;
+        outDoc.KeyInfo = getDoc_KeyInfoType(SignatureTypeJson["KeyInfo"]);
+    } else {
+        outDoc.KeyInfo_isUsed = 0;
+    }
+    if (SignatureTypeJson.contains("Object")) {
+        outDoc.Object_isUsed = 1;
+        outDoc.Object = getDoc_ObjectType(SignatureTypeJson["Object"]);
+    } else {
+        outDoc.Object_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ChargingProfileType(const struct iso2_ChargingProfileType& ChargingProfileTypeDoc) {
+    json outJson;
+
+    outJson["ProfileEntry"]["arrayLen"] = ChargingProfileTypeDoc.ProfileEntry.arrayLen;
+    for (uint16_t i = 0; i < ChargingProfileTypeDoc.ProfileEntry.arrayLen && i < iso2_ProfileEntryType_24_ARRAY_SIZE; ++i) {
+        outJson["ProfileEntry"]["array"][i] = getJson_ProfileEntryType(ChargingProfileTypeDoc.ProfileEntry.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ChargingProfileType getDoc_ChargingProfileType(const json& ChargingProfileTypeJson) {
+    struct iso2_ChargingProfileType outDoc;
+    init_iso2_ChargingProfileType(&outDoc);
+
+    outDoc.ProfileEntry.arrayLen = ChargingProfileTypeJson["ProfileEntry"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.ProfileEntry.arrayLen && i < iso2_ProfileEntryType_24_ARRAY_SIZE; ++i) {
+        outDoc.ProfileEntry.array[i] = getDoc_ProfileEntryType(ChargingProfileTypeJson["ProfileEntry"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ServiceParameterListType(const struct iso2_ServiceParameterListType& ServiceParameterListTypeDoc) {
+    json outJson;
+
+    outJson["ParameterSet"]["arrayLen"] = ServiceParameterListTypeDoc.ParameterSet.arrayLen;
+    for (uint16_t i = 0; i < ServiceParameterListTypeDoc.ParameterSet.arrayLen && i < iso2_ParameterSetType_5_ARRAY_SIZE; ++i) {
+        outJson["ParameterSet"]["array"][i] = getJson_ParameterSetType(ServiceParameterListTypeDoc.ParameterSet.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ServiceParameterListType getDoc_ServiceParameterListType(const json& ServiceParameterListTypeJson) {
+    struct iso2_ServiceParameterListType outDoc;
+    init_iso2_ServiceParameterListType(&outDoc);
+
+    outDoc.ParameterSet.arrayLen = ServiceParameterListTypeJson["ParameterSet"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.ParameterSet.arrayLen && i < iso2_ParameterSetType_5_ARRAY_SIZE; ++i) {
+        outDoc.ParameterSet.array[i] = getDoc_ParameterSetType(ServiceParameterListTypeJson["ParameterSet"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ListOfRootCertificateIDsType(const struct iso2_ListOfRootCertificateIDsType& ListOfRootCertificateIDsTypeDoc) {
+    json outJson;
+
+    outJson["RootCertificateID"]["arrayLen"] = ListOfRootCertificateIDsTypeDoc.RootCertificateID.arrayLen;
+    for (uint16_t i = 0; i < ListOfRootCertificateIDsTypeDoc.RootCertificateID.arrayLen && i < iso2_X509IssuerSerialType_5_ARRAY_SIZE; ++i) {
+        outJson["RootCertificateID"]["array"][i] = getJson_X509IssuerSerialType(ListOfRootCertificateIDsTypeDoc.RootCertificateID.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ListOfRootCertificateIDsType getDoc_ListOfRootCertificateIDsType(const json& ListOfRootCertificateIDsTypeJson) {
+    struct iso2_ListOfRootCertificateIDsType outDoc;
+    init_iso2_ListOfRootCertificateIDsType(&outDoc);
+
+    outDoc.RootCertificateID.arrayLen = ListOfRootCertificateIDsTypeJson["RootCertificateID"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.RootCertificateID.arrayLen && i < iso2_X509IssuerSerialType_5_ARRAY_SIZE; ++i) {
+        outDoc.RootCertificateID.array[i] = getDoc_X509IssuerSerialType(ListOfRootCertificateIDsTypeJson["RootCertificateID"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_AC_EVChargeParameterType(const struct iso2_AC_EVChargeParameterType& AC_EVChargeParameterTypeDoc) {
+    json outJson;
+
+    if (AC_EVChargeParameterTypeDoc.DepartureTime_isUsed) {
+        outJson["DepartureTime"] = AC_EVChargeParameterTypeDoc.DepartureTime;
+    }
+    outJson["EAmount"] = getJson_PhysicalValueType(AC_EVChargeParameterTypeDoc.EAmount);
+    outJson["EVMaxVoltage"] = getJson_PhysicalValueType(AC_EVChargeParameterTypeDoc.EVMaxVoltage);
+    outJson["EVMaxCurrent"] = getJson_PhysicalValueType(AC_EVChargeParameterTypeDoc.EVMaxCurrent);
+    outJson["EVMinCurrent"] = getJson_PhysicalValueType(AC_EVChargeParameterTypeDoc.EVMinCurrent);
+
+    return outJson;
+}
+
+struct iso2_AC_EVChargeParameterType getDoc_AC_EVChargeParameterType(const json& AC_EVChargeParameterTypeJson) {
+    struct iso2_AC_EVChargeParameterType outDoc;
+    init_iso2_AC_EVChargeParameterType(&outDoc);
+
+    if (AC_EVChargeParameterTypeJson.contains("DepartureTime")) {
+        outDoc.DepartureTime_isUsed = 1;
+        outDoc.DepartureTime = AC_EVChargeParameterTypeJson["DepartureTime"].template get<uint32_t>();
+    } else {
+        outDoc.DepartureTime_isUsed = 0;
+    }
+    outDoc.EAmount = getDoc_PhysicalValueType(AC_EVChargeParameterTypeJson["EAmount"]);
+    outDoc.EVMaxVoltage = getDoc_PhysicalValueType(AC_EVChargeParameterTypeJson["EVMaxVoltage"]);
+    outDoc.EVMaxCurrent = getDoc_PhysicalValueType(AC_EVChargeParameterTypeJson["EVMaxCurrent"]);
+    outDoc.EVMinCurrent = getDoc_PhysicalValueType(AC_EVChargeParameterTypeJson["EVMinCurrent"]);
+
+    return outDoc;
+}
+
+json getJson_DC_EVChargeParameterType(const struct iso2_DC_EVChargeParameterType& DC_EVChargeParameterTypeDoc) {
+    json outJson;
+
+    if (DC_EVChargeParameterTypeDoc.DepartureTime_isUsed) {
+        outJson["DepartureTime"] = DC_EVChargeParameterTypeDoc.DepartureTime;
+    }
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(DC_EVChargeParameterTypeDoc.DC_EVStatus);
+    outJson["EVMaximumCurrentLimit"] = getJson_PhysicalValueType(DC_EVChargeParameterTypeDoc.EVMaximumCurrentLimit);
+    if (DC_EVChargeParameterTypeDoc.EVMaximumPowerLimit_isUsed) {
+        outJson["EVMaximumPowerLimit"] = getJson_PhysicalValueType(DC_EVChargeParameterTypeDoc.EVMaximumPowerLimit);
+    }
+    outJson["EVMaximumVoltageLimit"] = getJson_PhysicalValueType(DC_EVChargeParameterTypeDoc.EVMaximumVoltageLimit);
+    if (DC_EVChargeParameterTypeDoc.EVEnergyCapacity_isUsed) {
+        outJson["EVEnergyCapacity"] = getJson_PhysicalValueType(DC_EVChargeParameterTypeDoc.EVEnergyCapacity);
+    }
+    if (DC_EVChargeParameterTypeDoc.EVEnergyRequest_isUsed) {
+        outJson["EVEnergyRequest"] = getJson_PhysicalValueType(DC_EVChargeParameterTypeDoc.EVEnergyRequest);
+    }
+    if (DC_EVChargeParameterTypeDoc.FullSOC_isUsed) {
+        outJson["FullSOC"] = DC_EVChargeParameterTypeDoc.FullSOC;
+    }
+    if (DC_EVChargeParameterTypeDoc.BulkSOC_isUsed) {
+        outJson["BulkSOC"] = DC_EVChargeParameterTypeDoc.BulkSOC;
+    }
+
+    return outJson;
+}
+
+struct iso2_DC_EVChargeParameterType getDoc_DC_EVChargeParameterType(const json& DC_EVChargeParameterTypeJson) {
+    struct iso2_DC_EVChargeParameterType outDoc;
+    init_iso2_DC_EVChargeParameterType(&outDoc);
+
+    if (DC_EVChargeParameterTypeJson.contains("DepartureTime")) {
+        outDoc.DepartureTime_isUsed = 1;
+        outDoc.DepartureTime = DC_EVChargeParameterTypeJson["DepartureTime"].template get<uint32_t>();
+    } else {
+        outDoc.DepartureTime_isUsed = 0;
+    }
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(DC_EVChargeParameterTypeJson["DC_EVStatus"]);
+    outDoc.EVMaximumCurrentLimit = getDoc_PhysicalValueType(DC_EVChargeParameterTypeJson["EVMaximumCurrentLimit"]);
+    if (DC_EVChargeParameterTypeJson.contains("EVMaximumPowerLimit")) {
+        outDoc.EVMaximumPowerLimit_isUsed = 1;
+        outDoc.EVMaximumPowerLimit = getDoc_PhysicalValueType(DC_EVChargeParameterTypeJson["EVMaximumPowerLimit"]);
+    } else {
+        outDoc.EVMaximumPowerLimit_isUsed = 0;
+    }
+    outDoc.EVMaximumVoltageLimit = getDoc_PhysicalValueType(DC_EVChargeParameterTypeJson["EVMaximumVoltageLimit"]);
+    if (DC_EVChargeParameterTypeJson.contains("EVEnergyCapacity")) {
+        outDoc.EVEnergyCapacity_isUsed = 1;
+        outDoc.EVEnergyCapacity = getDoc_PhysicalValueType(DC_EVChargeParameterTypeJson["EVEnergyCapacity"]);
+    } else {
+        outDoc.EVEnergyCapacity_isUsed = 0;
+    }
+    if (DC_EVChargeParameterTypeJson.contains("EVEnergyRequest")) {
+        outDoc.EVEnergyRequest_isUsed = 1;
+        outDoc.EVEnergyRequest = getDoc_PhysicalValueType(DC_EVChargeParameterTypeJson["EVEnergyRequest"]);
+    } else {
+        outDoc.EVEnergyRequest_isUsed = 0;
+    }
+    if (DC_EVChargeParameterTypeJson.contains("FullSOC")) {
+        outDoc.FullSOC_isUsed = 1;
+        outDoc.FullSOC = DC_EVChargeParameterTypeJson["FullSOC"].template get<int8_t>();
+    } else {
+        outDoc.FullSOC_isUsed = 0;
+    }
+    if (DC_EVChargeParameterTypeJson.contains("BulkSOC")) {
+        outDoc.BulkSOC_isUsed = 1;
+        outDoc.BulkSOC = DC_EVChargeParameterTypeJson["BulkSOC"].template get<int8_t>();
+    } else {
+        outDoc.BulkSOC_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_EVChargeParameterType(const struct iso2_EVChargeParameterType& EVChargeParameterTypeDoc) {
+    json outJson;
+
+    if (EVChargeParameterTypeDoc.DepartureTime_isUsed) {
+        outJson["DepartureTime"] = EVChargeParameterTypeDoc.DepartureTime;
+    }
+    outJson["AC_EVChargeParameter"] = getJson_AC_EVChargeParameterType(EVChargeParameterTypeDoc.AC_EVChargeParameter);
+    outJson["DC_EVChargeParameter"] = getJson_DC_EVChargeParameterType(EVChargeParameterTypeDoc.DC_EVChargeParameter);
+
+    return outJson;
+}
+
+struct iso2_EVChargeParameterType getDoc_EVChargeParameterType(const json& EVChargeParameterTypeJson) {
+    struct iso2_EVChargeParameterType outDoc;
+    init_iso2_EVChargeParameterType(&outDoc);
+
+    if (EVChargeParameterTypeJson.contains("DepartureTime")) {
+        outDoc.DepartureTime_isUsed = 1;
+        outDoc.DepartureTime = EVChargeParameterTypeJson["DepartureTime"].template get<uint32_t>();
+    } else {
+        outDoc.DepartureTime_isUsed = 0;
+    }
+    outDoc.AC_EVChargeParameter = getDoc_AC_EVChargeParameterType(EVChargeParameterTypeJson["AC_EVChargeParameter"]);
+    outDoc.DC_EVChargeParameter = getDoc_DC_EVChargeParameterType(EVChargeParameterTypeJson["DC_EVChargeParameter"]);
+
+    return outDoc;
+}
+
+json getJson_SASchedulesType(const struct iso2_SASchedulesType& SASchedulesTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = SASchedulesTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_SASchedulesType getDoc_SASchedulesType(const json& SASchedulesTypeJson) {
+    struct iso2_SASchedulesType outDoc;
+    init_iso2_SASchedulesType(&outDoc);
+
+    outDoc._unused = SASchedulesTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_SAScheduleListType(const struct iso2_SAScheduleListType& SAScheduleListTypeDoc) {
+    json outJson;
+
+    outJson["SAScheduleTuple"]["arrayLen"] = SAScheduleListTypeDoc.SAScheduleTuple.arrayLen;
+    for (uint16_t i = 0; i < SAScheduleListTypeDoc.SAScheduleTuple.arrayLen && i < iso2_SAScheduleTupleType_3_ARRAY_SIZE; ++i) {
+        outJson["SAScheduleTuple"]["array"][i] = getJson_SAScheduleTupleType(SAScheduleListTypeDoc.SAScheduleTuple.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_SAScheduleListType getDoc_SAScheduleListType(const json& SAScheduleListTypeJson) {
+    struct iso2_SAScheduleListType outDoc;
+    init_iso2_SAScheduleListType(&outDoc);
+
+    outDoc.SAScheduleTuple.arrayLen = SAScheduleListTypeJson["SAScheduleTuple"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SAScheduleTuple.arrayLen && i < iso2_SAScheduleTupleType_3_ARRAY_SIZE; ++i) {
+        outDoc.SAScheduleTuple.array[i] = getDoc_SAScheduleTupleType(SAScheduleListTypeJson["SAScheduleTuple"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_ChargeServiceType(const struct iso2_ChargeServiceType& ChargeServiceTypeDoc) {
+    json outJson;
+
+    outJson["ServiceID"] = ChargeServiceTypeDoc.ServiceID;
+    if (ChargeServiceTypeDoc.ServiceName_isUsed) {
+        outJson["ServiceName"]["charactersLen"] = ChargeServiceTypeDoc.ServiceName.charactersLen;
+        for (uint16_t i = 0; i < ChargeServiceTypeDoc.ServiceName.charactersLen && i < iso2_ServiceName_CHARACTER_SIZE; ++i) {
+            outJson["ServiceName"]["characters"][i] = ChargeServiceTypeDoc.ServiceName.characters[i];
+        }
+    }
+    outJson["ServiceCategory"] = ChargeServiceTypeDoc.ServiceCategory;
+    if (ChargeServiceTypeDoc.ServiceScope_isUsed) {
+        outJson["ServiceScope"]["charactersLen"] = ChargeServiceTypeDoc.ServiceScope.charactersLen;
+        for (uint16_t i = 0; i < ChargeServiceTypeDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outJson["ServiceScope"]["characters"][i] = ChargeServiceTypeDoc.ServiceScope.characters[i];
+        }
+    }
+    outJson["FreeService"] = ChargeServiceTypeDoc.FreeService;
+    outJson["SupportedEnergyTransferMode"] = getJson_SupportedEnergyTransferModeType(ChargeServiceTypeDoc.SupportedEnergyTransferMode);
+
+    return outJson;
+}
+
+struct iso2_ChargeServiceType getDoc_ChargeServiceType(const json& ChargeServiceTypeJson) {
+    struct iso2_ChargeServiceType outDoc;
+    init_iso2_ChargeServiceType(&outDoc);
+
+    outDoc.ServiceID = ChargeServiceTypeJson["ServiceID"].template get<uint16_t>();
+    if (ChargeServiceTypeJson.contains("ServiceName")) {
+        outDoc.ServiceName_isUsed = 1;
+        outDoc.ServiceName.charactersLen = ChargeServiceTypeJson["ServiceName"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ServiceName.charactersLen && i < iso2_ServiceName_CHARACTER_SIZE; ++i) {
+            outDoc.ServiceName.characters[i] = ChargeServiceTypeJson["ServiceName"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.ServiceName_isUsed = 0;
+    }
+    outDoc.ServiceCategory = ChargeServiceTypeJson["ServiceCategory"].template get<iso2_serviceCategoryType>();
+    if (ChargeServiceTypeJson.contains("ServiceScope")) {
+        outDoc.ServiceScope_isUsed = 1;
+        outDoc.ServiceScope.charactersLen = ChargeServiceTypeJson["ServiceScope"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outDoc.ServiceScope.characters[i] = ChargeServiceTypeJson["ServiceScope"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.ServiceScope_isUsed = 0;
+    }
+    outDoc.FreeService = ChargeServiceTypeJson["FreeService"].template get<bool>();
+    outDoc.SupportedEnergyTransferMode = getDoc_SupportedEnergyTransferModeType(ChargeServiceTypeJson["SupportedEnergyTransferMode"]);
+
+    return outDoc;
+}
+
+json getJson_EVPowerDeliveryParameterType(const struct iso2_EVPowerDeliveryParameterType& EVPowerDeliveryParameterTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = EVPowerDeliveryParameterTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_EVPowerDeliveryParameterType getDoc_EVPowerDeliveryParameterType(const json& EVPowerDeliveryParameterTypeJson) {
+    struct iso2_EVPowerDeliveryParameterType outDoc;
+    init_iso2_EVPowerDeliveryParameterType(&outDoc);
+
+    outDoc._unused = EVPowerDeliveryParameterTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_DC_EVPowerDeliveryParameterType(const struct iso2_DC_EVPowerDeliveryParameterType& DC_EVPowerDeliveryParameterTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(DC_EVPowerDeliveryParameterTypeDoc.DC_EVStatus);
+    if (DC_EVPowerDeliveryParameterTypeDoc.BulkChargingComplete_isUsed) {
+        outJson["BulkChargingComplete"] = DC_EVPowerDeliveryParameterTypeDoc.BulkChargingComplete;
+    }
+    outJson["ChargingComplete"] = DC_EVPowerDeliveryParameterTypeDoc.ChargingComplete;
+
+    return outJson;
+}
+
+struct iso2_DC_EVPowerDeliveryParameterType getDoc_DC_EVPowerDeliveryParameterType(const json& DC_EVPowerDeliveryParameterTypeJson) {
+    struct iso2_DC_EVPowerDeliveryParameterType outDoc;
+    init_iso2_DC_EVPowerDeliveryParameterType(&outDoc);
+
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(DC_EVPowerDeliveryParameterTypeJson["DC_EVStatus"]);
+    if (DC_EVPowerDeliveryParameterTypeJson.contains("BulkChargingComplete")) {
+        outDoc.BulkChargingComplete_isUsed = 1;
+        outDoc.BulkChargingComplete = DC_EVPowerDeliveryParameterTypeJson["BulkChargingComplete"].template get<int>();
+    } else {
+        outDoc.BulkChargingComplete_isUsed = 0;
+    }
+    outDoc.ChargingComplete = DC_EVPowerDeliveryParameterTypeJson["ChargingComplete"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_ContractSignatureEncryptedPrivateKeyType(const struct iso2_ContractSignatureEncryptedPrivateKeyType& ContractSignatureEncryptedPrivateKeyTypeDoc) {
+    json outJson;
+
+    outJson["Id"]["charactersLen"] = ContractSignatureEncryptedPrivateKeyTypeDoc.Id.charactersLen;
+    for (uint16_t i = 0; i < ContractSignatureEncryptedPrivateKeyTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outJson["Id"]["characters"][i] = ContractSignatureEncryptedPrivateKeyTypeDoc.Id.characters[i];
+    }
+    outJson["CONTENT"]["bytesLen"] = ContractSignatureEncryptedPrivateKeyTypeDoc.CONTENT.bytesLen;
+    for (uint16_t i = 0; i < ContractSignatureEncryptedPrivateKeyTypeDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["CONTENT"]["bytes"][i] = ContractSignatureEncryptedPrivateKeyTypeDoc.CONTENT.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_ContractSignatureEncryptedPrivateKeyType getDoc_ContractSignatureEncryptedPrivateKeyType(const json& ContractSignatureEncryptedPrivateKeyTypeJson) {
+    struct iso2_ContractSignatureEncryptedPrivateKeyType outDoc;
+    init_iso2_ContractSignatureEncryptedPrivateKeyType(&outDoc);
+
+    outDoc.Id.charactersLen = ContractSignatureEncryptedPrivateKeyTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outDoc.Id.characters[i] = ContractSignatureEncryptedPrivateKeyTypeJson["Id"]["characters"][i].template get<char>();
+    }
+    outDoc.CONTENT.bytesLen = ContractSignatureEncryptedPrivateKeyTypeJson["CONTENT"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.CONTENT.bytes[i] = ContractSignatureEncryptedPrivateKeyTypeJson["CONTENT"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_EVSEChargeParameterType(const struct iso2_EVSEChargeParameterType& EVSEChargeParameterTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = EVSEChargeParameterTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_EVSEChargeParameterType getDoc_EVSEChargeParameterType(const json& EVSEChargeParameterTypeJson) {
+    struct iso2_EVSEChargeParameterType outDoc;
+    init_iso2_EVSEChargeParameterType(&outDoc);
+
+    outDoc._unused = EVSEChargeParameterTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_DC_EVSEChargeParameterType(const struct iso2_DC_EVSEChargeParameterType& DC_EVSEChargeParameterTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(DC_EVSEChargeParameterTypeDoc.DC_EVSEStatus);
+    outJson["EVSEMaximumCurrentLimit"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEMaximumCurrentLimit);
+    outJson["EVSEMaximumPowerLimit"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEMaximumPowerLimit);
+    outJson["EVSEMaximumVoltageLimit"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEMaximumVoltageLimit);
+    outJson["EVSEMinimumCurrentLimit"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEMinimumCurrentLimit);
+    outJson["EVSEMinimumVoltageLimit"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEMinimumVoltageLimit);
+    if (DC_EVSEChargeParameterTypeDoc.EVSECurrentRegulationTolerance_isUsed) {
+        outJson["EVSECurrentRegulationTolerance"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSECurrentRegulationTolerance);
+    }
+    outJson["EVSEPeakCurrentRipple"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEPeakCurrentRipple);
+    if (DC_EVSEChargeParameterTypeDoc.EVSEEnergyToBeDelivered_isUsed) {
+        outJson["EVSEEnergyToBeDelivered"] = getJson_PhysicalValueType(DC_EVSEChargeParameterTypeDoc.EVSEEnergyToBeDelivered);
+    }
+
+    return outJson;
+}
+
+struct iso2_DC_EVSEChargeParameterType getDoc_DC_EVSEChargeParameterType(const json& DC_EVSEChargeParameterTypeJson) {
+    struct iso2_DC_EVSEChargeParameterType outDoc;
+    init_iso2_DC_EVSEChargeParameterType(&outDoc);
+
+    outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(DC_EVSEChargeParameterTypeJson["DC_EVSEStatus"]);
+    outDoc.EVSEMaximumCurrentLimit = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEMaximumCurrentLimit"]);
+    outDoc.EVSEMaximumPowerLimit = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEMaximumPowerLimit"]);
+    outDoc.EVSEMaximumVoltageLimit = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEMaximumVoltageLimit"]);
+    outDoc.EVSEMinimumCurrentLimit = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEMinimumCurrentLimit"]);
+    outDoc.EVSEMinimumVoltageLimit = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEMinimumVoltageLimit"]);
+    if (DC_EVSEChargeParameterTypeJson.contains("EVSECurrentRegulationTolerance")) {
+        outDoc.EVSECurrentRegulationTolerance_isUsed = 1;
+        outDoc.EVSECurrentRegulationTolerance = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSECurrentRegulationTolerance"]);
+    } else {
+        outDoc.EVSECurrentRegulationTolerance_isUsed = 0;
+    }
+    outDoc.EVSEPeakCurrentRipple = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEPeakCurrentRipple"]);
+    if (DC_EVSEChargeParameterTypeJson.contains("EVSEEnergyToBeDelivered")) {
+        outDoc.EVSEEnergyToBeDelivered_isUsed = 1;
+        outDoc.EVSEEnergyToBeDelivered = getDoc_PhysicalValueType(DC_EVSEChargeParameterTypeJson["EVSEEnergyToBeDelivered"]);
+    } else {
+        outDoc.EVSEEnergyToBeDelivered_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ServiceListType(const struct iso2_ServiceListType& ServiceListTypeDoc) {
+    json outJson;
+
+    outJson["Service"]["arrayLen"] = ServiceListTypeDoc.Service.arrayLen;
+    for (uint16_t i = 0; i < ServiceListTypeDoc.Service.arrayLen && i < iso2_ServiceType_8_ARRAY_SIZE; ++i) {
+        outJson["Service"]["array"][i] = getJson_ServiceType(ServiceListTypeDoc.Service.array[i]);
+    }
+
+    return outJson;
+}
+
+struct iso2_ServiceListType getDoc_ServiceListType(const json& ServiceListTypeJson) {
+    struct iso2_ServiceListType outDoc;
+    init_iso2_ServiceListType(&outDoc);
+
+    outDoc.Service.arrayLen = ServiceListTypeJson["Service"]["arrayLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Service.arrayLen && i < iso2_ServiceType_8_ARRAY_SIZE; ++i) {
+        outDoc.Service.array[i] = getDoc_ServiceType(ServiceListTypeJson["Service"]["array"][i]);
+    }
+
+    return outDoc;
+}
+
+json getJson_DiffieHellmanPublickeyType(const struct iso2_DiffieHellmanPublickeyType& DiffieHellmanPublickeyTypeDoc) {
+    json outJson;
+
+    outJson["Id"]["charactersLen"] = DiffieHellmanPublickeyTypeDoc.Id.charactersLen;
+    for (uint16_t i = 0; i < DiffieHellmanPublickeyTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outJson["Id"]["characters"][i] = DiffieHellmanPublickeyTypeDoc.Id.characters[i];
+    }
+    outJson["CONTENT"]["bytesLen"] = DiffieHellmanPublickeyTypeDoc.CONTENT.bytesLen;
+    for (uint16_t i = 0; i < DiffieHellmanPublickeyTypeDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["CONTENT"]["bytes"][i] = DiffieHellmanPublickeyTypeDoc.CONTENT.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_DiffieHellmanPublickeyType getDoc_DiffieHellmanPublickeyType(const json& DiffieHellmanPublickeyTypeJson) {
+    struct iso2_DiffieHellmanPublickeyType outDoc;
+    init_iso2_DiffieHellmanPublickeyType(&outDoc);
+
+    outDoc.Id.charactersLen = DiffieHellmanPublickeyTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outDoc.Id.characters[i] = DiffieHellmanPublickeyTypeJson["Id"]["characters"][i].template get<char>();
+    }
+    outDoc.CONTENT.bytesLen = DiffieHellmanPublickeyTypeJson["CONTENT"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.CONTENT.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.CONTENT.bytes[i] = DiffieHellmanPublickeyTypeJson["CONTENT"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_EMAIDType(const struct iso2_EMAIDType& EMAIDTypeDoc) {
+    json outJson;
+
+    outJson["Id"]["charactersLen"] = EMAIDTypeDoc.Id.charactersLen;
+    for (uint16_t i = 0; i < EMAIDTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outJson["Id"]["characters"][i] = EMAIDTypeDoc.Id.characters[i];
+    }
+    outJson["CONTENT"]["charactersLen"] = EMAIDTypeDoc.CONTENT.charactersLen;
+    for (uint16_t i = 0; i < EMAIDTypeDoc.CONTENT.charactersLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["CONTENT"]["characters"][i] = EMAIDTypeDoc.CONTENT.characters[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_EMAIDType getDoc_EMAIDType(const json& EMAIDTypeJson) {
+    struct iso2_EMAIDType outDoc;
+    init_iso2_EMAIDType(&outDoc);
+
+    outDoc.Id.charactersLen = EMAIDTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outDoc.Id.characters[i] = EMAIDTypeJson["Id"]["characters"][i].template get<char>();
+    }
+    outDoc.CONTENT.charactersLen = EMAIDTypeJson["CONTENT"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.CONTENT.charactersLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.CONTENT.characters[i] = EMAIDTypeJson["CONTENT"]["characters"][i].template get<char>();
+    }
+
+    return outDoc;
+}
+
+json getJson_AC_EVSEStatusType(const struct iso2_AC_EVSEStatusType& AC_EVSEStatusTypeDoc) {
+    json outJson;
+
+    outJson["NotificationMaxDelay"] = AC_EVSEStatusTypeDoc.NotificationMaxDelay;
+    outJson["EVSENotification"] = AC_EVSEStatusTypeDoc.EVSENotification;
+    outJson["RCD"] = AC_EVSEStatusTypeDoc.RCD;
+
+    return outJson;
+}
+
+struct iso2_AC_EVSEStatusType getDoc_AC_EVSEStatusType(const json& AC_EVSEStatusTypeJson) {
+    struct iso2_AC_EVSEStatusType outDoc;
+    init_iso2_AC_EVSEStatusType(&outDoc);
+
+    outDoc.NotificationMaxDelay = AC_EVSEStatusTypeJson["NotificationMaxDelay"].template get<uint16_t>();
+    outDoc.EVSENotification = AC_EVSEStatusTypeJson["EVSENotification"].template get<iso2_EVSENotificationType>();
+    outDoc.RCD = AC_EVSEStatusTypeJson["RCD"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_EVSEStatusType(const struct iso2_EVSEStatusType& EVSEStatusTypeDoc) {
+    json outJson;
+
+    outJson["NotificationMaxDelay"] = EVSEStatusTypeDoc.NotificationMaxDelay;
+    outJson["EVSENotification"] = EVSEStatusTypeDoc.EVSENotification;
+    outJson["AC_EVSEStatus"] = getJson_AC_EVSEStatusType(EVSEStatusTypeDoc.AC_EVSEStatus);
+    outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(EVSEStatusTypeDoc.DC_EVSEStatus);
+
+    return outJson;
+}
+
+struct iso2_EVSEStatusType getDoc_EVSEStatusType(const json& EVSEStatusTypeJson) {
+    struct iso2_EVSEStatusType outDoc;
+    init_iso2_EVSEStatusType(&outDoc);
+
+    outDoc.NotificationMaxDelay = EVSEStatusTypeJson["NotificationMaxDelay"].template get<uint16_t>();
+    outDoc.EVSENotification = EVSEStatusTypeJson["EVSENotification"].template get<iso2_EVSENotificationType>();
+    outDoc.AC_EVSEStatus = getDoc_AC_EVSEStatusType(EVSEStatusTypeJson["AC_EVSEStatus"]);
+    outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(EVSEStatusTypeJson["DC_EVSEStatus"]);
+
+    return outDoc;
+}
+
+json getJson_AC_EVSEChargeParameterType(const struct iso2_AC_EVSEChargeParameterType& AC_EVSEChargeParameterTypeDoc) {
+    json outJson;
+
+    outJson["AC_EVSEStatus"] = getJson_AC_EVSEStatusType(AC_EVSEChargeParameterTypeDoc.AC_EVSEStatus);
+    outJson["EVSENominalVoltage"] = getJson_PhysicalValueType(AC_EVSEChargeParameterTypeDoc.EVSENominalVoltage);
+    outJson["EVSEMaxCurrent"] = getJson_PhysicalValueType(AC_EVSEChargeParameterTypeDoc.EVSEMaxCurrent);
+
+    return outJson;
+}
+
+struct iso2_AC_EVSEChargeParameterType getDoc_AC_EVSEChargeParameterType(const json& AC_EVSEChargeParameterTypeJson) {
+    struct iso2_AC_EVSEChargeParameterType outDoc;
+    init_iso2_AC_EVSEChargeParameterType(&outDoc);
+
+    outDoc.AC_EVSEStatus = getDoc_AC_EVSEStatusType(AC_EVSEChargeParameterTypeJson["AC_EVSEStatus"]);
+    outDoc.EVSENominalVoltage = getDoc_PhysicalValueType(AC_EVSEChargeParameterTypeJson["EVSENominalVoltage"]);
+    outDoc.EVSEMaxCurrent = getDoc_PhysicalValueType(AC_EVSEChargeParameterTypeJson["EVSEMaxCurrent"]);
+
+    return outDoc;
+}
+
+json getJson_MeterInfoType(const struct iso2_MeterInfoType& MeterInfoTypeDoc) {
+    json outJson;
+
+    outJson["MeterID"]["charactersLen"] = MeterInfoTypeDoc.MeterID.charactersLen;
+    for (uint16_t i = 0; i < MeterInfoTypeDoc.MeterID.charactersLen && i < iso2_MeterID_CHARACTER_SIZE; ++i) {
+        outJson["MeterID"]["characters"][i] = MeterInfoTypeDoc.MeterID.characters[i];
+    }
+    if (MeterInfoTypeDoc.MeterReading_isUsed) {
+        outJson["MeterReading"] = MeterInfoTypeDoc.MeterReading;
+    }
+    if (MeterInfoTypeDoc.SigMeterReading_isUsed) {
+        outJson["SigMeterReading"]["bytesLen"] = MeterInfoTypeDoc.SigMeterReading.bytesLen;
+        for (uint16_t i = 0; i < MeterInfoTypeDoc.SigMeterReading.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["SigMeterReading"]["bytes"][i] = MeterInfoTypeDoc.SigMeterReading.bytes[i];
+        }
+    }
+    if (MeterInfoTypeDoc.MeterStatus_isUsed) {
+        outJson["MeterStatus"] = MeterInfoTypeDoc.MeterStatus;
+    }
+    if (MeterInfoTypeDoc.TMeter_isUsed) {
+        outJson["TMeter"] = MeterInfoTypeDoc.TMeter;
+    }
+
+    return outJson;
+}
+
+struct iso2_MeterInfoType getDoc_MeterInfoType(const json& MeterInfoTypeJson) {
+    struct iso2_MeterInfoType outDoc;
+    init_iso2_MeterInfoType(&outDoc);
+
+    outDoc.MeterID.charactersLen = MeterInfoTypeJson["MeterID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.MeterID.charactersLen && i < iso2_MeterID_CHARACTER_SIZE; ++i) {
+        outDoc.MeterID.characters[i] = MeterInfoTypeJson["MeterID"]["characters"][i].template get<char>();
+    }
+    if (MeterInfoTypeJson.contains("MeterReading")) {
+        outDoc.MeterReading_isUsed = 1;
+        outDoc.MeterReading = MeterInfoTypeJson["MeterReading"].template get<uint64_t>();
+    } else {
+        outDoc.MeterReading_isUsed = 0;
+    }
+    if (MeterInfoTypeJson.contains("SigMeterReading")) {
+        outDoc.SigMeterReading_isUsed = 1;
+        outDoc.SigMeterReading.bytesLen = MeterInfoTypeJson["SigMeterReading"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.SigMeterReading.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.SigMeterReading.bytes[i] = MeterInfoTypeJson["SigMeterReading"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.SigMeterReading_isUsed = 0;
+    }
+    if (MeterInfoTypeJson.contains("MeterStatus")) {
+        outDoc.MeterStatus_isUsed = 1;
+        outDoc.MeterStatus = MeterInfoTypeJson["MeterStatus"].template get<int16_t>();
+    } else {
+        outDoc.MeterStatus_isUsed = 0;
+    }
+    if (MeterInfoTypeJson.contains("TMeter")) {
+        outDoc.TMeter_isUsed = 1;
+        outDoc.TMeter = MeterInfoTypeJson["TMeter"].template get<int64_t>();
+    } else {
+        outDoc.TMeter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_MessageHeaderType(const struct iso2_MessageHeaderType& MessageHeaderTypeDoc) {
+    json outJson;
+
+    outJson["SessionID"]["bytesLen"] = MessageHeaderTypeDoc.SessionID.bytesLen;
+    for (uint16_t i = 0; i < MessageHeaderTypeDoc.SessionID.bytesLen && i < iso2_sessionIDType_BYTES_SIZE; ++i) {
+        outJson["SessionID"]["bytes"][i] = MessageHeaderTypeDoc.SessionID.bytes[i];
+    }
+    if (MessageHeaderTypeDoc.Notification_isUsed) {
+        outJson["Notification"] = getJson_NotificationType(MessageHeaderTypeDoc.Notification);
+    }
+    if (MessageHeaderTypeDoc.Signature_isUsed) {
+        outJson["Signature"] = getJson_SignatureType(MessageHeaderTypeDoc.Signature);
+    }
+
+    return outJson;
+}
+
+struct iso2_MessageHeaderType getDoc_MessageHeaderType(const json& MessageHeaderTypeJson) {
+    struct iso2_MessageHeaderType outDoc;
+    init_iso2_MessageHeaderType(&outDoc);
+
+    outDoc.SessionID.bytesLen = MessageHeaderTypeJson["SessionID"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen && i < iso2_sessionIDType_BYTES_SIZE; ++i) {
+        outDoc.SessionID.bytes[i] = MessageHeaderTypeJson["SessionID"]["bytes"][i].template get<uint8_t>();
+    }
+    if (MessageHeaderTypeJson.contains("Notification")) {
+        outDoc.Notification_isUsed = 1;
+        outDoc.Notification = getDoc_NotificationType(MessageHeaderTypeJson["Notification"]);
+    } else {
+        outDoc.Notification_isUsed = 0;
+    }
+    if (MessageHeaderTypeJson.contains("Signature")) {
+        outDoc.Signature_isUsed = 1;
+        outDoc.Signature = getDoc_SignatureType(MessageHeaderTypeJson["Signature"]);
+    } else {
+        outDoc.Signature_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PowerDeliveryReqType(const struct iso2_PowerDeliveryReqType& PowerDeliveryReqTypeDoc) {
+    json outJson;
+
+    outJson["ChargeProgress"] = PowerDeliveryReqTypeDoc.ChargeProgress;
+    outJson["SAScheduleTupleID"] = PowerDeliveryReqTypeDoc.SAScheduleTupleID;
+    if (PowerDeliveryReqTypeDoc.ChargingProfile_isUsed) {
+        outJson["ChargingProfile"] = getJson_ChargingProfileType(PowerDeliveryReqTypeDoc.ChargingProfile);
+    }
+    if (PowerDeliveryReqTypeDoc.DC_EVPowerDeliveryParameter_isUsed) {
+        outJson["DC_EVPowerDeliveryParameter"] = getJson_DC_EVPowerDeliveryParameterType(PowerDeliveryReqTypeDoc.DC_EVPowerDeliveryParameter);
+    }
+    if (PowerDeliveryReqTypeDoc.EVPowerDeliveryParameter_isUsed) {
+        outJson["EVPowerDeliveryParameter"] = getJson_EVPowerDeliveryParameterType(PowerDeliveryReqTypeDoc.EVPowerDeliveryParameter);
+    }
+
+    return outJson;
+}
+
+struct iso2_PowerDeliveryReqType getDoc_PowerDeliveryReqType(const json& PowerDeliveryReqTypeJson) {
+    struct iso2_PowerDeliveryReqType outDoc;
+    init_iso2_PowerDeliveryReqType(&outDoc);
+
+    outDoc.ChargeProgress = PowerDeliveryReqTypeJson["ChargeProgress"].template get<iso2_chargeProgressType>();
+    outDoc.SAScheduleTupleID = PowerDeliveryReqTypeJson["SAScheduleTupleID"].template get<uint8_t>();
+    if (PowerDeliveryReqTypeJson.contains("ChargingProfile")) {
+        outDoc.ChargingProfile_isUsed = 1;
+        outDoc.ChargingProfile = getDoc_ChargingProfileType(PowerDeliveryReqTypeJson["ChargingProfile"]);
+    } else {
+        outDoc.ChargingProfile_isUsed = 0;
+    }
+    if (PowerDeliveryReqTypeJson.contains("DC_EVPowerDeliveryParameter")) {
+        outDoc.DC_EVPowerDeliveryParameter_isUsed = 1;
+        outDoc.DC_EVPowerDeliveryParameter = getDoc_DC_EVPowerDeliveryParameterType(PowerDeliveryReqTypeJson["DC_EVPowerDeliveryParameter"]);
+    } else {
+        outDoc.DC_EVPowerDeliveryParameter_isUsed = 0;
+    }
+    if (PowerDeliveryReqTypeJson.contains("EVPowerDeliveryParameter")) {
+        outDoc.EVPowerDeliveryParameter_isUsed = 1;
+        outDoc.EVPowerDeliveryParameter = getDoc_EVPowerDeliveryParameterType(PowerDeliveryReqTypeJson["EVPowerDeliveryParameter"]);
+    } else {
+        outDoc.EVPowerDeliveryParameter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_CurrentDemandResType(const struct iso2_CurrentDemandResType& CurrentDemandResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = CurrentDemandResTypeDoc.ResponseCode;
+    outJson["EVSEPresentVoltage"] = getJson_PhysicalValueType(CurrentDemandResTypeDoc.EVSEPresentVoltage);
+    outJson["EVSEPresentCurrent"] = getJson_PhysicalValueType(CurrentDemandResTypeDoc.EVSEPresentCurrent);
+    outJson["EVSECurrentLimitAchieved"] = CurrentDemandResTypeDoc.EVSECurrentLimitAchieved;
+    outJson["EVSEVoltageLimitAchieved"] = CurrentDemandResTypeDoc.EVSEVoltageLimitAchieved;
+    outJson["EVSEPowerLimitAchieved"] = CurrentDemandResTypeDoc.EVSEPowerLimitAchieved;
+    if (CurrentDemandResTypeDoc.EVSEMaximumVoltageLimit_isUsed) {
+        outJson["EVSEMaximumVoltageLimit"] = getJson_PhysicalValueType(CurrentDemandResTypeDoc.EVSEMaximumVoltageLimit);
+    }
+    if (CurrentDemandResTypeDoc.EVSEMaximumCurrentLimit_isUsed) {
+        outJson["EVSEMaximumCurrentLimit"] = getJson_PhysicalValueType(CurrentDemandResTypeDoc.EVSEMaximumCurrentLimit);
+    }
+    if (CurrentDemandResTypeDoc.EVSEMaximumPowerLimit_isUsed) {
+        outJson["EVSEMaximumPowerLimit"] = getJson_PhysicalValueType(CurrentDemandResTypeDoc.EVSEMaximumPowerLimit);
+    }
+    outJson["EVSEID"]["charactersLen"] = CurrentDemandResTypeDoc.EVSEID.charactersLen;
+    for (uint16_t i = 0; i < CurrentDemandResTypeDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outJson["EVSEID"]["characters"][i] = CurrentDemandResTypeDoc.EVSEID.characters[i];
+    }
+    outJson["SAScheduleTupleID"] = CurrentDemandResTypeDoc.SAScheduleTupleID;
+    if (CurrentDemandResTypeDoc.MeterInfo_isUsed) {
+        outJson["MeterInfo"] = getJson_MeterInfoType(CurrentDemandResTypeDoc.MeterInfo);
+    }
+    if (CurrentDemandResTypeDoc.ReceiptRequired_isUsed) {
+        outJson["ReceiptRequired"] = CurrentDemandResTypeDoc.ReceiptRequired;
+    }
+
+    return outJson;
+}
+
+struct iso2_CurrentDemandResType getDoc_CurrentDemandResType(const json& CurrentDemandResTypeJson) {
+    struct iso2_CurrentDemandResType outDoc;
+    init_iso2_CurrentDemandResType(&outDoc);
+
+    outDoc.ResponseCode = CurrentDemandResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.EVSEPresentVoltage = getDoc_PhysicalValueType(CurrentDemandResTypeJson["EVSEPresentVoltage"]);
+    outDoc.EVSEPresentCurrent = getDoc_PhysicalValueType(CurrentDemandResTypeJson["EVSEPresentCurrent"]);
+    outDoc.EVSECurrentLimitAchieved = CurrentDemandResTypeJson["EVSECurrentLimitAchieved"].template get<bool>();
+    outDoc.EVSEVoltageLimitAchieved = CurrentDemandResTypeJson["EVSEVoltageLimitAchieved"].template get<bool>();
+    outDoc.EVSEPowerLimitAchieved = CurrentDemandResTypeJson["EVSEPowerLimitAchieved"].template get<bool>();
+    if (CurrentDemandResTypeJson.contains("EVSEMaximumVoltageLimit")) {
+        outDoc.EVSEMaximumVoltageLimit_isUsed = 1;
+        outDoc.EVSEMaximumVoltageLimit = getDoc_PhysicalValueType(CurrentDemandResTypeJson["EVSEMaximumVoltageLimit"]);
+    } else {
+        outDoc.EVSEMaximumVoltageLimit_isUsed = 0;
+    }
+    if (CurrentDemandResTypeJson.contains("EVSEMaximumCurrentLimit")) {
+        outDoc.EVSEMaximumCurrentLimit_isUsed = 1;
+        outDoc.EVSEMaximumCurrentLimit = getDoc_PhysicalValueType(CurrentDemandResTypeJson["EVSEMaximumCurrentLimit"]);
+    } else {
+        outDoc.EVSEMaximumCurrentLimit_isUsed = 0;
+    }
+    if (CurrentDemandResTypeJson.contains("EVSEMaximumPowerLimit")) {
+        outDoc.EVSEMaximumPowerLimit_isUsed = 1;
+        outDoc.EVSEMaximumPowerLimit = getDoc_PhysicalValueType(CurrentDemandResTypeJson["EVSEMaximumPowerLimit"]);
+    } else {
+        outDoc.EVSEMaximumPowerLimit_isUsed = 0;
+    }
+    outDoc.EVSEID.charactersLen = CurrentDemandResTypeJson["EVSEID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outDoc.EVSEID.characters[i] = CurrentDemandResTypeJson["EVSEID"]["characters"][i].template get<char>();
+    }
+    outDoc.SAScheduleTupleID = CurrentDemandResTypeJson["SAScheduleTupleID"].template get<uint8_t>();
+    if (CurrentDemandResTypeJson.contains("MeterInfo")) {
+        outDoc.MeterInfo_isUsed = 1;
+        outDoc.MeterInfo = getDoc_MeterInfoType(CurrentDemandResTypeJson["MeterInfo"]);
+    } else {
+        outDoc.MeterInfo_isUsed = 0;
+    }
+    if (CurrentDemandResTypeJson.contains("ReceiptRequired")) {
+        outDoc.ReceiptRequired_isUsed = 1;
+        outDoc.ReceiptRequired = CurrentDemandResTypeJson["ReceiptRequired"].template get<int>();
+    } else {
+        outDoc.ReceiptRequired_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ChargingStatusResType(const struct iso2_ChargingStatusResType& ChargingStatusResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = ChargingStatusResTypeDoc.ResponseCode;
+    outJson["EVSEID"]["charactersLen"] = ChargingStatusResTypeDoc.EVSEID.charactersLen;
+    for (uint16_t i = 0; i < ChargingStatusResTypeDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outJson["EVSEID"]["characters"][i] = ChargingStatusResTypeDoc.EVSEID.characters[i];
+    }
+    if (ChargingStatusResTypeDoc.EVSEMaxCurrent_isUsed) {
+        outJson["EVSEMaxCurrent"] = getJson_PhysicalValueType(ChargingStatusResTypeDoc.EVSEMaxCurrent);
+    }
+    if (ChargingStatusResTypeDoc.MeterInfo_isUsed) {
+        outJson["MeterInfo"] = getJson_MeterInfoType(ChargingStatusResTypeDoc.MeterInfo);
+    }
+    if (ChargingStatusResTypeDoc.ReceiptRequired_isUsed) {
+        outJson["ReceiptRequired"] = ChargingStatusResTypeDoc.ReceiptRequired;
+    }
+    outJson["AC_EVSEStatus"] = getJson_AC_EVSEStatusType(ChargingStatusResTypeDoc.AC_EVSEStatus);
+
+    return outJson;
+}
+
+struct iso2_ChargingStatusResType getDoc_ChargingStatusResType(const json& ChargingStatusResTypeJson) {
+    struct iso2_ChargingStatusResType outDoc;
+    init_iso2_ChargingStatusResType(&outDoc);
+
+    outDoc.ResponseCode = ChargingStatusResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.EVSEID.charactersLen = ChargingStatusResTypeJson["EVSEID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outDoc.EVSEID.characters[i] = ChargingStatusResTypeJson["EVSEID"]["characters"][i].template get<char>();
+    }
+    if (ChargingStatusResTypeJson.contains("EVSEMaxCurrent")) {
+        outDoc.EVSEMaxCurrent_isUsed = 1;
+        outDoc.EVSEMaxCurrent = getDoc_PhysicalValueType(ChargingStatusResTypeJson["EVSEMaxCurrent"]);
+    } else {
+        outDoc.EVSEMaxCurrent_isUsed = 0;
+    }
+    if (ChargingStatusResTypeJson.contains("MeterInfo")) {
+        outDoc.MeterInfo_isUsed = 1;
+        outDoc.MeterInfo = getDoc_MeterInfoType(ChargingStatusResTypeJson["MeterInfo"]);
+    } else {
+        outDoc.MeterInfo_isUsed = 0;
+    }
+    if (ChargingStatusResTypeJson.contains("ReceiptRequired")) {
+        outDoc.ReceiptRequired_isUsed = 1;
+        outDoc.ReceiptRequired = ChargingStatusResTypeJson["ReceiptRequired"].template get<int>();
+    } else {
+        outDoc.ReceiptRequired_isUsed = 0;
+    }
+    outDoc.AC_EVSEStatus = getDoc_AC_EVSEStatusType(ChargingStatusResTypeJson["AC_EVSEStatus"]);
+
+    return outDoc;
+}
+
+json getJson_AuthorizationReqType(const struct iso2_AuthorizationReqType& AuthorizationReqTypeDoc) {
+    json outJson;
+
+    if (AuthorizationReqTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = AuthorizationReqTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < AuthorizationReqTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = AuthorizationReqTypeDoc.Id.characters[i];
+        }
+    }
+    if (AuthorizationReqTypeDoc.GenChallenge_isUsed) {
+        outJson["GenChallenge"]["bytesLen"] = AuthorizationReqTypeDoc.GenChallenge.bytesLen;
+        for (uint16_t i = 0; i < AuthorizationReqTypeDoc.GenChallenge.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outJson["GenChallenge"]["bytes"][i] = AuthorizationReqTypeDoc.GenChallenge.bytes[i];
+        }
+    }
+
+    return outJson;
+}
+
+struct iso2_AuthorizationReqType getDoc_AuthorizationReqType(const json& AuthorizationReqTypeJson) {
+    struct iso2_AuthorizationReqType outDoc;
+    init_iso2_AuthorizationReqType(&outDoc);
+
+    if (AuthorizationReqTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = AuthorizationReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = AuthorizationReqTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    if (AuthorizationReqTypeJson.contains("GenChallenge")) {
+        outDoc.GenChallenge_isUsed = 1;
+        outDoc.GenChallenge.bytesLen = AuthorizationReqTypeJson["GenChallenge"]["bytesLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.GenChallenge.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+            outDoc.GenChallenge.bytes[i] = AuthorizationReqTypeJson["GenChallenge"]["bytes"][i].template get<uint8_t>();
+        }
+    } else {
+        outDoc.GenChallenge_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PreChargeReqType(const struct iso2_PreChargeReqType& PreChargeReqTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(PreChargeReqTypeDoc.DC_EVStatus);
+    outJson["EVTargetVoltage"] = getJson_PhysicalValueType(PreChargeReqTypeDoc.EVTargetVoltage);
+    outJson["EVTargetCurrent"] = getJson_PhysicalValueType(PreChargeReqTypeDoc.EVTargetCurrent);
+
+    return outJson;
+}
+
+struct iso2_PreChargeReqType getDoc_PreChargeReqType(const json& PreChargeReqTypeJson) {
+    struct iso2_PreChargeReqType outDoc;
+    init_iso2_PreChargeReqType(&outDoc);
+
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(PreChargeReqTypeJson["DC_EVStatus"]);
+    outDoc.EVTargetVoltage = getDoc_PhysicalValueType(PreChargeReqTypeJson["EVTargetVoltage"]);
+    outDoc.EVTargetCurrent = getDoc_PhysicalValueType(PreChargeReqTypeJson["EVTargetCurrent"]);
+
+    return outDoc;
+}
+
+json getJson_ServiceDetailResType(const struct iso2_ServiceDetailResType& ServiceDetailResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = ServiceDetailResTypeDoc.ResponseCode;
+    outJson["ServiceID"] = ServiceDetailResTypeDoc.ServiceID;
+    if (ServiceDetailResTypeDoc.ServiceParameterList_isUsed) {
+        outJson["ServiceParameterList"] = getJson_ServiceParameterListType(ServiceDetailResTypeDoc.ServiceParameterList);
+    }
+
+    return outJson;
+}
+
+struct iso2_ServiceDetailResType getDoc_ServiceDetailResType(const json& ServiceDetailResTypeJson) {
+    struct iso2_ServiceDetailResType outDoc;
+    init_iso2_ServiceDetailResType(&outDoc);
+
+    outDoc.ResponseCode = ServiceDetailResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.ServiceID = ServiceDetailResTypeJson["ServiceID"].template get<uint8_t>();
+    if (ServiceDetailResTypeJson.contains("ServiceParameterList")) {
+        outDoc.ServiceParameterList_isUsed = 1;
+        outDoc.ServiceParameterList = getDoc_ServiceParameterListType(ServiceDetailResTypeJson["ServiceParameterList"]);
+    } else {
+        outDoc.ServiceParameterList_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PaymentServiceSelectionResType(const struct iso2_PaymentServiceSelectionResType& PaymentServiceSelectionResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = PaymentServiceSelectionResTypeDoc.ResponseCode;
+
+    return outJson;
+}
+
+struct iso2_PaymentServiceSelectionResType getDoc_PaymentServiceSelectionResType(const json& PaymentServiceSelectionResTypeJson) {
+    struct iso2_PaymentServiceSelectionResType outDoc;
+    init_iso2_PaymentServiceSelectionResType(&outDoc);
+
+    outDoc.ResponseCode = PaymentServiceSelectionResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+
+    return outDoc;
+}
+
+json getJson_CertificateUpdateReqType(const struct iso2_CertificateUpdateReqType& CertificateUpdateReqTypeDoc) {
+    json outJson;
+
+    outJson["Id"]["charactersLen"] = CertificateUpdateReqTypeDoc.Id.charactersLen;
+    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outJson["Id"]["characters"][i] = CertificateUpdateReqTypeDoc.Id.characters[i];
+    }
+    outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateUpdateReqTypeDoc.ContractSignatureCertChain);
+    outJson["eMAID"]["charactersLen"] = CertificateUpdateReqTypeDoc.eMAID.charactersLen;
+    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.eMAID.charactersLen && i < iso2_eMAID_CHARACTER_SIZE; ++i) {
+        outJson["eMAID"]["characters"][i] = CertificateUpdateReqTypeDoc.eMAID.characters[i];
+    }
+    outJson["ListOfRootCertificateIDs"] = getJson_ListOfRootCertificateIDsType(CertificateUpdateReqTypeDoc.ListOfRootCertificateIDs);
+
+    return outJson;
+}
+
+struct iso2_CertificateUpdateReqType getDoc_CertificateUpdateReqType(const json& CertificateUpdateReqTypeJson) {
+    struct iso2_CertificateUpdateReqType outDoc;
+    init_iso2_CertificateUpdateReqType(&outDoc);
+
+    outDoc.Id.charactersLen = CertificateUpdateReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outDoc.Id.characters[i] = CertificateUpdateReqTypeJson["Id"]["characters"][i].template get<char>();
+    }
+    outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateUpdateReqTypeJson["ContractSignatureCertChain"]);
+    outDoc.eMAID.charactersLen = CertificateUpdateReqTypeJson["eMAID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.eMAID.charactersLen && i < iso2_eMAID_CHARACTER_SIZE; ++i) {
+        outDoc.eMAID.characters[i] = CertificateUpdateReqTypeJson["eMAID"]["characters"][i].template get<char>();
+    }
+    outDoc.ListOfRootCertificateIDs = getDoc_ListOfRootCertificateIDsType(CertificateUpdateReqTypeJson["ListOfRootCertificateIDs"]);
+
+    return outDoc;
+}
+
+json getJson_SessionSetupResType(const struct iso2_SessionSetupResType& SessionSetupResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = SessionSetupResTypeDoc.ResponseCode;
+    outJson["EVSEID"]["charactersLen"] = SessionSetupResTypeDoc.EVSEID.charactersLen;
+    for (uint16_t i = 0; i < SessionSetupResTypeDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outJson["EVSEID"]["characters"][i] = SessionSetupResTypeDoc.EVSEID.characters[i];
+    }
+    if (SessionSetupResTypeDoc.EVSETimeStamp_isUsed) {
+        outJson["EVSETimeStamp"] = SessionSetupResTypeDoc.EVSETimeStamp;
+    }
+
+    return outJson;
+}
+
+struct iso2_SessionSetupResType getDoc_SessionSetupResType(const json& SessionSetupResTypeJson) {
+    struct iso2_SessionSetupResType outDoc;
+    init_iso2_SessionSetupResType(&outDoc);
+
+    outDoc.ResponseCode = SessionSetupResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.EVSEID.charactersLen = SessionSetupResTypeJson["EVSEID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.EVSEID.charactersLen && i < iso2_EVSEID_CHARACTER_SIZE; ++i) {
+        outDoc.EVSEID.characters[i] = SessionSetupResTypeJson["EVSEID"]["characters"][i].template get<char>();
+    }
+    if (SessionSetupResTypeJson.contains("EVSETimeStamp")) {
+        outDoc.EVSETimeStamp_isUsed = 1;
+        outDoc.EVSETimeStamp = SessionSetupResTypeJson["EVSETimeStamp"].template get<int64_t>();
+    } else {
+        outDoc.EVSETimeStamp_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_CertificateInstallationReqType(const struct iso2_CertificateInstallationReqType& CertificateInstallationReqTypeDoc) {
+    json outJson;
+
+    outJson["Id"]["charactersLen"] = CertificateInstallationReqTypeDoc.Id.charactersLen;
+    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outJson["Id"]["characters"][i] = CertificateInstallationReqTypeDoc.Id.characters[i];
+    }
+    outJson["OEMProvisioningCert"]["bytesLen"] = CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytesLen;
+    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["OEMProvisioningCert"]["bytes"][i] = CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytes[i];
+    }
+    outJson["ListOfRootCertificateIDs"] = getJson_ListOfRootCertificateIDsType(CertificateInstallationReqTypeDoc.ListOfRootCertificateIDs);
+
+    return outJson;
+}
+
+struct iso2_CertificateInstallationReqType getDoc_CertificateInstallationReqType(const json& CertificateInstallationReqTypeJson) {
+    struct iso2_CertificateInstallationReqType outDoc;
+    init_iso2_CertificateInstallationReqType(&outDoc);
+
+    outDoc.Id.charactersLen = CertificateInstallationReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+        outDoc.Id.characters[i] = CertificateInstallationReqTypeJson["Id"]["characters"][i].template get<char>();
+    }
+    outDoc.OEMProvisioningCert.bytesLen = CertificateInstallationReqTypeJson["OEMProvisioningCert"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.OEMProvisioningCert.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.OEMProvisioningCert.bytes[i] = CertificateInstallationReqTypeJson["OEMProvisioningCert"]["bytes"][i].template get<uint8_t>();
+    }
+    outDoc.ListOfRootCertificateIDs = getDoc_ListOfRootCertificateIDsType(CertificateInstallationReqTypeJson["ListOfRootCertificateIDs"]);
+
+    return outDoc;
+}
+
+json getJson_CertificateInstallationResType(const struct iso2_CertificateInstallationResType& CertificateInstallationResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = CertificateInstallationResTypeDoc.ResponseCode;
+    outJson["SAProvisioningCertificateChain"] = getJson_CertificateChainType(CertificateInstallationResTypeDoc.SAProvisioningCertificateChain);
+    outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateInstallationResTypeDoc.ContractSignatureCertChain);
+    outJson["ContractSignatureEncryptedPrivateKey"] = getJson_ContractSignatureEncryptedPrivateKeyType(CertificateInstallationResTypeDoc.ContractSignatureEncryptedPrivateKey);
+    outJson["DHpublickey"] = getJson_DiffieHellmanPublickeyType(CertificateInstallationResTypeDoc.DHpublickey);
+    outJson["eMAID"] = getJson_EMAIDType(CertificateInstallationResTypeDoc.eMAID);
+
+    return outJson;
+}
+
+struct iso2_CertificateInstallationResType getDoc_CertificateInstallationResType(const json& CertificateInstallationResTypeJson) {
+    struct iso2_CertificateInstallationResType outDoc;
+    init_iso2_CertificateInstallationResType(&outDoc);
+
+    outDoc.ResponseCode = CertificateInstallationResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.SAProvisioningCertificateChain = getDoc_CertificateChainType(CertificateInstallationResTypeJson["SAProvisioningCertificateChain"]);
+    outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateInstallationResTypeJson["ContractSignatureCertChain"]);
+    outDoc.ContractSignatureEncryptedPrivateKey = getDoc_ContractSignatureEncryptedPrivateKeyType(CertificateInstallationResTypeJson["ContractSignatureEncryptedPrivateKey"]);
+    outDoc.DHpublickey = getDoc_DiffieHellmanPublickeyType(CertificateInstallationResTypeJson["DHpublickey"]);
+    outDoc.eMAID = getDoc_EMAIDType(CertificateInstallationResTypeJson["eMAID"]);
+
+    return outDoc;
+}
+
+json getJson_WeldingDetectionResType(const struct iso2_WeldingDetectionResType& WeldingDetectionResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = WeldingDetectionResTypeDoc.ResponseCode;
+    outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(WeldingDetectionResTypeDoc.DC_EVSEStatus);
+    outJson["EVSEPresentVoltage"] = getJson_PhysicalValueType(WeldingDetectionResTypeDoc.EVSEPresentVoltage);
+
+    return outJson;
+}
+
+struct iso2_WeldingDetectionResType getDoc_WeldingDetectionResType(const json& WeldingDetectionResTypeJson) {
+    struct iso2_WeldingDetectionResType outDoc;
+    init_iso2_WeldingDetectionResType(&outDoc);
+
+    outDoc.ResponseCode = WeldingDetectionResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(WeldingDetectionResTypeJson["DC_EVSEStatus"]);
+    outDoc.EVSEPresentVoltage = getDoc_PhysicalValueType(WeldingDetectionResTypeJson["EVSEPresentVoltage"]);
+
+    return outDoc;
+}
+
+json getJson_CurrentDemandReqType(const struct iso2_CurrentDemandReqType& CurrentDemandReqTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(CurrentDemandReqTypeDoc.DC_EVStatus);
+    outJson["EVTargetCurrent"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.EVTargetCurrent);
+    if (CurrentDemandReqTypeDoc.EVMaximumVoltageLimit_isUsed) {
+        outJson["EVMaximumVoltageLimit"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.EVMaximumVoltageLimit);
+    }
+    if (CurrentDemandReqTypeDoc.EVMaximumCurrentLimit_isUsed) {
+        outJson["EVMaximumCurrentLimit"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.EVMaximumCurrentLimit);
+    }
+    if (CurrentDemandReqTypeDoc.EVMaximumPowerLimit_isUsed) {
+        outJson["EVMaximumPowerLimit"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.EVMaximumPowerLimit);
+    }
+    if (CurrentDemandReqTypeDoc.BulkChargingComplete_isUsed) {
+        outJson["BulkChargingComplete"] = CurrentDemandReqTypeDoc.BulkChargingComplete;
+    }
+    outJson["ChargingComplete"] = CurrentDemandReqTypeDoc.ChargingComplete;
+    if (CurrentDemandReqTypeDoc.RemainingTimeToFullSoC_isUsed) {
+        outJson["RemainingTimeToFullSoC"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.RemainingTimeToFullSoC);
+    }
+    if (CurrentDemandReqTypeDoc.RemainingTimeToBulkSoC_isUsed) {
+        outJson["RemainingTimeToBulkSoC"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.RemainingTimeToBulkSoC);
+    }
+    outJson["EVTargetVoltage"] = getJson_PhysicalValueType(CurrentDemandReqTypeDoc.EVTargetVoltage);
+
+    return outJson;
+}
+
+struct iso2_CurrentDemandReqType getDoc_CurrentDemandReqType(const json& CurrentDemandReqTypeJson) {
+    struct iso2_CurrentDemandReqType outDoc;
+    init_iso2_CurrentDemandReqType(&outDoc);
+
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(CurrentDemandReqTypeJson["DC_EVStatus"]);
+    outDoc.EVTargetCurrent = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["EVTargetCurrent"]);
+    if (CurrentDemandReqTypeJson.contains("EVMaximumVoltageLimit")) {
+        outDoc.EVMaximumVoltageLimit_isUsed = 1;
+        outDoc.EVMaximumVoltageLimit = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["EVMaximumVoltageLimit"]);
+    } else {
+        outDoc.EVMaximumVoltageLimit_isUsed = 0;
+    }
+    if (CurrentDemandReqTypeJson.contains("EVMaximumCurrentLimit")) {
+        outDoc.EVMaximumCurrentLimit_isUsed = 1;
+        outDoc.EVMaximumCurrentLimit = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["EVMaximumCurrentLimit"]);
+    } else {
+        outDoc.EVMaximumCurrentLimit_isUsed = 0;
+    }
+    if (CurrentDemandReqTypeJson.contains("EVMaximumPowerLimit")) {
+        outDoc.EVMaximumPowerLimit_isUsed = 1;
+        outDoc.EVMaximumPowerLimit = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["EVMaximumPowerLimit"]);
+    } else {
+        outDoc.EVMaximumPowerLimit_isUsed = 0;
+    }
+    if (CurrentDemandReqTypeJson.contains("BulkChargingComplete")) {
+        outDoc.BulkChargingComplete_isUsed = 1;
+        outDoc.BulkChargingComplete = CurrentDemandReqTypeJson["BulkChargingComplete"].template get<int>();
+    } else {
+        outDoc.BulkChargingComplete_isUsed = 0;
+    }
+    outDoc.ChargingComplete = CurrentDemandReqTypeJson["ChargingComplete"].template get<int>();
+    if (CurrentDemandReqTypeJson.contains("RemainingTimeToFullSoC")) {
+        outDoc.RemainingTimeToFullSoC_isUsed = 1;
+        outDoc.RemainingTimeToFullSoC = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["RemainingTimeToFullSoC"]);
+    } else {
+        outDoc.RemainingTimeToFullSoC_isUsed = 0;
+    }
+    if (CurrentDemandReqTypeJson.contains("RemainingTimeToBulkSoC")) {
+        outDoc.RemainingTimeToBulkSoC_isUsed = 1;
+        outDoc.RemainingTimeToBulkSoC = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["RemainingTimeToBulkSoC"]);
+    } else {
+        outDoc.RemainingTimeToBulkSoC_isUsed = 0;
+    }
+    outDoc.EVTargetVoltage = getDoc_PhysicalValueType(CurrentDemandReqTypeJson["EVTargetVoltage"]);
+
+    return outDoc;
+}
+
+json getJson_PreChargeResType(const struct iso2_PreChargeResType& PreChargeResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = PreChargeResTypeDoc.ResponseCode;
+    outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(PreChargeResTypeDoc.DC_EVSEStatus);
+    outJson["EVSEPresentVoltage"] = getJson_PhysicalValueType(PreChargeResTypeDoc.EVSEPresentVoltage);
+
+    return outJson;
+}
+
+struct iso2_PreChargeResType getDoc_PreChargeResType(const json& PreChargeResTypeJson) {
+    struct iso2_PreChargeResType outDoc;
+    init_iso2_PreChargeResType(&outDoc);
+
+    outDoc.ResponseCode = PreChargeResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(PreChargeResTypeJson["DC_EVSEStatus"]);
+    outDoc.EVSEPresentVoltage = getDoc_PhysicalValueType(PreChargeResTypeJson["EVSEPresentVoltage"]);
+
+    return outDoc;
+}
+
+json getJson_CertificateUpdateResType(const struct iso2_CertificateUpdateResType& CertificateUpdateResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = CertificateUpdateResTypeDoc.ResponseCode;
+    outJson["SAProvisioningCertificateChain"] = getJson_CertificateChainType(CertificateUpdateResTypeDoc.SAProvisioningCertificateChain);
+    outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateUpdateResTypeDoc.ContractSignatureCertChain);
+    outJson["ContractSignatureEncryptedPrivateKey"] = getJson_ContractSignatureEncryptedPrivateKeyType(CertificateUpdateResTypeDoc.ContractSignatureEncryptedPrivateKey);
+    outJson["DHpublickey"] = getJson_DiffieHellmanPublickeyType(CertificateUpdateResTypeDoc.DHpublickey);
+    outJson["eMAID"] = getJson_EMAIDType(CertificateUpdateResTypeDoc.eMAID);
+    if (CertificateUpdateResTypeDoc.RetryCounter_isUsed) {
+        outJson["RetryCounter"] = CertificateUpdateResTypeDoc.RetryCounter;
+    }
+
+    return outJson;
+}
+
+struct iso2_CertificateUpdateResType getDoc_CertificateUpdateResType(const json& CertificateUpdateResTypeJson) {
+    struct iso2_CertificateUpdateResType outDoc;
+    init_iso2_CertificateUpdateResType(&outDoc);
+
+    outDoc.ResponseCode = CertificateUpdateResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.SAProvisioningCertificateChain = getDoc_CertificateChainType(CertificateUpdateResTypeJson["SAProvisioningCertificateChain"]);
+    outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateUpdateResTypeJson["ContractSignatureCertChain"]);
+    outDoc.ContractSignatureEncryptedPrivateKey = getDoc_ContractSignatureEncryptedPrivateKeyType(CertificateUpdateResTypeJson["ContractSignatureEncryptedPrivateKey"]);
+    outDoc.DHpublickey = getDoc_DiffieHellmanPublickeyType(CertificateUpdateResTypeJson["DHpublickey"]);
+    outDoc.eMAID = getDoc_EMAIDType(CertificateUpdateResTypeJson["eMAID"]);
+    if (CertificateUpdateResTypeJson.contains("RetryCounter")) {
+        outDoc.RetryCounter_isUsed = 1;
+        outDoc.RetryCounter = CertificateUpdateResTypeJson["RetryCounter"].template get<uint8_t>();
+    } else {
+        outDoc.RetryCounter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_MeteringReceiptReqType(const struct iso2_MeteringReceiptReqType& MeteringReceiptReqTypeDoc) {
+    json outJson;
+
+    if (MeteringReceiptReqTypeDoc.Id_isUsed) {
+        outJson["Id"]["charactersLen"] = MeteringReceiptReqTypeDoc.Id.charactersLen;
+        for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outJson["Id"]["characters"][i] = MeteringReceiptReqTypeDoc.Id.characters[i];
+        }
+    }
+    outJson["SessionID"]["bytesLen"] = MeteringReceiptReqTypeDoc.SessionID.bytesLen;
+    for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.SessionID.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outJson["SessionID"]["bytes"][i] = MeteringReceiptReqTypeDoc.SessionID.bytes[i];
+    }
+    if (MeteringReceiptReqTypeDoc.SAScheduleTupleID_isUsed) {
+        outJson["SAScheduleTupleID"] = MeteringReceiptReqTypeDoc.SAScheduleTupleID;
+    }
+    outJson["MeterInfo"] = getJson_MeterInfoType(MeteringReceiptReqTypeDoc.MeterInfo);
+
+    return outJson;
+}
+
+struct iso2_MeteringReceiptReqType getDoc_MeteringReceiptReqType(const json& MeteringReceiptReqTypeJson) {
+    struct iso2_MeteringReceiptReqType outDoc;
+    init_iso2_MeteringReceiptReqType(&outDoc);
+
+    if (MeteringReceiptReqTypeJson.contains("Id")) {
+        outDoc.Id_isUsed = 1;
+        outDoc.Id.charactersLen = MeteringReceiptReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < iso2_Id_CHARACTER_SIZE; ++i) {
+            outDoc.Id.characters[i] = MeteringReceiptReqTypeJson["Id"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.Id_isUsed = 0;
+    }
+    outDoc.SessionID.bytesLen = MeteringReceiptReqTypeJson["SessionID"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen && i < iso2_base64Binary_BYTES_SIZE; ++i) {
+        outDoc.SessionID.bytes[i] = MeteringReceiptReqTypeJson["SessionID"]["bytes"][i].template get<uint8_t>();
+    }
+    if (MeteringReceiptReqTypeJson.contains("SAScheduleTupleID")) {
+        outDoc.SAScheduleTupleID_isUsed = 1;
+        outDoc.SAScheduleTupleID = MeteringReceiptReqTypeJson["SAScheduleTupleID"].template get<uint8_t>();
+    } else {
+        outDoc.SAScheduleTupleID_isUsed = 0;
+    }
+    outDoc.MeterInfo = getDoc_MeterInfoType(MeteringReceiptReqTypeJson["MeterInfo"]);
+
+    return outDoc;
+}
+
+json getJson_ChargingStatusReqType(const struct iso2_ChargingStatusReqType& ChargingStatusReqTypeDoc) {
+    json outJson;
+
+    outJson["_unused"] = ChargingStatusReqTypeDoc._unused;
+
+    return outJson;
+}
+
+struct iso2_ChargingStatusReqType getDoc_ChargingStatusReqType(const json& ChargingStatusReqTypeJson) {
+    struct iso2_ChargingStatusReqType outDoc;
+    init_iso2_ChargingStatusReqType(&outDoc);
+
+    outDoc._unused = ChargingStatusReqTypeJson["_unused"].template get<int>();
+
+    return outDoc;
+}
+
+json getJson_SessionStopResType(const struct iso2_SessionStopResType& SessionStopResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = SessionStopResTypeDoc.ResponseCode;
+
+    return outJson;
+}
+
+struct iso2_SessionStopResType getDoc_SessionStopResType(const json& SessionStopResTypeJson) {
+    struct iso2_SessionStopResType outDoc;
+    init_iso2_SessionStopResType(&outDoc);
+
+    outDoc.ResponseCode = SessionStopResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+
+    return outDoc;
+}
+
+json getJson_ChargeParameterDiscoveryReqType(const struct iso2_ChargeParameterDiscoveryReqType& ChargeParameterDiscoveryReqTypeDoc) {
+    json outJson;
+
+    if (ChargeParameterDiscoveryReqTypeDoc.MaxEntriesSAScheduleTuple_isUsed) {
+        outJson["MaxEntriesSAScheduleTuple"] = ChargeParameterDiscoveryReqTypeDoc.MaxEntriesSAScheduleTuple;
+    }
+    outJson["RequestedEnergyTransferMode"] = ChargeParameterDiscoveryReqTypeDoc.RequestedEnergyTransferMode;
+    if (ChargeParameterDiscoveryReqTypeDoc.AC_EVChargeParameter_isUsed) {
+        outJson["AC_EVChargeParameter"] = getJson_AC_EVChargeParameterType(ChargeParameterDiscoveryReqTypeDoc.AC_EVChargeParameter);
+    }
+    if (ChargeParameterDiscoveryReqTypeDoc.DC_EVChargeParameter_isUsed) {
+        outJson["DC_EVChargeParameter"] = getJson_DC_EVChargeParameterType(ChargeParameterDiscoveryReqTypeDoc.DC_EVChargeParameter);
+    }
+    if (ChargeParameterDiscoveryReqTypeDoc.EVChargeParameter_isUsed) {
+        outJson["EVChargeParameter"] = getJson_EVChargeParameterType(ChargeParameterDiscoveryReqTypeDoc.EVChargeParameter);
+    }
+
+    return outJson;
+}
+
+struct iso2_ChargeParameterDiscoveryReqType getDoc_ChargeParameterDiscoveryReqType(const json& ChargeParameterDiscoveryReqTypeJson) {
+    struct iso2_ChargeParameterDiscoveryReqType outDoc;
+    init_iso2_ChargeParameterDiscoveryReqType(&outDoc);
+
+    if (ChargeParameterDiscoveryReqTypeJson.contains("MaxEntriesSAScheduleTuple")) {
+        outDoc.MaxEntriesSAScheduleTuple_isUsed = 1;
+        outDoc.MaxEntriesSAScheduleTuple = ChargeParameterDiscoveryReqTypeJson["MaxEntriesSAScheduleTuple"].template get<uint8_t>();
+    } else {
+        outDoc.MaxEntriesSAScheduleTuple_isUsed = 0;
+    }
+    outDoc.RequestedEnergyTransferMode = ChargeParameterDiscoveryReqTypeJson["RequestedEnergyTransferMode"].template get<iso2_EnergyTransferModeType>();
+    if (ChargeParameterDiscoveryReqTypeJson.contains("AC_EVChargeParameter")) {
+        outDoc.AC_EVChargeParameter_isUsed = 1;
+        outDoc.AC_EVChargeParameter = getDoc_AC_EVChargeParameterType(ChargeParameterDiscoveryReqTypeJson["AC_EVChargeParameter"]);
+    } else {
+        outDoc.AC_EVChargeParameter_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryReqTypeJson.contains("DC_EVChargeParameter")) {
+        outDoc.DC_EVChargeParameter_isUsed = 1;
+        outDoc.DC_EVChargeParameter = getDoc_DC_EVChargeParameterType(ChargeParameterDiscoveryReqTypeJson["DC_EVChargeParameter"]);
+    } else {
+        outDoc.DC_EVChargeParameter_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryReqTypeJson.contains("EVChargeParameter")) {
+        outDoc.EVChargeParameter_isUsed = 1;
+        outDoc.EVChargeParameter = getDoc_EVChargeParameterType(ChargeParameterDiscoveryReqTypeJson["EVChargeParameter"]);
+    } else {
+        outDoc.EVChargeParameter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_CableCheckReqType(const struct iso2_CableCheckReqType& CableCheckReqTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(CableCheckReqTypeDoc.DC_EVStatus);
+
+    return outJson;
+}
+
+struct iso2_CableCheckReqType getDoc_CableCheckReqType(const json& CableCheckReqTypeJson) {
+    struct iso2_CableCheckReqType outDoc;
+    init_iso2_CableCheckReqType(&outDoc);
+
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(CableCheckReqTypeJson["DC_EVStatus"]);
+
+    return outDoc;
+}
+
+json getJson_WeldingDetectionReqType(const struct iso2_WeldingDetectionReqType& WeldingDetectionReqTypeDoc) {
+    json outJson;
+
+    outJson["DC_EVStatus"] = getJson_DC_EVStatusType(WeldingDetectionReqTypeDoc.DC_EVStatus);
+
+    return outJson;
+}
+
+struct iso2_WeldingDetectionReqType getDoc_WeldingDetectionReqType(const json& WeldingDetectionReqTypeJson) {
+    struct iso2_WeldingDetectionReqType outDoc;
+    init_iso2_WeldingDetectionReqType(&outDoc);
+
+    outDoc.DC_EVStatus = getDoc_DC_EVStatusType(WeldingDetectionReqTypeJson["DC_EVStatus"]);
+
+    return outDoc;
+}
+
+json getJson_PowerDeliveryResType(const struct iso2_PowerDeliveryResType& PowerDeliveryResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = PowerDeliveryResTypeDoc.ResponseCode;
+    if (PowerDeliveryResTypeDoc.AC_EVSEStatus_isUsed) {
+        outJson["AC_EVSEStatus"] = getJson_AC_EVSEStatusType(PowerDeliveryResTypeDoc.AC_EVSEStatus);
+    }
+    if (PowerDeliveryResTypeDoc.DC_EVSEStatus_isUsed) {
+        outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(PowerDeliveryResTypeDoc.DC_EVSEStatus);
+    }
+    if (PowerDeliveryResTypeDoc.EVSEStatus_isUsed) {
+        outJson["EVSEStatus"] = getJson_EVSEStatusType(PowerDeliveryResTypeDoc.EVSEStatus);
+    }
+
+    return outJson;
+}
+
+struct iso2_PowerDeliveryResType getDoc_PowerDeliveryResType(const json& PowerDeliveryResTypeJson) {
+    struct iso2_PowerDeliveryResType outDoc;
+    init_iso2_PowerDeliveryResType(&outDoc);
+
+    outDoc.ResponseCode = PowerDeliveryResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    if (PowerDeliveryResTypeJson.contains("AC_EVSEStatus")) {
+        outDoc.AC_EVSEStatus_isUsed = 1;
+        outDoc.AC_EVSEStatus = getDoc_AC_EVSEStatusType(PowerDeliveryResTypeJson["AC_EVSEStatus"]);
+    } else {
+        outDoc.AC_EVSEStatus_isUsed = 0;
+    }
+    if (PowerDeliveryResTypeJson.contains("DC_EVSEStatus")) {
+        outDoc.DC_EVSEStatus_isUsed = 1;
+        outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(PowerDeliveryResTypeJson["DC_EVSEStatus"]);
+    } else {
+        outDoc.DC_EVSEStatus_isUsed = 0;
+    }
+    if (PowerDeliveryResTypeJson.contains("EVSEStatus")) {
+        outDoc.EVSEStatus_isUsed = 1;
+        outDoc.EVSEStatus = getDoc_EVSEStatusType(PowerDeliveryResTypeJson["EVSEStatus"]);
+    } else {
+        outDoc.EVSEStatus_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ChargeParameterDiscoveryResType(const struct iso2_ChargeParameterDiscoveryResType& ChargeParameterDiscoveryResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = ChargeParameterDiscoveryResTypeDoc.ResponseCode;
+    outJson["EVSEProcessing"] = ChargeParameterDiscoveryResTypeDoc.EVSEProcessing;
+    if (ChargeParameterDiscoveryResTypeDoc.SAScheduleList_isUsed) {
+        outJson["SAScheduleList"] = getJson_SAScheduleListType(ChargeParameterDiscoveryResTypeDoc.SAScheduleList);
+    }
+    if (ChargeParameterDiscoveryResTypeDoc.SASchedules_isUsed) {
+        outJson["SASchedules"] = getJson_SASchedulesType(ChargeParameterDiscoveryResTypeDoc.SASchedules);
+    }
+    if (ChargeParameterDiscoveryResTypeDoc.AC_EVSEChargeParameter_isUsed) {
+        outJson["AC_EVSEChargeParameter"] = getJson_AC_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeDoc.AC_EVSEChargeParameter);
+    }
+    if (ChargeParameterDiscoveryResTypeDoc.DC_EVSEChargeParameter_isUsed) {
+        outJson["DC_EVSEChargeParameter"] = getJson_DC_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeDoc.DC_EVSEChargeParameter);
+    }
+    if (ChargeParameterDiscoveryResTypeDoc.EVSEChargeParameter_isUsed) {
+        outJson["EVSEChargeParameter"] = getJson_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeDoc.EVSEChargeParameter);
+    }
+
+    return outJson;
+}
+
+struct iso2_ChargeParameterDiscoveryResType getDoc_ChargeParameterDiscoveryResType(const json& ChargeParameterDiscoveryResTypeJson) {
+    struct iso2_ChargeParameterDiscoveryResType outDoc;
+    init_iso2_ChargeParameterDiscoveryResType(&outDoc);
+
+    outDoc.ResponseCode = ChargeParameterDiscoveryResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.EVSEProcessing = ChargeParameterDiscoveryResTypeJson["EVSEProcessing"].template get<iso2_EVSEProcessingType>();
+    if (ChargeParameterDiscoveryResTypeJson.contains("SAScheduleList")) {
+        outDoc.SAScheduleList_isUsed = 1;
+        outDoc.SAScheduleList = getDoc_SAScheduleListType(ChargeParameterDiscoveryResTypeJson["SAScheduleList"]);
+    } else {
+        outDoc.SAScheduleList_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryResTypeJson.contains("SASchedules")) {
+        outDoc.SASchedules_isUsed = 1;
+        outDoc.SASchedules = getDoc_SASchedulesType(ChargeParameterDiscoveryResTypeJson["SASchedules"]);
+    } else {
+        outDoc.SASchedules_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryResTypeJson.contains("AC_EVSEChargeParameter")) {
+        outDoc.AC_EVSEChargeParameter_isUsed = 1;
+        outDoc.AC_EVSEChargeParameter = getDoc_AC_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeJson["AC_EVSEChargeParameter"]);
+    } else {
+        outDoc.AC_EVSEChargeParameter_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryResTypeJson.contains("DC_EVSEChargeParameter")) {
+        outDoc.DC_EVSEChargeParameter_isUsed = 1;
+        outDoc.DC_EVSEChargeParameter = getDoc_DC_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeJson["DC_EVSEChargeParameter"]);
+    } else {
+        outDoc.DC_EVSEChargeParameter_isUsed = 0;
+    }
+    if (ChargeParameterDiscoveryResTypeJson.contains("EVSEChargeParameter")) {
+        outDoc.EVSEChargeParameter_isUsed = 1;
+        outDoc.EVSEChargeParameter = getDoc_EVSEChargeParameterType(ChargeParameterDiscoveryResTypeJson["EVSEChargeParameter"]);
+    } else {
+        outDoc.EVSEChargeParameter_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_PaymentServiceSelectionReqType(const struct iso2_PaymentServiceSelectionReqType& PaymentServiceSelectionReqTypeDoc) {
+    json outJson;
+
+    outJson["SelectedPaymentOption"] = PaymentServiceSelectionReqTypeDoc.SelectedPaymentOption;
+    outJson["SelectedServiceList"] = getJson_SelectedServiceListType(PaymentServiceSelectionReqTypeDoc.SelectedServiceList);
+
+    return outJson;
+}
+
+struct iso2_PaymentServiceSelectionReqType getDoc_PaymentServiceSelectionReqType(const json& PaymentServiceSelectionReqTypeJson) {
+    struct iso2_PaymentServiceSelectionReqType outDoc;
+    init_iso2_PaymentServiceSelectionReqType(&outDoc);
+
+    outDoc.SelectedPaymentOption = PaymentServiceSelectionReqTypeJson["SelectedPaymentOption"].template get<iso2_paymentOptionType>();
+    outDoc.SelectedServiceList = getDoc_SelectedServiceListType(PaymentServiceSelectionReqTypeJson["SelectedServiceList"]);
+
+    return outDoc;
+}
+
+json getJson_MeteringReceiptResType(const struct iso2_MeteringReceiptResType& MeteringReceiptResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = MeteringReceiptResTypeDoc.ResponseCode;
+    if (MeteringReceiptResTypeDoc.AC_EVSEStatus_isUsed) {
+        outJson["AC_EVSEStatus"] = getJson_AC_EVSEStatusType(MeteringReceiptResTypeDoc.AC_EVSEStatus);
+    }
+    if (MeteringReceiptResTypeDoc.DC_EVSEStatus_isUsed) {
+        outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(MeteringReceiptResTypeDoc.DC_EVSEStatus);
+    }
+    if (MeteringReceiptResTypeDoc.EVSEStatus_isUsed) {
+        outJson["EVSEStatus"] = getJson_EVSEStatusType(MeteringReceiptResTypeDoc.EVSEStatus);
+    }
+
+    return outJson;
+}
+
+struct iso2_MeteringReceiptResType getDoc_MeteringReceiptResType(const json& MeteringReceiptResTypeJson) {
+    struct iso2_MeteringReceiptResType outDoc;
+    init_iso2_MeteringReceiptResType(&outDoc);
+
+    outDoc.ResponseCode = MeteringReceiptResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    if (MeteringReceiptResTypeJson.contains("AC_EVSEStatus")) {
+        outDoc.AC_EVSEStatus_isUsed = 1;
+        outDoc.AC_EVSEStatus = getDoc_AC_EVSEStatusType(MeteringReceiptResTypeJson["AC_EVSEStatus"]);
+    } else {
+        outDoc.AC_EVSEStatus_isUsed = 0;
+    }
+    if (MeteringReceiptResTypeJson.contains("DC_EVSEStatus")) {
+        outDoc.DC_EVSEStatus_isUsed = 1;
+        outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(MeteringReceiptResTypeJson["DC_EVSEStatus"]);
+    } else {
+        outDoc.DC_EVSEStatus_isUsed = 0;
+    }
+    if (MeteringReceiptResTypeJson.contains("EVSEStatus")) {
+        outDoc.EVSEStatus_isUsed = 1;
+        outDoc.EVSEStatus = getDoc_EVSEStatusType(MeteringReceiptResTypeJson["EVSEStatus"]);
+    } else {
+        outDoc.EVSEStatus_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_CableCheckResType(const struct iso2_CableCheckResType& CableCheckResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = CableCheckResTypeDoc.ResponseCode;
+    outJson["DC_EVSEStatus"] = getJson_DC_EVSEStatusType(CableCheckResTypeDoc.DC_EVSEStatus);
+    outJson["EVSEProcessing"] = CableCheckResTypeDoc.EVSEProcessing;
+
+    return outJson;
+}
+
+struct iso2_CableCheckResType getDoc_CableCheckResType(const json& CableCheckResTypeJson) {
+    struct iso2_CableCheckResType outDoc;
+    init_iso2_CableCheckResType(&outDoc);
+
+    outDoc.ResponseCode = CableCheckResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.DC_EVSEStatus = getDoc_DC_EVSEStatusType(CableCheckResTypeJson["DC_EVSEStatus"]);
+    outDoc.EVSEProcessing = CableCheckResTypeJson["EVSEProcessing"].template get<iso2_EVSEProcessingType>();
+
+    return outDoc;
+}
+
+json getJson_ServiceDiscoveryResType(const struct iso2_ServiceDiscoveryResType& ServiceDiscoveryResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = ServiceDiscoveryResTypeDoc.ResponseCode;
+    outJson["PaymentOptionList"] = getJson_PaymentOptionListType(ServiceDiscoveryResTypeDoc.PaymentOptionList);
+    outJson["ChargeService"] = getJson_ChargeServiceType(ServiceDiscoveryResTypeDoc.ChargeService);
+    if (ServiceDiscoveryResTypeDoc.ServiceList_isUsed) {
+        outJson["ServiceList"] = getJson_ServiceListType(ServiceDiscoveryResTypeDoc.ServiceList);
+    }
+
+    return outJson;
+}
+
+struct iso2_ServiceDiscoveryResType getDoc_ServiceDiscoveryResType(const json& ServiceDiscoveryResTypeJson) {
+    struct iso2_ServiceDiscoveryResType outDoc;
+    init_iso2_ServiceDiscoveryResType(&outDoc);
+
+    outDoc.ResponseCode = ServiceDiscoveryResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.PaymentOptionList = getDoc_PaymentOptionListType(ServiceDiscoveryResTypeJson["PaymentOptionList"]);
+    outDoc.ChargeService = getDoc_ChargeServiceType(ServiceDiscoveryResTypeJson["ChargeService"]);
+    if (ServiceDiscoveryResTypeJson.contains("ServiceList")) {
+        outDoc.ServiceList_isUsed = 1;
+        outDoc.ServiceList = getDoc_ServiceListType(ServiceDiscoveryResTypeJson["ServiceList"]);
+    } else {
+        outDoc.ServiceList_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_ServiceDetailReqType(const struct iso2_ServiceDetailReqType& ServiceDetailReqTypeDoc) {
+    json outJson;
+
+    outJson["ServiceID"] = ServiceDetailReqTypeDoc.ServiceID;
+
+    return outJson;
+}
+
+struct iso2_ServiceDetailReqType getDoc_ServiceDetailReqType(const json& ServiceDetailReqTypeJson) {
+    struct iso2_ServiceDetailReqType outDoc;
+    init_iso2_ServiceDetailReqType(&outDoc);
+
+    outDoc.ServiceID = ServiceDetailReqTypeJson["ServiceID"].template get<uint8_t>();
+
+    return outDoc;
+}
+
+json getJson_SessionSetupReqType(const struct iso2_SessionSetupReqType& SessionSetupReqTypeDoc) {
+    json outJson;
+
+    outJson["EVCCID"]["bytesLen"] = SessionSetupReqTypeDoc.EVCCID.bytesLen;
+    for (uint16_t i = 0; i < SessionSetupReqTypeDoc.EVCCID.bytesLen && i < iso2_evccIDType_BYTES_SIZE; ++i) {
+        outJson["EVCCID"]["bytes"][i] = SessionSetupReqTypeDoc.EVCCID.bytes[i];
+    }
+
+    return outJson;
+}
+
+struct iso2_SessionSetupReqType getDoc_SessionSetupReqType(const json& SessionSetupReqTypeJson) {
+    struct iso2_SessionSetupReqType outDoc;
+    init_iso2_SessionSetupReqType(&outDoc);
+
+    outDoc.EVCCID.bytesLen = SessionSetupReqTypeJson["EVCCID"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.EVCCID.bytesLen && i < iso2_evccIDType_BYTES_SIZE; ++i) {
+        outDoc.EVCCID.bytes[i] = SessionSetupReqTypeJson["EVCCID"]["bytes"][i].template get<uint8_t>();
+    }
+
+    return outDoc;
+}
+
+json getJson_SessionStopReqType(const struct iso2_SessionStopReqType& SessionStopReqTypeDoc) {
+    json outJson;
+
+    outJson["ChargingSession"] = SessionStopReqTypeDoc.ChargingSession;
+
+    return outJson;
+}
+
+struct iso2_SessionStopReqType getDoc_SessionStopReqType(const json& SessionStopReqTypeJson) {
+    struct iso2_SessionStopReqType outDoc;
+    init_iso2_SessionStopReqType(&outDoc);
+
+    outDoc.ChargingSession = SessionStopReqTypeJson["ChargingSession"].template get<iso2_chargingSessionType>();
+
+    return outDoc;
+}
+
+json getJson_ServiceDiscoveryReqType(const struct iso2_ServiceDiscoveryReqType& ServiceDiscoveryReqTypeDoc) {
+    json outJson;
+
+    if (ServiceDiscoveryReqTypeDoc.ServiceScope_isUsed) {
+        outJson["ServiceScope"]["charactersLen"] = ServiceDiscoveryReqTypeDoc.ServiceScope.charactersLen;
+        for (uint16_t i = 0; i < ServiceDiscoveryReqTypeDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outJson["ServiceScope"]["characters"][i] = ServiceDiscoveryReqTypeDoc.ServiceScope.characters[i];
+        }
+    }
+    if (ServiceDiscoveryReqTypeDoc.ServiceCategory_isUsed) {
+        outJson["ServiceCategory"] = ServiceDiscoveryReqTypeDoc.ServiceCategory;
+    }
+
+    return outJson;
+}
+
+struct iso2_ServiceDiscoveryReqType getDoc_ServiceDiscoveryReqType(const json& ServiceDiscoveryReqTypeJson) {
+    struct iso2_ServiceDiscoveryReqType outDoc;
+    init_iso2_ServiceDiscoveryReqType(&outDoc);
+
+    if (ServiceDiscoveryReqTypeJson.contains("ServiceScope")) {
+        outDoc.ServiceScope_isUsed = 1;
+        outDoc.ServiceScope.charactersLen = ServiceDiscoveryReqTypeJson["ServiceScope"]["charactersLen"].template get<uint16_t>();
+        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen && i < iso2_ServiceScope_CHARACTER_SIZE; ++i) {
+            outDoc.ServiceScope.characters[i] = ServiceDiscoveryReqTypeJson["ServiceScope"]["characters"][i].template get<char>();
+        }
+    } else {
+        outDoc.ServiceScope_isUsed = 0;
+    }
+    if (ServiceDiscoveryReqTypeJson.contains("ServiceCategory")) {
+        outDoc.ServiceCategory_isUsed = 1;
+        outDoc.ServiceCategory = ServiceDiscoveryReqTypeJson["ServiceCategory"].template get<iso2_serviceCategoryType>();
+    } else {
+        outDoc.ServiceCategory_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_AuthorizationResType(const struct iso2_AuthorizationResType& AuthorizationResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = AuthorizationResTypeDoc.ResponseCode;
+    outJson["EVSEProcessing"] = AuthorizationResTypeDoc.EVSEProcessing;
+
+    return outJson;
+}
+
+struct iso2_AuthorizationResType getDoc_AuthorizationResType(const json& AuthorizationResTypeJson) {
+    struct iso2_AuthorizationResType outDoc;
+    init_iso2_AuthorizationResType(&outDoc);
+
+    outDoc.ResponseCode = AuthorizationResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.EVSEProcessing = AuthorizationResTypeJson["EVSEProcessing"].template get<iso2_EVSEProcessingType>();
+
+    return outDoc;
+}
+
+json getJson_PaymentDetailsReqType(const struct iso2_PaymentDetailsReqType& PaymentDetailsReqTypeDoc) {
+    json outJson;
+
+    outJson["eMAID"]["charactersLen"] = PaymentDetailsReqTypeDoc.eMAID.charactersLen;
+    for (uint16_t i = 0; i < PaymentDetailsReqTypeDoc.eMAID.charactersLen && i < iso2_eMAID_CHARACTER_SIZE; ++i) {
+        outJson["eMAID"]["characters"][i] = PaymentDetailsReqTypeDoc.eMAID.characters[i];
+    }
+    outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(PaymentDetailsReqTypeDoc.ContractSignatureCertChain);
+
+    return outJson;
+}
+
+struct iso2_PaymentDetailsReqType getDoc_PaymentDetailsReqType(const json& PaymentDetailsReqTypeJson) {
+    struct iso2_PaymentDetailsReqType outDoc;
+    init_iso2_PaymentDetailsReqType(&outDoc);
+
+    outDoc.eMAID.charactersLen = PaymentDetailsReqTypeJson["eMAID"]["charactersLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.eMAID.charactersLen && i < iso2_eMAID_CHARACTER_SIZE; ++i) {
+        outDoc.eMAID.characters[i] = PaymentDetailsReqTypeJson["eMAID"]["characters"][i].template get<char>();
+    }
+    outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(PaymentDetailsReqTypeJson["ContractSignatureCertChain"]);
+
+    return outDoc;
+}
+
+json getJson_PaymentDetailsResType(const struct iso2_PaymentDetailsResType& PaymentDetailsResTypeDoc) {
+    json outJson;
+
+    outJson["ResponseCode"] = PaymentDetailsResTypeDoc.ResponseCode;
+    outJson["GenChallenge"]["bytesLen"] = PaymentDetailsResTypeDoc.GenChallenge.bytesLen;
+    for (uint16_t i = 0; i < PaymentDetailsResTypeDoc.GenChallenge.bytesLen && i < iso2_genChallengeType_BYTES_SIZE; ++i) {
+        outJson["GenChallenge"]["bytes"][i] = PaymentDetailsResTypeDoc.GenChallenge.bytes[i];
+    }
+    outJson["EVSETimeStamp"] = PaymentDetailsResTypeDoc.EVSETimeStamp;
+
+    return outJson;
+}
+
+struct iso2_PaymentDetailsResType getDoc_PaymentDetailsResType(const json& PaymentDetailsResTypeJson) {
+    struct iso2_PaymentDetailsResType outDoc;
+    init_iso2_PaymentDetailsResType(&outDoc);
+
+    outDoc.ResponseCode = PaymentDetailsResTypeJson["ResponseCode"].template get<iso2_responseCodeType>();
+    outDoc.GenChallenge.bytesLen = PaymentDetailsResTypeJson["GenChallenge"]["bytesLen"].template get<uint16_t>();
+    for (uint16_t i = 0; i < outDoc.GenChallenge.bytesLen && i < iso2_genChallengeType_BYTES_SIZE; ++i) {
+        outDoc.GenChallenge.bytes[i] = PaymentDetailsResTypeJson["GenChallenge"]["bytes"][i].template get<uint8_t>();
+    }
+    outDoc.EVSETimeStamp = PaymentDetailsResTypeJson["EVSETimeStamp"].template get<int64_t>();
+
+    return outDoc;
+}
+
+json getJson_BodyType(const struct iso2_BodyType& BodyTypeDoc) {
+    json outJson;
+
+    if (BodyTypeDoc.AuthorizationReq_isUsed) {
+        outJson["AuthorizationReq"] = getJson_AuthorizationReqType(BodyTypeDoc.AuthorizationReq);
+    }
+    if (BodyTypeDoc.AuthorizationRes_isUsed) {
+        outJson["AuthorizationRes"] = getJson_AuthorizationResType(BodyTypeDoc.AuthorizationRes);
+    }
+    if (BodyTypeDoc.BodyElement_isUsed) {
+        outJson["BodyElement"] = getJson_BodyBaseType(BodyTypeDoc.BodyElement);
+    }
+    if (BodyTypeDoc.CableCheckReq_isUsed) {
+        outJson["CableCheckReq"] = getJson_CableCheckReqType(BodyTypeDoc.CableCheckReq);
+    }
+    if (BodyTypeDoc.CableCheckRes_isUsed) {
+        outJson["CableCheckRes"] = getJson_CableCheckResType(BodyTypeDoc.CableCheckRes);
+    }
+    if (BodyTypeDoc.CertificateInstallationReq_isUsed) {
+        outJson["CertificateInstallationReq"] = getJson_CertificateInstallationReqType(BodyTypeDoc.CertificateInstallationReq);
+    }
+    if (BodyTypeDoc.CertificateInstallationRes_isUsed) {
+        outJson["CertificateInstallationRes"] = getJson_CertificateInstallationResType(BodyTypeDoc.CertificateInstallationRes);
+    }
+    if (BodyTypeDoc.CertificateUpdateReq_isUsed) {
+        outJson["CertificateUpdateReq"] = getJson_CertificateUpdateReqType(BodyTypeDoc.CertificateUpdateReq);
+    }
+    if (BodyTypeDoc.CertificateUpdateRes_isUsed) {
+        outJson["CertificateUpdateRes"] = getJson_CertificateUpdateResType(BodyTypeDoc.CertificateUpdateRes);
+    }
+    if (BodyTypeDoc.ChargeParameterDiscoveryRes_isUsed) {
+        outJson["ChargeParameterDiscoveryRes"] = getJson_ChargeParameterDiscoveryResType(BodyTypeDoc.ChargeParameterDiscoveryRes);
+    }
+    if (BodyTypeDoc.ChargeParameterDiscoveryReq_isUsed) {
+        outJson["ChargeParameterDiscoveryReq"] = getJson_ChargeParameterDiscoveryReqType(BodyTypeDoc.ChargeParameterDiscoveryReq);
+    }
+    if (BodyTypeDoc.ChargingStatusReq_isUsed) {
+        outJson["ChargingStatusReq"] = getJson_ChargingStatusReqType(BodyTypeDoc.ChargingStatusReq);
+    }
+    if (BodyTypeDoc.ChargingStatusRes_isUsed) {
+        outJson["ChargingStatusRes"] = getJson_ChargingStatusResType(BodyTypeDoc.ChargingStatusRes);
+    }
+    if (BodyTypeDoc.CurrentDemandReq_isUsed) {
+        outJson["CurrentDemandReq"] = getJson_CurrentDemandReqType(BodyTypeDoc.CurrentDemandReq);
+    }
+    if (BodyTypeDoc.CurrentDemandRes_isUsed) {
+        outJson["CurrentDemandRes"] = getJson_CurrentDemandResType(BodyTypeDoc.CurrentDemandRes);
+    }
+    if (BodyTypeDoc.MeteringReceiptReq_isUsed) {
+        outJson["MeteringReceiptReq"] = getJson_MeteringReceiptReqType(BodyTypeDoc.MeteringReceiptReq);
+    }
+    if (BodyTypeDoc.MeteringReceiptRes_isUsed) {
+        outJson["MeteringReceiptRes"] = getJson_MeteringReceiptResType(BodyTypeDoc.MeteringReceiptRes);
+    }
+    if (BodyTypeDoc.PaymentDetailsReq_isUsed) {
+        outJson["PaymentDetailsReq"] = getJson_PaymentDetailsReqType(BodyTypeDoc.PaymentDetailsReq);
+    }
+    if (BodyTypeDoc.PaymentDetailsRes_isUsed) {
+        outJson["PaymentDetailsRes"] = getJson_PaymentDetailsResType(BodyTypeDoc.PaymentDetailsRes);
+    }
+    if (BodyTypeDoc.PaymentServiceSelectionReq_isUsed) {
+        outJson["PaymentServiceSelectionReq"] = getJson_PaymentServiceSelectionReqType(BodyTypeDoc.PaymentServiceSelectionReq);
+    }
+    if (BodyTypeDoc.PaymentServiceSelectionRes_isUsed) {
+        outJson["PaymentServiceSelectionRes"] = getJson_PaymentServiceSelectionResType(BodyTypeDoc.PaymentServiceSelectionRes);
+    }
+    if (BodyTypeDoc.PowerDeliveryReq_isUsed) {
+        outJson["PowerDeliveryReq"] = getJson_PowerDeliveryReqType(BodyTypeDoc.PowerDeliveryReq);
+    }
+    if (BodyTypeDoc.PowerDeliveryRes_isUsed) {
+        outJson["PowerDeliveryRes"] = getJson_PowerDeliveryResType(BodyTypeDoc.PowerDeliveryRes);
+    }
+    if (BodyTypeDoc.PreChargeReq_isUsed) {
+        outJson["PreChargeReq"] = getJson_PreChargeReqType(BodyTypeDoc.PreChargeReq);
+    }
+    if (BodyTypeDoc.PreChargeRes_isUsed) {
+        outJson["PreChargeRes"] = getJson_PreChargeResType(BodyTypeDoc.PreChargeRes);
+    }
+    if (BodyTypeDoc.ServiceDetailReq_isUsed) {
+        outJson["ServiceDetailReq"] = getJson_ServiceDetailReqType(BodyTypeDoc.ServiceDetailReq);
+    }
+    if (BodyTypeDoc.ServiceDetailRes_isUsed) {
+        outJson["ServiceDetailRes"] = getJson_ServiceDetailResType(BodyTypeDoc.ServiceDetailRes);
+    }
+    if (BodyTypeDoc.ServiceDiscoveryReq_isUsed) {
+        outJson["ServiceDiscoveryReq"] = getJson_ServiceDiscoveryReqType(BodyTypeDoc.ServiceDiscoveryReq);
+    }
+    if (BodyTypeDoc.ServiceDiscoveryRes_isUsed) {
+        outJson["ServiceDiscoveryRes"] = getJson_ServiceDiscoveryResType(BodyTypeDoc.ServiceDiscoveryRes);
+    }
+    if (BodyTypeDoc.SessionSetupReq_isUsed) {
+        outJson["SessionSetupReq"] = getJson_SessionSetupReqType(BodyTypeDoc.SessionSetupReq);
+    }
+    if (BodyTypeDoc.SessionSetupRes_isUsed) {
+        outJson["SessionSetupRes"] = getJson_SessionSetupResType(BodyTypeDoc.SessionSetupRes);
+    }
+    if (BodyTypeDoc.SessionStopReq_isUsed) {
+        outJson["SessionStopReq"] = getJson_SessionStopReqType(BodyTypeDoc.SessionStopReq);
+    }
+    if (BodyTypeDoc.SessionStopRes_isUsed) {
+        outJson["SessionStopRes"] = getJson_SessionStopResType(BodyTypeDoc.SessionStopRes);
+    }
+    if (BodyTypeDoc.WeldingDetectionReq_isUsed) {
+        outJson["WeldingDetectionReq"] = getJson_WeldingDetectionReqType(BodyTypeDoc.WeldingDetectionReq);
+    }
+    if (BodyTypeDoc.WeldingDetectionRes_isUsed) {
+        outJson["WeldingDetectionRes"] = getJson_WeldingDetectionResType(BodyTypeDoc.WeldingDetectionRes);
+    }
+
+    return outJson;
+}
+
+struct iso2_BodyType getDoc_BodyType(const json& BodyTypeJson) {
+    struct iso2_BodyType outDoc;
+    init_iso2_BodyType(&outDoc);
+
+    if (BodyTypeJson.contains("AuthorizationReq")) {
+        outDoc.AuthorizationReq_isUsed = 1;
+        outDoc.AuthorizationReq = getDoc_AuthorizationReqType(BodyTypeJson["AuthorizationReq"]);
+    } else {
+        outDoc.AuthorizationReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("AuthorizationRes")) {
+        outDoc.AuthorizationRes_isUsed = 1;
+        outDoc.AuthorizationRes = getDoc_AuthorizationResType(BodyTypeJson["AuthorizationRes"]);
+    } else {
+        outDoc.AuthorizationRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("BodyElement")) {
+        outDoc.BodyElement_isUsed = 1;
+        outDoc.BodyElement = getDoc_BodyBaseType(BodyTypeJson["BodyElement"]);
+    } else {
+        outDoc.BodyElement_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CableCheckReq")) {
+        outDoc.CableCheckReq_isUsed = 1;
+        outDoc.CableCheckReq = getDoc_CableCheckReqType(BodyTypeJson["CableCheckReq"]);
+    } else {
+        outDoc.CableCheckReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CableCheckRes")) {
+        outDoc.CableCheckRes_isUsed = 1;
+        outDoc.CableCheckRes = getDoc_CableCheckResType(BodyTypeJson["CableCheckRes"]);
+    } else {
+        outDoc.CableCheckRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CertificateInstallationReq")) {
+        outDoc.CertificateInstallationReq_isUsed = 1;
+        outDoc.CertificateInstallationReq = getDoc_CertificateInstallationReqType(BodyTypeJson["CertificateInstallationReq"]);
+    } else {
+        outDoc.CertificateInstallationReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CertificateInstallationRes")) {
+        outDoc.CertificateInstallationRes_isUsed = 1;
+        outDoc.CertificateInstallationRes = getDoc_CertificateInstallationResType(BodyTypeJson["CertificateInstallationRes"]);
+    } else {
+        outDoc.CertificateInstallationRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CertificateUpdateReq")) {
+        outDoc.CertificateUpdateReq_isUsed = 1;
+        outDoc.CertificateUpdateReq = getDoc_CertificateUpdateReqType(BodyTypeJson["CertificateUpdateReq"]);
+    } else {
+        outDoc.CertificateUpdateReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CertificateUpdateRes")) {
+        outDoc.CertificateUpdateRes_isUsed = 1;
+        outDoc.CertificateUpdateRes = getDoc_CertificateUpdateResType(BodyTypeJson["CertificateUpdateRes"]);
+    } else {
+        outDoc.CertificateUpdateRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ChargeParameterDiscoveryRes")) {
+        outDoc.ChargeParameterDiscoveryRes_isUsed = 1;
+        outDoc.ChargeParameterDiscoveryRes = getDoc_ChargeParameterDiscoveryResType(BodyTypeJson["ChargeParameterDiscoveryRes"]);
+    } else {
+        outDoc.ChargeParameterDiscoveryRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ChargeParameterDiscoveryReq")) {
+        outDoc.ChargeParameterDiscoveryReq_isUsed = 1;
+        outDoc.ChargeParameterDiscoveryReq = getDoc_ChargeParameterDiscoveryReqType(BodyTypeJson["ChargeParameterDiscoveryReq"]);
+    } else {
+        outDoc.ChargeParameterDiscoveryReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ChargingStatusReq")) {
+        outDoc.ChargingStatusReq_isUsed = 1;
+        outDoc.ChargingStatusReq = getDoc_ChargingStatusReqType(BodyTypeJson["ChargingStatusReq"]);
+    } else {
+        outDoc.ChargingStatusReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ChargingStatusRes")) {
+        outDoc.ChargingStatusRes_isUsed = 1;
+        outDoc.ChargingStatusRes = getDoc_ChargingStatusResType(BodyTypeJson["ChargingStatusRes"]);
+    } else {
+        outDoc.ChargingStatusRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CurrentDemandReq")) {
+        outDoc.CurrentDemandReq_isUsed = 1;
+        outDoc.CurrentDemandReq = getDoc_CurrentDemandReqType(BodyTypeJson["CurrentDemandReq"]);
+    } else {
+        outDoc.CurrentDemandReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("CurrentDemandRes")) {
+        outDoc.CurrentDemandRes_isUsed = 1;
+        outDoc.CurrentDemandRes = getDoc_CurrentDemandResType(BodyTypeJson["CurrentDemandRes"]);
+    } else {
+        outDoc.CurrentDemandRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("MeteringReceiptReq")) {
+        outDoc.MeteringReceiptReq_isUsed = 1;
+        outDoc.MeteringReceiptReq = getDoc_MeteringReceiptReqType(BodyTypeJson["MeteringReceiptReq"]);
+    } else {
+        outDoc.MeteringReceiptReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("MeteringReceiptRes")) {
+        outDoc.MeteringReceiptRes_isUsed = 1;
+        outDoc.MeteringReceiptRes = getDoc_MeteringReceiptResType(BodyTypeJson["MeteringReceiptRes"]);
+    } else {
+        outDoc.MeteringReceiptRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PaymentDetailsReq")) {
+        outDoc.PaymentDetailsReq_isUsed = 1;
+        outDoc.PaymentDetailsReq = getDoc_PaymentDetailsReqType(BodyTypeJson["PaymentDetailsReq"]);
+    } else {
+        outDoc.PaymentDetailsReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PaymentDetailsRes")) {
+        outDoc.PaymentDetailsRes_isUsed = 1;
+        outDoc.PaymentDetailsRes = getDoc_PaymentDetailsResType(BodyTypeJson["PaymentDetailsRes"]);
+    } else {
+        outDoc.PaymentDetailsRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PaymentServiceSelectionReq")) {
+        outDoc.PaymentServiceSelectionReq_isUsed = 1;
+        outDoc.PaymentServiceSelectionReq = getDoc_PaymentServiceSelectionReqType(BodyTypeJson["PaymentServiceSelectionReq"]);
+    } else {
+        outDoc.PaymentServiceSelectionReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PaymentServiceSelectionRes")) {
+        outDoc.PaymentServiceSelectionRes_isUsed = 1;
+        outDoc.PaymentServiceSelectionRes = getDoc_PaymentServiceSelectionResType(BodyTypeJson["PaymentServiceSelectionRes"]);
+    } else {
+        outDoc.PaymentServiceSelectionRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PowerDeliveryReq")) {
+        outDoc.PowerDeliveryReq_isUsed = 1;
+        outDoc.PowerDeliveryReq = getDoc_PowerDeliveryReqType(BodyTypeJson["PowerDeliveryReq"]);
+    } else {
+        outDoc.PowerDeliveryReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PowerDeliveryRes")) {
+        outDoc.PowerDeliveryRes_isUsed = 1; 
+        outDoc.PowerDeliveryRes = getDoc_PowerDeliveryResType(BodyTypeJson["PowerDeliveryRes"]);
+    } else {
+        outDoc.PowerDeliveryRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PreChargeReq")) {
+        outDoc.PreChargeReq_isUsed = 1;
+        outDoc.PreChargeReq = getDoc_PreChargeReqType(BodyTypeJson["PreChargeReq"]);
+    } else {
+        outDoc.PreChargeReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("PreChargeRes")) {
+        outDoc.PreChargeRes_isUsed = 1;
+        outDoc.PreChargeRes = getDoc_PreChargeResType(BodyTypeJson["PreChargeRes"]);
+    } else {
+        outDoc.PreChargeRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ServiceDetailReq")) {
+        outDoc.ServiceDetailReq_isUsed = 1;
+        outDoc.ServiceDetailReq = getDoc_ServiceDetailReqType(BodyTypeJson["ServiceDetailReq"]);
+    } else {
+        outDoc.ServiceDetailReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ServiceDetailRes")) {
+        outDoc.ServiceDetailRes_isUsed = 1;
+        outDoc.ServiceDetailRes = getDoc_ServiceDetailResType(BodyTypeJson["ServiceDetailRes"]);
+    } else {
+        outDoc.ServiceDetailRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ServiceDiscoveryReq")) {
+        outDoc.ServiceDiscoveryReq_isUsed = 1;
+        outDoc.ServiceDiscoveryReq = getDoc_ServiceDiscoveryReqType(BodyTypeJson["ServiceDiscoveryReq"]);
+    } else {
+        outDoc.ServiceDiscoveryReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("ServiceDiscoveryRes")) {
+        outDoc.ServiceDiscoveryRes_isUsed = 1;
+        outDoc.ServiceDiscoveryRes = getDoc_ServiceDiscoveryResType(BodyTypeJson["ServiceDiscoveryRes"]);
+    } else {
+        outDoc.ServiceDiscoveryRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("SessionSetupReq")) {
+        outDoc.SessionSetupReq_isUsed = 1;
+        outDoc.SessionSetupReq = getDoc_SessionSetupReqType(BodyTypeJson["SessionSetupReq"]);
+    } else {
+        outDoc.SessionSetupReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("SessionSetupRes")) {
+        outDoc.SessionSetupRes_isUsed = 1;
+        outDoc.SessionSetupRes = getDoc_SessionSetupResType(BodyTypeJson["SessionSetupRes"]);
+    } else {
+        outDoc.SessionSetupRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("SessionStopReq")) {
+        outDoc.SessionStopReq_isUsed = 1;
+        outDoc.SessionStopReq = getDoc_SessionStopReqType(BodyTypeJson["SessionStopReq"]);
+    } else {
+        outDoc.SessionStopReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("SessionStopRes")) {
+        outDoc.SessionStopRes_isUsed = 1;
+        outDoc.SessionStopRes = getDoc_SessionStopResType(BodyTypeJson["SessionStopRes"]);
+    } else {
+        outDoc.SessionStopRes_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("WeldingDetectionReq")) {
+        outDoc.WeldingDetectionReq_isUsed = 1;
+        outDoc.WeldingDetectionReq = getDoc_WeldingDetectionReqType(BodyTypeJson["WeldingDetectionReq"]);
+    } else {
+        outDoc.WeldingDetectionReq_isUsed = 0;
+    }
+    if (BodyTypeJson.contains("WeldingDetectionRes")) {
+        outDoc.WeldingDetectionRes_isUsed = 1;
+        outDoc.WeldingDetectionRes = getDoc_WeldingDetectionResType(BodyTypeJson["WeldingDetectionRes"]);
+    } else {
+        outDoc.WeldingDetectionRes_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_V2G_Message(const struct iso2_V2G_Message& V2G_MessageDoc) {
+    json outJson;
+
+    outJson["Header"] = getJson_MessageHeaderType(V2G_MessageDoc.Header);
+    outJson["Body"] = getJson_BodyType(V2G_MessageDoc.Body);
+
+    return outJson;
+}
+
+struct iso2_V2G_Message getDoc_V2G_Message(const json& V2G_MessageJson) {
+    struct iso2_V2G_Message outDoc;
+    init_iso2_V2G_Message(&outDoc);
+
+    outDoc.Header = getDoc_MessageHeaderType(V2G_MessageJson["Header"]);
+    outDoc.Body = getDoc_BodyType(V2G_MessageJson["Body"]);
+
+    return outDoc;
+}
+
+json getJson_exiDocument(const struct iso2_exiDocument& exiDocumentDoc) {
+    json outJson;
+
+    outJson["V2G_Message"] = getJson_V2G_Message(exiDocumentDoc.V2G_Message);
+
+    return outJson;
+}
+
+struct iso2_exiDocument getDoc_exiDocument(const json& exiDocumentJson) {
+    struct iso2_exiDocument outDoc;
+    init_iso2_exiDocument(&outDoc);
+
+    outDoc.V2G_Message = getDoc_V2G_Message(exiDocumentJson["V2G_Message"]);
+
+    return outDoc;
+}
+
+json getJson_exiFragment(const struct iso2_exiFragment& exiFragmentDoc) {
+    json outJson;
+
+    if (exiFragmentDoc.AuthorizationReq_isUsed) {
+        outJson["AuthorizationReq"] = getJson_AuthorizationReqType(exiFragmentDoc.AuthorizationReq);
+    }
+    if (exiFragmentDoc.CertificateInstallationReq_isUsed) {
+        outJson["CertificateInstallationReq"] = getJson_CertificateInstallationReqType(exiFragmentDoc.CertificateInstallationReq);
+    }
+    if (exiFragmentDoc.CertificateUpdateReq_isUsed) {
+        outJson["CertificateUpdateReq"] = getJson_CertificateUpdateReqType(exiFragmentDoc.CertificateUpdateReq);
+    }
+    if (exiFragmentDoc.ContractSignatureCertChain_isUsed) {
+        outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(exiFragmentDoc.ContractSignatureCertChain);
+    }
+    if (exiFragmentDoc.ContractSignatureEncryptedPrivateKey_isUsed) {
+        outJson["ContractSignatureEncryptedPrivateKey"] = getJson_ContractSignatureEncryptedPrivateKeyType(exiFragmentDoc.ContractSignatureEncryptedPrivateKey);
+    }
+    if (exiFragmentDoc.DHpublickey_isUsed) {
+        outJson["DHpublickey"] = getJson_DiffieHellmanPublickeyType(exiFragmentDoc.DHpublickey);
+    }
+    if (exiFragmentDoc.MeteringReceiptReq_isUsed) {
+        outJson["MeteringReceiptReq"] = getJson_MeteringReceiptReqType(exiFragmentDoc.MeteringReceiptReq);
+    }
+    if (exiFragmentDoc.SalesTariff_isUsed) {
+        outJson["SalesTariff"] = getJson_SalesTariffType(exiFragmentDoc.SalesTariff);
+    }
+    if (exiFragmentDoc.SignedInfo_isUsed) {
+        outJson["SignedInfo"] = getJson_SignedInfoType(exiFragmentDoc.SignedInfo);
+    }
+    if (exiFragmentDoc.eMAID_isUsed) {
+        outJson["eMAID"] = getJson_EMAIDType(exiFragmentDoc.eMAID);
+    }
+
+    return outJson;
+}
+
+struct iso2_exiFragment getDoc_exiFragment(const json& exiFragmentJson) {
+    struct iso2_exiFragment outDoc;
+    init_iso2_exiFragment(&outDoc);
+
+    if (exiFragmentJson.contains("AuthorizationReq")) {
+        outDoc.AuthorizationReq_isUsed = 1;
+        outDoc.AuthorizationReq = getDoc_AuthorizationReqType(exiFragmentJson["AuthorizationReq"]);
+    } else {
+        outDoc.AuthorizationReq_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("CertificateInstallationReq")) {
+        outDoc.CertificateInstallationReq_isUsed = 1;
+        outDoc.CertificateInstallationReq = getDoc_CertificateInstallationReqType(exiFragmentJson["CertificateInstallationReq"]);
+    } else {
+        outDoc.CertificateInstallationReq_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("CertificateUpdateReq")) {
+        outDoc.CertificateUpdateReq_isUsed = 1;
+        outDoc.CertificateUpdateReq = getDoc_CertificateUpdateReqType(exiFragmentJson["CertificateUpdateReq"]);
+    } else {
+        outDoc.CertificateUpdateReq_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("ContractSignatureCertChain")) {
+        outDoc.ContractSignatureCertChain_isUsed = 1;
+        outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(exiFragmentJson["ContractSignatureCertChain"]);
+    } else {
+        outDoc.ContractSignatureCertChain_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("ContractSignatureEncryptedPrivateKey")) {
+        outDoc.ContractSignatureEncryptedPrivateKey_isUsed = 1;
+        outDoc.ContractSignatureEncryptedPrivateKey = getDoc_ContractSignatureEncryptedPrivateKeyType(exiFragmentJson["ContractSignatureEncryptedPrivateKey"]);
+    } else {
+        outDoc.ContractSignatureEncryptedPrivateKey_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("DHpublickey")) {
+        outDoc.DHpublickey_isUsed = 1;
+        outDoc.DHpublickey = getDoc_DiffieHellmanPublickeyType(exiFragmentJson["DHpublickey"]);
+    } else {
+        outDoc.DHpublickey_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("MeteringReceiptReq")) {
+        outDoc.MeteringReceiptReq_isUsed = 1;
+        outDoc.MeteringReceiptReq = getDoc_MeteringReceiptReqType(exiFragmentJson["MeteringReceiptReq"]);
+    } else {
+        outDoc.MeteringReceiptReq_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("SalesTariff")) {
+        outDoc.SalesTariff_isUsed = 1;
+        outDoc.SalesTariff = getDoc_SalesTariffType(exiFragmentJson["SalesTariff"]);
+    } else {
+        outDoc.SalesTariff_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("SignedInfo")) {
+        outDoc.SignedInfo_isUsed = 1;
+        outDoc.SignedInfo = getDoc_SignedInfoType(exiFragmentJson["SignedInfo"]);
+    } else {
+        outDoc.SignedInfo_isUsed = 0;
+    }
+    if (exiFragmentJson.contains("eMAID")) {
+        outDoc.eMAID_isUsed = 1;
+        outDoc.eMAID = getDoc_EMAIDType(exiFragmentJson["eMAID"]);
+    } else {
+        outDoc.eMAID_isUsed = 0;
+    }
+
+    return outDoc;
+}
+
+json getJson_xmldsigFragment(const struct iso2_xmldsigFragment& xmldsigFragmentDoc) {
+    json outJson;
+
+    if (xmldsigFragmentDoc.CanonicalizationMethod_isUsed) {
+        outJson["CanonicalizationMethod"] = getJson_CanonicalizationMethodType(xmldsigFragmentDoc.CanonicalizationMethod);
+    }
+    if (xmldsigFragmentDoc.DSAKeyValue_isUsed) {
+        outJson["DSAKeyValue"] = getJson_DSAKeyValueType(xmldsigFragmentDoc.DSAKeyValue);
+    }
+    if (xmldsigFragmentDoc.DigestMethod_isUsed) {
+        outJson["DigestMethod"] = getJson_DigestMethodType(xmldsigFragmentDoc.DigestMethod);
+    }
+    if (xmldsigFragmentDoc.KeyInfo_isUsed) {
+        outJson["KeyInfo"] = getJson_KeyInfoType(xmldsigFragmentDoc.KeyInfo);
+    }
+    if (xmldsigFragmentDoc.KeyValue_isUsed) {
+        outJson["KeyValue"] = getJson_KeyValueType(xmldsigFragmentDoc.KeyValue);
+    }
+    if (xmldsigFragmentDoc.Object_isUsed) {
+        outJson["Object"] = getJson_ObjectType(xmldsigFragmentDoc.Object);
+    }
+    if (xmldsigFragmentDoc.PGPData_isUsed) {
+        outJson["PGPData"] = getJson_PGPDataType(xmldsigFragmentDoc.PGPData);
+    }
+    if (xmldsigFragmentDoc.RSAKeyValue_isUsed) {
+        outJson["RSAKeyValue"] = getJson_RSAKeyValueType(xmldsigFragmentDoc.RSAKeyValue);
+    }
+    if (xmldsigFragmentDoc.Reference_isUsed) {
+        outJson["Reference"] = getJson_ReferenceType(xmldsigFragmentDoc.Reference);
+    }
+    if (xmldsigFragmentDoc.RetrievalMethod_isUsed) {
+        outJson["RetrievalMethod"] = getJson_RetrievalMethodType(xmldsigFragmentDoc.RetrievalMethod);
+    }
+    if (xmldsigFragmentDoc.SPKIData_isUsed) {
+        outJson["SPKIData"] = getJson_SPKIDataType(xmldsigFragmentDoc.SPKIData);
+    }
+    if (xmldsigFragmentDoc.Signature_isUsed) {
+        outJson["Signature"] = getJson_SignatureType(xmldsigFragmentDoc.Signature);
+    }
+    if (xmldsigFragmentDoc.SignatureMethod_isUsed) {
+        outJson["SignatureMethod"] = getJson_SignatureMethodType(xmldsigFragmentDoc.SignatureMethod);
+    }
+    if (xmldsigFragmentDoc.SignatureValue_isUsed) {
+        outJson["SignatureValue"] = getJson_SignatureValueType(xmldsigFragmentDoc.SignatureValue);
+    }
+    if (xmldsigFragmentDoc.SignedInfo_isUsed) {
+        outJson["SignedInfo"] = getJson_SignedInfoType(xmldsigFragmentDoc.SignedInfo);
+    }
+    if (xmldsigFragmentDoc.Transform_isUsed) {
+        outJson["Transform"] = getJson_TransformType(xmldsigFragmentDoc.Transform);
+    }
+    if (xmldsigFragmentDoc.Transforms_isUsed) {
+        outJson["Transforms"] = getJson_TransformsType(xmldsigFragmentDoc.Transforms);
+    }
+    if (xmldsigFragmentDoc.X509Data_isUsed) {
+        outJson["X509Data"] = getJson_X509DataType(xmldsigFragmentDoc.X509Data);
+    }
+    if (xmldsigFragmentDoc.X509IssuerSerial_isUsed) {
+        outJson["X509IssuerSerial"] = getJson_X509IssuerSerialType(xmldsigFragmentDoc.X509IssuerSerial);
+    }
+
+    return outJson;
+}
+
+struct iso2_xmldsigFragment getDoc_xmldsigFragment(const json& xmldsigFragmentJson) {
+    struct iso2_xmldsigFragment outDoc;
+    init_iso2_xmldsigFragment(&outDoc);
+
+    if (xmldsigFragmentJson.contains("CanonicalizationMethod")) {
+        outDoc.CanonicalizationMethod_isUsed = 1;
+        outDoc.CanonicalizationMethod = getDoc_CanonicalizationMethodType(xmldsigFragmentJson["CanonicalizationMethod"]);
+    } else {
+        outDoc.CanonicalizationMethod_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("DSAKeyValue")) {
+        outDoc.DSAKeyValue_isUsed = 1;
+        outDoc.DSAKeyValue = getDoc_DSAKeyValueType(xmldsigFragmentJson["DSAKeyValue"]);
+    } else {
+        outDoc.DSAKeyValue_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("DigestMethod")) {
+        outDoc.DigestMethod_isUsed = 1;
+        outDoc.DigestMethod = getDoc_DigestMethodType(xmldsigFragmentJson["DigestMethod"]);
+    } else {
+        outDoc.DigestMethod_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("KeyInfo")) {
+        outDoc.KeyInfo_isUsed = 1;
+        outDoc.KeyInfo = getDoc_KeyInfoType(xmldsigFragmentJson["KeyInfo"]);
+    } else {
+        outDoc.KeyInfo_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("KeyValue")) {
+        outDoc.KeyValue_isUsed = 1;
+        outDoc.KeyValue = getDoc_KeyValueType(xmldsigFragmentJson["KeyValue"]);
+    } else {
+        outDoc.KeyValue_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("Object")) {
+        outDoc.Object_isUsed = 1;
+        outDoc.Object = getDoc_ObjectType(xmldsigFragmentJson["Object"]);
+    } else {
+        outDoc.Object_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("PGPData")) {
+        outDoc.PGPData_isUsed = 1;
+        outDoc.PGPData = getDoc_PGPDataType(xmldsigFragmentJson["PGPData"]);
+    } else {
+        outDoc.PGPData_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("RSAKeyValue")) {
+        outDoc.RSAKeyValue_isUsed = 1;
+        outDoc.RSAKeyValue = getDoc_RSAKeyValueType(xmldsigFragmentJson["RSAKeyValue"]);
+    } else {
+        outDoc.RSAKeyValue_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("Reference")) {
+        outDoc.Reference_isUsed = 1;
+        outDoc.Reference = getDoc_ReferenceType(xmldsigFragmentJson["Reference"]);
+    } else {
+        outDoc.Reference_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("RetrievalMethod")) {
+        outDoc.RetrievalMethod_isUsed = 1;
+        outDoc.RetrievalMethod = getDoc_RetrievalMethodType(xmldsigFragmentJson["RetrievalMethod"]);
+    } else {
+        outDoc.RetrievalMethod_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("SPKIData")) {
+        outDoc.SPKIData_isUsed = 1;
+        outDoc.SPKIData = getDoc_SPKIDataType(xmldsigFragmentJson["SPKIData"]);
+    } else {
+        outDoc.SPKIData_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("Signature")) {
+        outDoc.Signature_isUsed = 1;
+        outDoc.Signature = getDoc_SignatureType(xmldsigFragmentJson["Signature"]);
+    } else {
+        outDoc.Signature_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("SignatureMethod")) {
+        outDoc.SignatureMethod_isUsed = 1;
+        outDoc.SignatureMethod = getDoc_SignatureMethodType(xmldsigFragmentJson["SignatureMethod"]);
+    } else {
+        outDoc.SignatureMethod_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("SignatureValue")) {
+        outDoc.SignatureValue_isUsed = 1;
+        outDoc.SignatureValue = getDoc_SignatureValueType(xmldsigFragmentJson["SignatureValue"]);
+    } else {
+        outDoc.SignatureValue_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("SignedInfo")) {
+        outDoc.SignedInfo_isUsed = 1;
+        outDoc.SignedInfo = getDoc_SignedInfoType(xmldsigFragmentJson["SignedInfo"]);
+    } else {    
+        outDoc.SignedInfo_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("Transform")) {
+        outDoc.Transform_isUsed = 1;
+        outDoc.Transform = getDoc_TransformType(xmldsigFragmentJson["Transform"]);
+    } else {
+        outDoc.Transform_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("Transforms")) {
+        outDoc.Transforms_isUsed = 1;
+        outDoc.Transforms = getDoc_TransformsType(xmldsigFragmentJson["Transforms"]);
+    } else {
+        outDoc.Transforms_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("X509Data")) {
+        outDoc.X509Data_isUsed = 1;
+        outDoc.X509Data = getDoc_X509DataType(xmldsigFragmentJson["X509Data"]);
+    } else {
+        outDoc.X509Data_isUsed = 0;
+    }
+    if (xmldsigFragmentJson.contains("X509IssuerSerial")) {
+        outDoc.X509IssuerSerial_isUsed = 1;
+        outDoc.X509IssuerSerial = getDoc_X509IssuerSerialType(xmldsigFragmentJson["X509IssuerSerial"]);
+    } else {
+        outDoc.X509IssuerSerial_isUsed = 0;
+    }
+
+    return outDoc;
+}
 
 extern "C" {
     const char* decodeFromPythonBytes(const uint8_t* data, size_t size) {
@@ -32,1137 +4393,7 @@ extern "C" {
         exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
         decode_iso2_exiDocument(&inEXI, &outDoc);
 
-        const auto& header = outDoc.V2G_Message.Header;
-        const auto& body = outDoc.V2G_Message.Body;
-
-        outJson["Header"]["SessionID"]["bytesLen"] = header.SessionID.bytesLen;
-        for (int i = 0; i < header.SessionID.bytesLen; i++) {
-            outJson["Header"]["SessionID"]["bytes"][i] = header.SessionID.bytes[i];
-        }
-
-        if (header.Notification_isUsed) {
-            outJson["Header"]["Notification"]["FaultCode"] = header.Notification.FaultCode;
-            outJson["Header"]["Notification"]["FaultMsg"]["charactersLen"] = header.Notification.FaultMsg.charactersLen;
-            for (int i = 0; i < header.Notification.FaultMsg.charactersLen; i++) {
-                outJson["Header"]["Notification"]["FaultMsg"][i] = header.Notification.FaultMsg.characters[i];
-            }
-        }
-
-        // TODO: implement signature, check if same as DIN header and copy over if so
-
-        if (body.AuthorizationReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            if (body.AuthorizationReq.Id_isUsed) {
-                outJson["Body"]["AuthorizationReq"]["Id"]["charactersLen"] = body.AuthorizationReq.Id.charactersLen;
-                for (int i = 0; i < body.AuthorizationReq.Id.charactersLen; i++) {
-                    outJson["Body"]["AuthorizationReq"]["Id"]["characters"][i] = body.AuthorizationReq.Id.characters[i];
-                }
-            }
-
-            if (body.AuthorizationReq.GenChallenge_isUsed) {
-                outJson["Body"]["AuthorizationReq"]["GenChallenge"]["bytesLen"] = body.AuthorizationReq.GenChallenge.bytesLen;
-                for (int i = 0; i < body.AuthorizationReq.GenChallenge.bytesLen; i++) {
-                    outJson["Body"]["AuthorizationReq"]["GenChallenge"]["bytes"][i] = body.AuthorizationReq.GenChallenge.bytes[i];
-                }
-            } 
-            
-            if (!(body.AuthorizationReq.GenChallenge_isUsed | body.AuthorizationReq.Id_isUsed)) {
-                outJson["Body"]["AuthorizationReq"]["isUsed"] = true;
-            }
-
-        } else if (body.AuthorizationRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["AuthorizationRes"]["ResponseCode"] = body.AuthorizationRes.ResponseCode;
-
-            outJson["Body"]["AuthorizationRes"]["EVSEProcessing"] = body.AuthorizationRes.EVSEProcessing;
-
-        } else if (body.CableCheckReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVReady"] = body.CableCheckReq.DC_EVStatus.EVReady;
-
-            outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVErrorCode"] = body.CableCheckReq.DC_EVStatus.EVErrorCode;
-
-            outJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVRESSSOC"] = body.CableCheckReq.DC_EVStatus.EVRESSSOC;
-
-        } else if (body.CableCheckRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CableCheckRes"]["ResponseCode"] = body.CableCheckRes.ResponseCode;
-
-            outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.CableCheckRes.DC_EVSEStatus.NotificationMaxDelay;
-            outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSENotification"] = body.CableCheckRes.DC_EVSEStatus.EVSENotification;
-            if (body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus;
-            }
-            outJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.CableCheckRes.DC_EVSEStatus.EVSEStatusCode;
-
-            outJson["Body"]["CableCheckRes"]["EVSEProcessing"] = body.CableCheckRes.EVSEProcessing;
-
-        } else if (body.CertificateInstallationReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CertificateInstallationReq"]["Id"]["charactersLen"] = body.CertificateInstallationReq.Id.charactersLen;
-            for (int i = 0; i < body.CertificateInstallationReq.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateInstallationReq"]["Id"]["characters"][i] = body.CertificateInstallationReq.Id.characters[i];
-            }
-
-            outJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytesLen"] = body.CertificateInstallationReq.OEMProvisioningCert.bytesLen;
-            for (int i = 0; i < body.CertificateInstallationReq.OEMProvisioningCert.bytesLen; i++) {
-                outJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytes"][i] = body.CertificateInstallationReq.OEMProvisioningCert.bytes[i];
-            }
-
-            outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen;
-            for (int i = 0; i < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
-                outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["charactersLen"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen;
-                for (int j = 0; j < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen; j++) {
-                    outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j];
-                }
-                outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets_count"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count;
-                for (size_t k = 0; k < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
-                    outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][k] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[k];
-                }
-                outJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["is_negative"] = body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative;
-            }
-
-        } else if (body.CertificateInstallationRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CertificateInstallationRes"]["ResponseCode"] = body.CertificateInstallationRes.ResponseCode;
-
-            if (body.CertificateInstallationRes.SAProvisioningCertificateChain.Id_isUsed) {
-                outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Id"]["charactersLen"] = body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.charactersLen;
-                for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.charactersLen; i++) {
-                    outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Id"]["characters"][i] = body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytesLen"] = body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytesLen;
-            for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytes"][i] = body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytes[i];
-            }
-            if (body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates_isUsed) {
-                outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-            if (body.CertificateInstallationRes.ContractSignatureCertChain.Id_isUsed) {
-                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Id"]["charactersLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.Id.charactersLen;
-                for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Id"]["characters"][i] = body.CertificateInstallationRes.ContractSignatureCertChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen;
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i] = body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytes[i];
-            }
-            if (body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed) {
-                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-            outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["charactersLen"] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen;
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["characters"][i] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.characters[i];
-            }
-            outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytesLen"] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen;
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytes"][i] = body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytes[i];
-            }
-
-            outJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["Id"]["charactersLen"] = body.CertificateInstallationRes.DHpublickey.Id.charactersLen;
-            for (int i = 0; i < body.CertificateInstallationRes.DHpublickey.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["Id"]["characters"][i] = body.CertificateInstallationRes.DHpublickey.Id.characters[i];
-            }
-            outJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["CONTENT"]["bytesLen"] = body.CertificateInstallationRes.DHpublickey.CONTENT.bytesLen;
-            for (int i = 0; i < body.CertificateInstallationRes.DHpublickey.CONTENT.bytesLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["CONTENT"]["bytes"][i] = body.CertificateInstallationRes.DHpublickey.CONTENT.bytes[i];
-            }
-
-            outJson["Body"]["CertificateInstallationRes"]["eMAID"]["Id"]["charactersLen"] = body.CertificateInstallationRes.eMAID.Id.charactersLen;
-            for (int i = 0; i < body.CertificateInstallationRes.eMAID.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["eMAID"]["Id"]["characters"][i] = body.CertificateInstallationRes.eMAID.Id.characters[i];
-            }
-            outJson["Body"]["CertificateInstallationRes"]["eMAID"]["CONTENT"]["charactersLen"] = body.CertificateInstallationRes.eMAID.CONTENT.charactersLen;
-            for (int i = 0; i < body.CertificateInstallationRes.eMAID.CONTENT.charactersLen; i++) {
-                outJson["Body"]["CertificateInstallationRes"]["eMAID"]["CONTENT"]["characters"][i] = body.CertificateInstallationRes.eMAID.CONTENT.characters[i];
-            }
-
-        } else if (body.CertificateUpdateReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            
-            outJson["Body"]["CertificateUpdateReq"]["Id"]["charactersLen"] = body.CertificateUpdateReq.Id.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateReq.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateReq"]["Id"]["characters"][i] = body.CertificateUpdateReq.Id.characters[i];
-            }
-
-            if (body.CertificateUpdateReq.ContractSignatureCertChain.Id_isUsed) {
-                outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Id"]["charactersLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.Id.charactersLen;
-                for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Id"]["characters"][i] = body.CertificateUpdateReq.ContractSignatureCertChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen;
-            for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i] = body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytes[i];
-            }
-            if (body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed) {
-                outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-            outJson["Body"]["CertificateUpdateReq"]["eMAID"]["charactersLen"] = body.CertificateUpdateReq.eMAID.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateReq.eMAID.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateReq"]["eMAID"]["characters"][i] = body.CertificateUpdateReq.eMAID.characters[i];
-            }
-
-            outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen;
-            for (int i = 0; i < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
-                outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["charactersLen"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen;
-                for (int j = 0; j < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen; j++) {
-                    outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j];
-                }
-                outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets_count"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count;
-                for (size_t k = 0; k < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; k++) {
-                    outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][k] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[k];
-                }
-                outJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["is_negative"] = body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative;
-            }
-
-        } else if (body.CertificateUpdateRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CertificateUpdateRes"]["ResponseCode"] = body.CertificateUpdateRes.ResponseCode;
-
-            if (body.CertificateUpdateRes.SAProvisioningCertificateChain.Id_isUsed) {
-                outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Id"]["charactersLen"] = body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.charactersLen;
-                for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.charactersLen; i++) {
-                    outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Id"]["characters"][i] = body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytesLen"] = body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytesLen;
-            for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytes"][i] = body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytes[i];
-            }
-            if (body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates_isUsed) {
-                outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-            if (body.CertificateUpdateRes.ContractSignatureCertChain.Id_isUsed) {
-                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Id"]["charactersLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.Id.charactersLen;
-                for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Id"]["characters"][i] = body.CertificateUpdateRes.ContractSignatureCertChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen;
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i] = body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytes[i];
-            }
-            if (body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed) {
-                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-            outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["charactersLen"] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["characters"][i] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.characters[i];
-            }
-            outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytesLen"] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen;
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytes"][i] = body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytes[i];
-            }
-
-            outJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["Id"]["charactersLen"] = body.CertificateUpdateRes.DHpublickey.Id.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateRes.DHpublickey.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["Id"]["characters"][i] = body.CertificateUpdateRes.DHpublickey.Id.characters[i];
-            }
-            outJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["CONTENT"]["bytesLen"] = body.CertificateUpdateRes.DHpublickey.CONTENT.bytesLen;
-            for (int i = 0; i < body.CertificateUpdateRes.DHpublickey.CONTENT.bytesLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["CONTENT"]["bytes"][i] = body.CertificateUpdateRes.DHpublickey.CONTENT.bytes[i];
-            }
-
-            outJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["charactersLen"] = body.CertificateUpdateRes.eMAID.Id.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.Id.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["characters"][i] = body.CertificateUpdateRes.eMAID.Id.characters[i];
-            }
-            outJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["charactersLen"] = body.CertificateUpdateRes.eMAID.CONTENT.charactersLen;
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.CONTENT.charactersLen; i++) {
-                outJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["characters"][i] = body.CertificateUpdateRes.eMAID.CONTENT.characters[i];
-            }
-
-            if (body.CertificateUpdateRes.RetryCounter_isUsed) {
-                outJson["Body"]["CertificateUpdateRes"]["RetryCounter"] = body.CertificateUpdateRes.RetryCounter;
-            }
-
-        } else if (body.ChargeParameterDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            if (body.ChargeParameterDiscoveryReq.MaxEntriesSAScheduleTuple_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["MaxEntriesSAScheduleTuple"] = body.ChargeParameterDiscoveryReq.MaxEntriesSAScheduleTuple;
-            }
-
-            outJson["Body"]["ChargeParameterDiscoveryReq"]["RequestedEnergyTransferMode"] = body.ChargeParameterDiscoveryReq.RequestedEnergyTransferMode;
-
-            if (body.ChargeParameterDiscoveryReq.AC_EVChargeParameter_isUsed) {
-                if (body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.DepartureTime_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["DepartureTime"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.DepartureTime;
-                }
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Multiplier"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Unit"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Value"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Multiplier"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Unit"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Value"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Multiplier"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Unit"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Value"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Multiplier"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Unit"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Value"] = body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Value;
-            }
-
-            if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter_isUsed) {
-                if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DepartureTime_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DepartureTime"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DepartureTime;
-                }
-                
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVReady"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVReady;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVErrorCode"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVErrorCode;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVRESSSOC"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVRESSSOC;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Value"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Value;
-
-                if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Value"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Value;
-                }
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Value"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Value;
-
-                if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Multiplier"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Unit"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Value"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Value;
-                }
-
-                if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.FullSOC_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["FullSOC"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.FullSOC;
-                }
-
-                if (body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.BulkSOC_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["BulkSOC"] = body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.BulkSOC;
-                }
-            }
-
-            if (body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed) {
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DepartureTime_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DepartureTime"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DepartureTime;
-                }
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.DepartureTime_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["DepartureTime"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.DepartureTime;
-                }
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Value;
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DepartureTime_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DepartureTime"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DepartureTime;
-                }
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVReady"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVReady;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVErrorCode"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVErrorCode;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVRESSSOC"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVRESSSOC;
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Value;
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Value;
-                }
-
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Value;
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Multiplier"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Unit"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Value"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Value;
-                }
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.FullSOC_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["FullSOC"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.FullSOC;
-                }
-
-                if (body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.BulkSOC_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["BulkSOC"] = body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.BulkSOC;
-                }
-            }
-
-        } else if (body.ChargeParameterDiscoveryRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ChargeParameterDiscoveryRes"]["ResponseCode"] = body.ChargeParameterDiscoveryRes.ResponseCode;
-            outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEProcessing"] = body.ChargeParameterDiscoveryRes.EVSEProcessing;
-
-            if (body.ChargeParameterDiscoveryRes.SAScheduleList_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["arrayLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.arrayLen;
-                for (int i = 0; i < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.arrayLen; i++) {
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SAScheduleTupleID"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SAScheduleTupleID;
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["arrayLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.arrayLen;
-                    for (int j = 0; j < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.arrayLen; j++) {
-                        if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["RelativeTimeInterval"]["start"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.start;
-                            if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.duration_isUsed) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["RelativeTimeInterval"]["duration"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.duration;
-                            }
-                        }
-                        if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["TimeInterval"]["_unused"] = 0;
-                        }
-                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Multiplier"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Multiplier;
-                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Unit"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Unit;
-                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Value"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Value;
-                    }
-                    if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff_isUsed) {
-                        if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["Id"]["charactersLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.charactersLen;
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.charactersLen; k++) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["Id"]["characters"][k] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.characters[k];
-                            }
-                        }
-                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffID"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffID;
-                        if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffDescription"]["charactersLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.charactersLen;
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.charactersLen; k++) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffDescription"]["characters"][k] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.characters[k];
-                            }
-                        }
-                        if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.NumEPriceLevels_isUsed) {
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["NumEPriceLevels"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.NumEPriceLevels;
-                        }
-                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["arrayLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.arrayLen;
-                        for (int j = 0; j < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.arrayLen; j++) {
-                            if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval_isUsed) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["RelativeTimeInterval"]["start"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.start;
-                                if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.duration_isUsed) {
-                                    outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["RelativeTimeInterval"]["duration"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.duration;
-                                }
-                            }
-                            if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["TimeInterval"]["_unused"] = 0;
-                            }
-                            if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel_isUsed) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["EPriceLevel"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel;
-                            }
-                            outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["arrayLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.arrayLen;
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.arrayLen; k++) {
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Multiplier"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Multiplier;
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Unit"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Unit;
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Value"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Value;
-
-                                outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["arrayLen"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.arrayLen;
-                                for (int l = 0; l < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.arrayLen; l++) {
-                                    outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["costKind"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].costKind;
-                                    outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["amount"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amount;
-                                    if (body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amountMultiplier_isUsed) {
-                                        outJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["amountMultiplier"] = body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amountMultiplier;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (body.ChargeParameterDiscoveryRes.SASchedules_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["SASchedules"]["_unused"] = 0;
-            }
-
-            if (body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["EVSENotification"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.EVSENotification;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["RCD"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.RCD;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Multiplier"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Unit"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Value"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Multiplier"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Unit"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Value"] = body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Value;
-            }
-
-            if (body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSENotification"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSENotification;
-                if (body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEIsolationStatus;
-                }
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEStatusCode;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Value;
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Value;
-
-                if (body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Value;
-                }
-
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Multiplier;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Unit;
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Value;
-
-                if (body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered_isUsed) {
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Multiplier"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Multiplier;
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Unit"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Unit;
-                    outJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Value"] = body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Value;
-                }
-            }
-
-            if (body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed) {
-                outJson["Body"]["ChargeParameterDiscoveryRes"]["EVSEChargeParameter"]["_unused"] = 0;
-            }
-        } else if (body.ChargingStatusReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ChargingStatusReq"]["_unused"] = 0;
-
-        } else if (body.ChargingStatusRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ChargingStatusRes"]["ResponseCode"] = body.ChargingStatusRes.ResponseCode;
-            
-            outJson["Body"]["ChargingStatusRes"]["EVSEID"]["charactersLen"] = body.ChargingStatusRes.EVSEID.charactersLen;
-            for (int i = 0; i < body.ChargingStatusRes.EVSEID.charactersLen; i++) {
-                outJson["Body"]["ChargingStatusRes"]["EVSEID"]["characters"][i] = body.ChargingStatusRes.EVSEID.characters[i];
-            }
-
-            if (body.ChargingStatusRes.EVSEMaxCurrent_isUsed) {
-                outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Multiplier"] = body.ChargingStatusRes.EVSEMaxCurrent.Multiplier;
-                outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Unit"] = body.ChargingStatusRes.EVSEMaxCurrent.Unit;
-                outJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Value"] = body.ChargingStatusRes.EVSEMaxCurrent.Value;
-            }
-
-            if (body.ChargingStatusRes.MeterInfo_isUsed) {
-                outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["charactersLen"] = body.ChargingStatusRes.MeterInfo.MeterID.charactersLen;
-                for (int i = 0; i < body.ChargingStatusRes.MeterInfo.MeterID.charactersLen; i++) {
-                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["characters"][i] = body.ChargingStatusRes.MeterInfo.MeterID.characters[i];
-                }
-                
-                if (body.ChargingStatusRes.MeterInfo.MeterReading_isUsed) {
-                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"] = body.ChargingStatusRes.MeterInfo.MeterReading;
-                }
-
-                if (body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed) {
-                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"] = body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen;
-                    for (int i = 0; i < body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen; i++) {
-                        outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i] = body.ChargingStatusRes.MeterInfo.SigMeterReading.bytes[i];
-                    }
-                }
-
-                if (body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed) {
-                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterStatus"] = body.ChargingStatusRes.MeterInfo.MeterStatus;
-                }
-
-                if (body.ChargingStatusRes.MeterInfo.TMeter_isUsed) {
-                    outJson["Body"]["ChargingStatusRes"]["MeterInfo"]["TMeter"] = body.ChargingStatusRes.MeterInfo.TMeter;
-                }
-            }
-
-            if (body.ChargingStatusRes.ReceiptRequired_isUsed) {
-                outJson["Body"]["ChargingStatusRes"]["ReceiptRequired"] = body.ChargingStatusRes.ReceiptRequired;
-            }
-
-            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.ChargingStatusRes.AC_EVSEStatus.NotificationMaxDelay;
-            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["EVSENotification"] = body.ChargingStatusRes.AC_EVSEStatus.EVSENotification;
-            outJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["RCD"] = body.ChargingStatusRes.AC_EVSEStatus.RCD;
-
-        } else if (body.CurrentDemandReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVReady"] = body.CurrentDemandReq.DC_EVStatus.EVReady;
-            outJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVErrorCode"] = body.CurrentDemandReq.DC_EVStatus.EVErrorCode;
-            outJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVRESSSOC"] = body.CurrentDemandReq.DC_EVStatus.EVRESSSOC;
-
-            outJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Multiplier"] = body.CurrentDemandReq.EVTargetCurrent.Multiplier;
-            outJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Unit"] = body.CurrentDemandReq.EVTargetCurrent.Unit;
-            outJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Value"] = body.CurrentDemandReq.EVTargetCurrent.Value;
-
-            if (body.CurrentDemandReq.EVMaximumVoltageLimit_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Multiplier"] = body.CurrentDemandReq.EVMaximumVoltageLimit.Multiplier;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Unit"] = body.CurrentDemandReq.EVMaximumVoltageLimit.Unit;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Value"] = body.CurrentDemandReq.EVMaximumVoltageLimit.Value;
-            }
-
-            if (body.CurrentDemandReq.EVMaximumCurrentLimit_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Multiplier"] = body.CurrentDemandReq.EVMaximumCurrentLimit.Multiplier;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Unit"] = body.CurrentDemandReq.EVMaximumCurrentLimit.Unit;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Value"] = body.CurrentDemandReq.EVMaximumCurrentLimit.Value;
-            }
-
-            if (body.CurrentDemandReq.EVMaximumPowerLimit_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Multiplier"] = body.CurrentDemandReq.EVMaximumPowerLimit.Multiplier;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Unit"] = body.CurrentDemandReq.EVMaximumPowerLimit.Unit;
-                outJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Value"] = body.CurrentDemandReq.EVMaximumPowerLimit.Value;
-            }
-
-            if (body.CurrentDemandReq.BulkChargingComplete_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["BulkChargingComplete"] = body.CurrentDemandReq.BulkChargingComplete;
-            }
-
-            outJson["Body"]["CurrentDemandReq"]["ChargingComplete"] = body.CurrentDemandReq.ChargingComplete;
-
-            if (body.CurrentDemandReq.RemainingTimeToFullSoC_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Multiplier"] = body.CurrentDemandReq.RemainingTimeToFullSoC.Multiplier;
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Unit"] = body.CurrentDemandReq.RemainingTimeToFullSoC.Unit;
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Value"] = body.CurrentDemandReq.RemainingTimeToFullSoC.Value;
-            }
-
-            if (body.CurrentDemandReq.RemainingTimeToBulkSoC_isUsed) {
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Multiplier"] = body.CurrentDemandReq.RemainingTimeToBulkSoC.Multiplier;
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Unit"] = body.CurrentDemandReq.RemainingTimeToBulkSoC.Unit;
-                outJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Value"] = body.CurrentDemandReq.RemainingTimeToBulkSoC.Value;
-            }
-
-            outJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Multiplier"] = body.CurrentDemandReq.EVTargetVoltage.Multiplier;
-            outJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Unit"] = body.CurrentDemandReq.EVTargetVoltage.Unit;
-            outJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Value"] = body.CurrentDemandReq.EVTargetVoltage.Value;
-
-        } else if (body.CurrentDemandRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["CurrentDemandRes"]["ResponseCode"] = body.CurrentDemandRes.ResponseCode;
-
-            outJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.CurrentDemandRes.DC_EVSEStatus.NotificationMaxDelay;
-            outJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSENotification"] = body.CurrentDemandRes.DC_EVSEStatus.EVSENotification;
-            if (body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus;
-            }
-            outJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.CurrentDemandRes.DC_EVSEStatus.EVSEStatusCode;
-
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Multiplier"] = body.CurrentDemandRes.EVSEPresentVoltage.Multiplier;
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Unit"] = body.CurrentDemandRes.EVSEPresentVoltage.Unit;
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Value"] = body.CurrentDemandRes.EVSEPresentVoltage.Value;
-
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Multiplier"] = body.CurrentDemandRes.EVSEPresentCurrent.Multiplier;
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Unit"] = body.CurrentDemandRes.EVSEPresentCurrent.Unit;
-            outJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Value"] = body.CurrentDemandRes.EVSEPresentCurrent.Value;
-
-            outJson["Body"]["CurrentDemandRes"]["EVSECurrentLimitAchieved"] = body.CurrentDemandRes.EVSECurrentLimitAchieved;
-            outJson["Body"]["CurrentDemandRes"]["EVSEVoltageLimitAchieved"] = body.CurrentDemandRes.EVSEVoltageLimitAchieved;
-            outJson["Body"]["CurrentDemandRes"]["EVSEPowerLimitAchieved"] = body.CurrentDemandRes.EVSEPowerLimitAchieved;
-
-            if (body.CurrentDemandRes.EVSEMaximumVoltageLimit_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Multiplier"] = body.CurrentDemandRes.EVSEMaximumVoltageLimit.Multiplier;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Unit"] = body.CurrentDemandRes.EVSEMaximumVoltageLimit.Unit;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Value"] = body.CurrentDemandRes.EVSEMaximumVoltageLimit.Value;
-            }
-
-            if (body.CurrentDemandRes.EVSEMaximumCurrentLimit_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Multiplier"] = body.CurrentDemandRes.EVSEMaximumCurrentLimit.Multiplier;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Unit"] = body.CurrentDemandRes.EVSEMaximumCurrentLimit.Unit;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Value"] = body.CurrentDemandRes.EVSEMaximumCurrentLimit.Value;
-            }
-
-            if (body.CurrentDemandRes.EVSEMaximumPowerLimit_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Multiplier"] = body.CurrentDemandRes.EVSEMaximumPowerLimit.Multiplier;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Unit"] = body.CurrentDemandRes.EVSEMaximumPowerLimit.Unit;
-                outJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Value"] = body.CurrentDemandRes.EVSEMaximumPowerLimit.Value;
-            }
-
-            outJson["Body"]["CurrentDemandRes"]["EVSEID"]["charactersLen"] = body.CurrentDemandRes.EVSEID.charactersLen;
-            for (int i = 0; i < body.CurrentDemandRes.EVSEID.charactersLen; i++) {
-                outJson["Body"]["CurrentDemandRes"]["EVSEID"]["characters"][i] = body.CurrentDemandRes.EVSEID.characters[i];
-            }
-
-            outJson["Body"]["CurrentDemandRes"]["SAScheduleTupleID"] = body.CurrentDemandRes.SAScheduleTupleID;
-
-            if (body.CurrentDemandRes.MeterInfo_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterID"]["charactersLen"] = body.CurrentDemandRes.MeterInfo.MeterID.charactersLen;
-                for (int i = 0; i < body.CurrentDemandRes.MeterInfo.MeterID.charactersLen; i++) {
-                    outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterID"]["characters"][i] = body.CurrentDemandRes.MeterInfo.MeterID.characters[i];
-                }
-                
-                if (body.CurrentDemandRes.MeterInfo.MeterReading_isUsed) {
-                    outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterReading"] = body.CurrentDemandRes.MeterInfo.MeterReading;
-                }
-
-                if (body.CurrentDemandRes.MeterInfo.SigMeterReading_isUsed) {
-                    outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"] = body.CurrentDemandRes.MeterInfo.SigMeterReading.bytesLen;
-                    for (int i = 0; i < body.CurrentDemandRes.MeterInfo.SigMeterReading.bytesLen; i++) {
-                        outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i] = body.CurrentDemandRes.MeterInfo.SigMeterReading.bytes[i];
-                    }
-                }
-
-                if (body.CurrentDemandRes.MeterInfo.MeterStatus_isUsed) {
-                    outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterStatus"] = body.CurrentDemandRes.MeterInfo.MeterStatus;
-                }
-
-                if (body.CurrentDemandRes.MeterInfo.TMeter_isUsed) {
-                    outJson["Body"]["CurrentDemandRes"]["MeterInfo"]["TMeter"] = body.CurrentDemandRes.MeterInfo.TMeter;
-                }
-            }
-
-            if (body.CurrentDemandRes.ReceiptRequired_isUsed) {
-                outJson["Body"]["CurrentDemandRes"]["ReceiptRequired"] = body.CurrentDemandRes.ReceiptRequired;
-            }
-
-        } else if (body.MeteringReceiptReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            if (body.MeteringReceiptReq.Id_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["Id"]["charactersLen"] = body.MeteringReceiptReq.Id.charactersLen;
-                for (int i = 0; i < body.MeteringReceiptReq.Id.charactersLen; i++) {
-                    outJson["Body"]["MeteringReceiptReq"]["Id"]["characters"][i] = body.MeteringReceiptReq.Id.characters[i];
-                }
-            }
-
-            outJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytesLen"] = body.MeteringReceiptReq.SessionID.bytesLen;
-            for (int i = 0; i < body.MeteringReceiptReq.SessionID.bytesLen; i++) {
-                outJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytes"][i] = body.MeteringReceiptReq.SessionID.bytes[i];
-            }
-
-            if (body.MeteringReceiptReq.SAScheduleTupleID_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["SAScheduleTupleID"] = body.MeteringReceiptReq.SAScheduleTupleID;
-            }
-
-            outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["charactersLen"] = body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen;
-            for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen; i++) {
-                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["characters"][i] = body.MeteringReceiptReq.MeterInfo.MeterID.characters[i];
-            }
-            if (body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"] = body.MeteringReceiptReq.MeterInfo.MeterReading;
-            }
-            if (body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytesLen"] = body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen;
-                for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen; i++) {
-                    outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytes"][i] = body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytes[i];
-                }
-            }
-            if (body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterStatus"] = body.MeteringReceiptReq.MeterInfo.MeterStatus;
-            }
-            if (body.MeteringReceiptReq.MeterInfo.TMeter_isUsed) {
-                outJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["TMeter"] = body.MeteringReceiptReq.MeterInfo.TMeter;
-            }
-
-        } else if (body.MeteringReceiptRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["MeteringReceiptRes"]["ResponseCode"] = body.MeteringReceiptRes.ResponseCode;
-
-            if (body.MeteringReceiptRes.AC_EVSEStatus_isUsed) {
-                outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.AC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.AC_EVSEStatus.EVSENotification;
-                outJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["RCD"] = body.MeteringReceiptRes.AC_EVSEStatus.RCD;
-            }
-
-            if (body.MeteringReceiptRes.DC_EVSEStatus_isUsed) {
-                outJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.DC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.DC_EVSEStatus.EVSENotification;
-                if (body.MeteringReceiptRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                    outJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.MeteringReceiptRes.DC_EVSEStatus.EVSEIsolationStatus;
-                }
-                outJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.MeteringReceiptRes.DC_EVSEStatus.EVSEStatusCode;
-            }
-
-            if (body.MeteringReceiptRes.EVSEStatus_isUsed) {
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.EVSEStatus.EVSENotification;
-
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.EVSENotification;
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["RCD"] = body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.RCD;
-
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSENotification"] = body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSENotification;
-                if (body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                    outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus;
-                }
-                outJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEStatusCode;
-            }
-
-        } else if (body.PaymentDetailsReq_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PaymentDetailsReq"]["eMAID"]["charactersLen"] = body.PaymentDetailsReq.eMAID.charactersLen;
-            for (int i = 0; i < body.PaymentDetailsReq.eMAID.charactersLen; i++) {
-                outJson["Body"]["PaymentDetailsReq"]["eMAID"]["characters"][i] = body.PaymentDetailsReq.eMAID.characters[i];
-            }
-
-            if (body.PaymentDetailsReq.ContractSignatureCertChain.Id_isUsed) {
-                outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Id"]["charactersLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.Id.charactersLen;
-                for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Id"]["characters"][i] = body.PaymentDetailsReq.ContractSignatureCertChain.Id.characters[i];
-                }
-            }
-            outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen;
-            for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i] = body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytes[i];
-            }
-
-            if (body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed) {
-                outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen;
-                for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"] = body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen;
-                    for (int j = 0; j < body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        outJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j] = body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j];
-                    }
-                }
-            }
-
-        } else if (body.PaymentDetailsRes_isUsed) {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PaymentDetailsRes"]["ResponseCode"] = body.PaymentDetailsRes.ResponseCode;
-
-            outJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["bytesLen"] = body.PaymentDetailsRes.GenChallenge.bytesLen;
-            for (int i = 0; i < body.PaymentDetailsRes.GenChallenge.bytesLen; i++) {
-                outJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["bytes"][i] = body.PaymentDetailsRes.GenChallenge.bytes[i];
-            }
-
-            outJson["Body"]["PaymentDetailsRes"]["EVSETimeStamp"] = body.PaymentDetailsRes.EVSETimeStamp;
-
-        } else if (body.PaymentServiceSelectionReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PaymentServiceSelectionReq"]["SelectedPaymentOption"] = body.PaymentServiceSelectionReq.SelectedPaymentOption;
-
-            outJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["arrayLen"] = body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.arrayLen;
-            for (int i = 0; i < body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.arrayLen; i++) {
-                outJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["array"][i]["ServiceID"] = body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ServiceID;
-                if (body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ParameterSetID_isUsed) {
-                    outJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["array"][i]["ParameterSetID"] = body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ParameterSetID;
-                }
-            }
-
-        } else if (body.PaymentServiceSelectionRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PaymentServiceSelectionRes"]["ResponseCode"] = body.PaymentServiceSelectionRes.ResponseCode;
-
-        } else if (body.PowerDeliveryReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PowerDeliveryReq"]["ChargeProgress"] = body.PowerDeliveryReq.ChargeProgress;
-
-            outJson["Body"]["PowerDeliveryReq"]["SAScheduleTupleID"] = body.PowerDeliveryReq.SAScheduleTupleID;
-
-            if (body.PowerDeliveryReq.ChargingProfile_isUsed) {
-                outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["arrayLen"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.arrayLen;
-                for (int i = 0; i < body.PowerDeliveryReq.ChargingProfile.ProfileEntry.arrayLen; i++) {
-                    outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryStart"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryStart;
-
-                    outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Multiplier"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Multiplier;
-                    outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Unit"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Unit;
-                    outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Value"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Value;
-
-                    if (body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed) {
-                        outJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxNumberOfPhasesInUse"] = body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxNumberOfPhasesInUse;
-                    }
-                }
-            }
-
-            if (body.PowerDeliveryReq.DC_EVPowerDeliveryParameter_isUsed) {
-                outJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVReady"] = body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVReady;
-                outJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVErrorCode"] = body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVErrorCode;
-                outJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVRESSSOC"] = body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVRESSSOC;
-
-                if (body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.BulkChargingComplete_isUsed) {
-                    outJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["BulkChargingComplete"] = body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.BulkChargingComplete;
-                }
-
-                outJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["ChargingComplete"] = body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.ChargingComplete;
-            }
-
-            if (body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed) {
-                outJson["Body"]["PowerDeliveryReq"]["EVPowerDeliveryParameter"]["_unused"] = 0;
-            }
-
-        } else if (body.PowerDeliveryRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PowerDeliveryRes"]["ResponseCode"] = body.PowerDeliveryRes.ResponseCode;
-
-            if (body.PowerDeliveryRes.AC_EVSEStatus_isUsed) {
-                outJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.PowerDeliveryRes.AC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["EVSENotification"] = body.PowerDeliveryRes.AC_EVSEStatus.EVSENotification;
-                outJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["RCD"] = body.PowerDeliveryRes.AC_EVSEStatus.RCD;
-            }
-
-            if (body.PowerDeliveryRes.DC_EVSEStatus_isUsed) {
-                outJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.PowerDeliveryRes.DC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSENotification"] = body.PowerDeliveryRes.DC_EVSEStatus.EVSENotification;
-                if (body.PowerDeliveryRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                    outJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.PowerDeliveryRes.DC_EVSEStatus.EVSEIsolationStatus;
-                }
-                outJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.PowerDeliveryRes.DC_EVSEStatus.EVSEStatusCode;
-            }
-
-            if (body.PowerDeliveryRes.EVSEStatus_isUsed) {
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["NotificationMaxDelay"] = body.PowerDeliveryRes.EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["EVSENotification"] = body.PowerDeliveryRes.EVSEStatus.EVSENotification;
-
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["NotificationMaxDelay"] = body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["EVSENotification"] = body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.EVSENotification;
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["RCD"] = body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.RCD;
-
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.NotificationMaxDelay;
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSENotification"] = body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSENotification;
-                if (body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                    outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus;
-                }
-                outJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEStatusCode;
-            }
-
-        } else if (body.PreChargeReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVReady"] = body.PreChargeReq.DC_EVStatus.EVReady;
-            outJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVErrorCode"] = body.PreChargeReq.DC_EVStatus.EVErrorCode;
-            outJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVRESSSOC"] = body.PreChargeReq.DC_EVStatus.EVRESSSOC;
-
-            outJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Multiplier"] = body.PreChargeReq.EVTargetVoltage.Multiplier;
-            outJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Unit"] = body.PreChargeReq.EVTargetVoltage.Unit;
-            outJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Value"] = body.PreChargeReq.EVTargetVoltage.Value;
-
-            outJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Multiplier"] = body.PreChargeReq.EVTargetCurrent.Multiplier;
-            outJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Unit"] = body.PreChargeReq.EVTargetCurrent.Unit;
-            outJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Value"] = body.PreChargeReq.EVTargetCurrent.Value;
-
-        } else if (body.PreChargeRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["PreChargeRes"]["ResponseCode"] = body.PreChargeRes.ResponseCode;
-
-            outJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.PreChargeRes.DC_EVSEStatus.NotificationMaxDelay;
-            outJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSENotification"] = body.PreChargeRes.DC_EVSEStatus.EVSENotification;
-            if (body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                outJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus;
-            }
-            outJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.PreChargeRes.DC_EVSEStatus.EVSEStatusCode;
-
-            outJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Multiplier"] = body.PreChargeRes.EVSEPresentVoltage.Multiplier;
-            outJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Unit"] = body.PreChargeRes.EVSEPresentVoltage.Unit;
-            outJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Value"] = body.PreChargeRes.EVSEPresentVoltage.Value;
-
-        } else if (body.ServiceDetailReq_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ServiceDetailReq"]["ServiceID"] = body.ServiceDetailReq.ServiceID;
-
-        } else if (body.ServiceDetailRes_isUsed) {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ServiceDetailRes"]["ResponseCode"] = body.ServiceDetailRes.ResponseCode;
-
-            outJson["Body"]["ServiceDetailRes"]["ServiceID"] = body.ServiceDetailRes.ServiceID;
-            
-            if (body.ServiceDetailRes.ServiceParameterList_isUsed) {    
-                outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["arrayLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen;
-                for (int i = 0; i < body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen; i++) {
-                    outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["ParameterSetID"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].ParameterSetID;
-                    outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["arrayLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.arrayLen;
-                    for (int j = 0; j < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.arrayLen; j++) {
-                        outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["Name"]["charactersLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.charactersLen;
-                        for (int k = 0; k < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.charactersLen; k++) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["Name"]["characters"][k] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.characters[k];
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].boolValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["boolValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].boolValue;
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].byteValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["byteValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].byteValue;
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].shortValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["shortValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].shortValue;
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].intValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["intValue"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].intValue;
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Multiplier"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Multiplier;
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Unit"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Unit;
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Value"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Value;
-                        }
-                        if (body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue_isUsed) {
-                            outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["stringValue"]["charactersLen"] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.charactersLen;
-                            for (int k = 0; k < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.charactersLen; k++) {
-                                outJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["stringValue"]["characters"][k] = body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.characters[k];
-                            }
-                        }
-                    }
-                }
-            }
-
-        } else if (body.ServiceDiscoveryReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            if (body.ServiceDiscoveryReq.ServiceScope_isUsed) {
-                outJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["charactersLen"] = body.ServiceDiscoveryReq.ServiceScope.charactersLen;
-                for (int i = 0; i < body.ServiceDiscoveryReq.ServiceScope.charactersLen; i++) {
-                    outJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["characters"][i] = body.ServiceDiscoveryReq.ServiceScope.characters[i];
-                }
-            }
-
-            if (body.ServiceDiscoveryReq.ServiceCategory_isUsed) {
-                outJson["Body"]["ServiceDiscoveryReq"]["ServiceCategory"] = body.ServiceDiscoveryReq.ServiceCategory;
-            }
-            
-            // Cant make empty json object, can I? idk, im pretty sure I cant
-            if (!(body.ServiceDiscoveryReq.ServiceScope_isUsed | body.ServiceDiscoveryReq.ServiceCategory_isUsed)) {
-                outJson["Body"]["ServiceDiscoveryReq"]["isUsed"] = true;
-            }
-
-        } else if (body.ServiceDiscoveryRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["ServiceDiscoveryRes"]["ResponseCode"] = body.ServiceDiscoveryRes.ResponseCode;
-
-            outJson["Body"]["ServiceDiscoveryRes"]["PaymentOptionList"]["PaymentOption"]["arrayLen"] = body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.arrayLen;
-            for (int i = 0; i < body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.arrayLen; i++) {
-                outJson["Body"]["ServiceDiscoveryRes"]["PaymentOptionList"]["PaymentOption"]["array"][i] = body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.array[i];
-            }
-
-            outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceID"] = body.ServiceDiscoveryRes.ChargeService.ServiceID;
-
-            if (body.ServiceDiscoveryRes.ChargeService.ServiceName_isUsed) {
-                outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceName"]["charactersLen"] = body.ServiceDiscoveryRes.ChargeService.ServiceName.charactersLen;
-                for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.ServiceName.charactersLen; i++) {
-                    outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceName"]["characters"][i] = body.ServiceDiscoveryRes.ChargeService.ServiceName.characters[i];
-                }
-            }
-
-            outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceCategory"] = body.ServiceDiscoveryRes.ChargeService.ServiceCategory;
-
-            if (body.ServiceDiscoveryRes.ChargeService.ServiceScope_isUsed) {
-                outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceScope"]["charactersLen"] = body.ServiceDiscoveryRes.ChargeService.ServiceScope.charactersLen;
-                for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.ServiceScope.charactersLen; i++) {
-                    outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceScope"]["characters"][i] = body.ServiceDiscoveryRes.ChargeService.ServiceScope.characters[i];
-                }
-            }
-
-            outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["FreeService"] = body.ServiceDiscoveryRes.ChargeService.FreeService;
-
-            outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["SupportedEnergyTransferMode"]["EnergyTransferMode"]["arrayLen"] = body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.arrayLen;
-            for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.arrayLen; i++) {
-                outJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["SupportedEnergyTransferMode"]["EnergyTransferMode"]["array"][i] = body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.array[i];
-            }
-
-            if (body.ServiceDiscoveryRes.ServiceList_isUsed) {
-                outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["arrayLen"] = body.ServiceDiscoveryRes.ServiceList.Service.arrayLen;
-                for (int i = 0; i < body.ServiceDiscoveryRes.ServiceList.Service.arrayLen; i++) {
-                    outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceID"] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceID;
-                    if (body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName_isUsed) {
-                        outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceName"]["charactersLen"] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.charactersLen;
-                        for (int j = 0; j < body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.charactersLen; j++) {
-                            outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceName"]["characters"][j] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.characters[j];
-                        }
-                    }
-                    outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceCategory"] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceCategory;
-                    if (body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope_isUsed) {
-                        outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceScope"]["charactersLen"] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.charactersLen;
-                        for (int j = 0; j < body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.charactersLen; j++) {
-                            outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceScope"]["characters"][j] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.characters[j];
-                        }
-                    }
-                    outJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["FreeService"] = body.ServiceDiscoveryRes.ServiceList.Service.array[i].FreeService;
-                }
-            }
-
-        } else if (body.SessionSetupReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["SessionSetupReq"]["EVCCID"]["bytesLen"] = body.SessionSetupReq.EVCCID.bytesLen;
-            for (int i = 0; i < body.SessionSetupReq.EVCCID.bytesLen; i++) {
-                outJson["Body"]["SessionSetupReq"]["EVCCID"]["bytes"][i] = body.SessionSetupReq.EVCCID.bytes[i];
-            }
-
-        } else if (body.SessionSetupRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["SessionSetupRes"]["ResponseCode"] = body.SessionSetupRes.ResponseCode;
-
-            outJson["Body"]["SessionSetupRes"]["EVSEID"]["charactersLen"] = body.SessionSetupRes.EVSEID.charactersLen;
-            for (int i = 0; i < body.SessionSetupRes.EVSEID.charactersLen; i++) {
-                outJson["Body"]["SessionSetupRes"]["EVSEID"]["characters"][i] = body.SessionSetupRes.EVSEID.characters[i];
-            }
-
-            if (body.SessionSetupRes.EVSETimeStamp_isUsed) {
-                outJson["Body"]["SessionSetupRes"]["EVSETimeStamp"] = body.SessionSetupRes.EVSETimeStamp;
-            }
-
-        } else if (body.SessionStopReq_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["SessionStopReq"]["ChargingSession"] = body.SessionStopReq.ChargingSession;
-
-        } else if (body.SessionStopRes_isUsed) {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["SessionStopRes"]["ResponseCode"] = body.SessionStopRes.ResponseCode;
-
-        } else if (body.WeldingDetectionReq_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVReady"] = body.WeldingDetectionReq.DC_EVStatus.EVReady;
-            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVErrorCode"] = body.WeldingDetectionReq.DC_EVStatus.EVErrorCode;
-            outJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSSOC"] = body.WeldingDetectionReq.DC_EVStatus.EVRESSSOC;
-
-        } else if (body.WeldingDetectionRes_isUsed) {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            outJson["Body"]["WeldingDetectionRes"]["ResponseCode"] = body.WeldingDetectionRes.ResponseCode;
-
-            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["NotificationMaxDelay"] = body.WeldingDetectionRes.DC_EVSEStatus.NotificationMaxDelay;
-            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSENotification"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSENotification;
-            if (body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed) {
-                outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus;
-            }
-            outJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEStatusCode"] = body.WeldingDetectionRes.DC_EVSEStatus.EVSEStatusCode;
-
-            outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Multiplier"] = body.WeldingDetectionRes.EVSEPresentVoltage.Multiplier;
-            outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Unit"] = body.WeldingDetectionRes.EVSEPresentVoltage.Unit;
-            outJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Value"] = body.WeldingDetectionRes.EVSEPresentVoltage.Value;
-
-        } else {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        }
+        outJson = getJson_exiDocument(outDoc);
 
         static string jsonString;
         jsonString = outJson.dump(4);
@@ -1177,1506 +4408,9 @@ extern "C" {
 
     encoded_data* encodeFromPythonDict(const char* inString) {
         json inJson = json::parse(inString);
-        auto sessionID = inJson["Header"]["SessionID"]["bytes"].template get<std::array<uint8_t, 8>>();
 
         iso2_exiDocument inDoc;
-        init_iso2_exiDocument(&inDoc);
-        init_iso2_MessageHeaderType(&inDoc.V2G_Message.Header);
-
-        auto& header = inDoc.V2G_Message.Header;
-        header.SessionID.bytesLen = iso2_sessionIDType_BYTES_SIZE;
-        copy(sessionID.begin(), sessionID.end(), header.SessionID.bytes);
-
-        init_iso2_BodyType(&inDoc.V2G_Message.Body);
-        auto& body = inDoc.V2G_Message.Body;
-
-        string packetType = inJson["Body"].items().begin().key();
-
-        if (packetType == "AuthorizationReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_AuthorizationReqType(&body.AuthorizationReq);
-            body.AuthorizationReq_isUsed = true;
-
-            if (inJson["Body"]["AuthorizationReq"].contains("Id")) {
-                body.AuthorizationReq.Id_isUsed = true;
-                body.AuthorizationReq.Id.charactersLen = inJson["Body"]["AuthorizationReq"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.AuthorizationReq.Id.charactersLen; i++) {
-                    body.AuthorizationReq.Id.characters[i] = inJson["Body"]["Authorization"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.AuthorizationReq.Id_isUsed = false;
-            }
-
-            if (inJson["Body"]["AuthorizationReq"].contains("GenChallenge")) {
-                body.AuthorizationReq.GenChallenge_isUsed = true;
-                body.AuthorizationReq.GenChallenge.bytesLen = inJson["Body"]["AuthorizationReq"]["GenChallenge"]["bytesLen"].template get<uint16_t>();
-                for (int i = 0; i < body.AuthorizationReq.GenChallenge.bytesLen; i++) {
-                    body.AuthorizationReq.GenChallenge.bytes[i] = inJson["Body"]["AuthorizationReq"]["GenChallenge"]["bytes"][i].template get<uint8_t>();
-                }
-            } else {
-                body.AuthorizationReq.GenChallenge_isUsed = false;
-            }
-        } else if (packetType == "AuthorizationRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_AuthorizationResType(&body.AuthorizationRes);
-            body.AuthorizationRes_isUsed = true;
-
-            body.AuthorizationRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["AuthorizationRes"]["ResponseCode"].template get<int>());
-            body.AuthorizationRes.EVSEProcessing = static_cast<iso2_EVSEProcessingType>(inJson["Body"]["AuthorizationRes"]["EVSEProcessing"].template get<int>());
-        } else if (packetType == "CableCheckReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CableCheckReqType(&body.CableCheckReq);
-            body.CableCheckReq_isUsed = true;
-
-            body.CableCheckReq.DC_EVStatus.EVReady = inJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVReady"].template get<int>();
-            body.CableCheckReq.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-            body.CableCheckReq.DC_EVStatus.EVRESSSOC = inJson["Body"]["CableCheckReq"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-        } else if (packetType == "CableCheckRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CableCheckResType(&body.CableCheckRes);
-            body.CableCheckRes_isUsed = true;
-
-            body.CableCheckRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["CableCheckRes"]["ResponseCode"].template get<int>());
-
-            body.CableCheckRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-            body.CableCheckRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-            if (inJson["Body"]["CableCheckRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["CableCheckRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-            } else {
-                body.CableCheckRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-            }
-            body.CableCheckRes.EVSEProcessing = static_cast<iso2_EVSEProcessingType>(inJson["Body"]["CableCheckRes"]["EVSEProcessing"].template get<int>());
-
-        } else if (packetType == "CertificateInstallationReq") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CertificateInstallationReqType(&body.CertificateInstallationReq);
-            body.CertificateInstallationReq_isUsed = true;
-
-            body.CertificateInstallationReq.Id.charactersLen = inJson["Body"]["CertificateInstallationReq"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationReq.Id.charactersLen; i++) {
-                body.CertificateInstallationReq.Id.characters[i] = inJson["Body"]["CertificateInstallationReq"]["Id"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateInstallationReq.OEMProvisioningCert.bytesLen = inJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationReq.OEMProvisioningCert.bytesLen; i++) {
-                body.CertificateInstallationReq.OEMProvisioningCert.bytes[i] = inJson["Body"]["CertificateInstallationReq"]["OEMProvisioningCert"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"].template get<uint8_t>();
-            for (int i = 0; i < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
-                body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["charactersLen"].template get<uint16_t>();
-                for (int j = 0; j < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen; j++) {
-                    body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j] = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j].template get<char>();
-                }
-                body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octetsCount"].template get<uint8_t>();
-                for (size_t j = 0; j < body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; j++) {
-                    body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[j] = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][j].template get<uint8_t>();
-                }
-                body.CertificateInstallationReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative = inJson["Body"]["CertificateInstallationReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["isNegative"].template get<bool>();
-            }
-        } else if (packetType == "CertificateInstallationRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CertificateInstallationResType(&body.CertificateInstallationRes);
-            body.CertificateInstallationRes_isUsed = true;
-
-            body.CertificateInstallationRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["CertificateInstallationRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"].contains("Id")) {
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.Id_isUsed = true;
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.charactersLen = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.charactersLen; i++) {
-                    body.CertificateInstallationRes.SAProvisioningCertificateChain.Id.characters[i] = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.Id_isUsed = false;
-            }
-
-            body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytesLen = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytesLen; i++) {
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.Certificate.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-
-            if (inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"].contains("SubCertificates")) {
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates_isUsed = true;
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["CertificateInstallationRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.CertificateInstallationRes.SAProvisioningCertificateChain.SubCertificates_isUsed = false;
-            }
-            
-            if (inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"].contains("Id")) {
-                body.CertificateInstallationRes.ContractSignatureCertChain.Id_isUsed = true;
-                body.CertificateInstallationRes.ContractSignatureCertChain.Id.charactersLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    body.CertificateInstallationRes.ContractSignatureCertChain.Id.characters[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.CertificateInstallationRes.ContractSignatureCertChain.Id_isUsed = false;
-            }
-            body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                body.CertificateInstallationRes.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-            if (inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"].contains("SubCertificates")) {
-                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed = true;
-                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.CertificateInstallationRes.ContractSignatureCertChain.SubCertificates_isUsed = false;
-            }
-
-            body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen; i++) {
-                body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.Id.characters[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen; i++) {
-                body.CertificateInstallationRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.CertificateInstallationRes.DHpublickey.Id.charactersLen = inJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.DHpublickey.Id.charactersLen; i++) {
-                body.CertificateInstallationRes.DHpublickey.Id.characters[i] = inJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["Id"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateInstallationRes.DHpublickey.CONTENT.bytesLen = inJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["CONTENT"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateInstallationRes.DHpublickey.CONTENT.bytesLen; i++) {
-                body.CertificateInstallationRes.DHpublickey.CONTENT.bytes[i] = inJson["Body"]["CertificateInstallationRes"]["DHpublickey"]["CONTENT"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.CertificateUpdateRes.eMAID.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.Id.charactersLen; i++) {
-                body.CertificateUpdateRes.eMAID.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateUpdateRes.eMAID.CONTENT.charactersLen = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.CONTENT.charactersLen; i++) {
-                body.CertificateUpdateRes.eMAID.CONTENT.characters[i] = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["characters"][i].template get<char>();
-            }
-
-        } else if (packetType == "CertificateUpdateReq") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CertificateUpdateReqType(&body.CertificateUpdateReq);
-            body.CertificateUpdateReq_isUsed = true;
-
-            body.CertificateUpdateReq.Id.charactersLen = inJson["Body"]["CertificateUpdateReq"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateReq.Id.charactersLen; i++) {
-                body.CertificateUpdateReq.Id.characters[i] = inJson["Body"]["CertificateUpdateReq"]["Id"]["characters"][i].template get<char>();
-            }
-
-            if (inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"].contains("Id")) {
-                body.CertificateUpdateReq.ContractSignatureCertChain.Id_isUsed = true;
-                body.CertificateUpdateReq.ContractSignatureCertChain.Id.charactersLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    body.CertificateUpdateReq.ContractSignatureCertChain.Id.characters[i] = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.CertificateUpdateReq.ContractSignatureCertChain.Id_isUsed = false;
-            }
-            body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                body.CertificateUpdateReq.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-            if (inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"].contains("SubCertificates")) {
-                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed = true;
-                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["CertificateUpdateReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.CertificateUpdateReq.ContractSignatureCertChain.SubCertificates_isUsed = false;
-            }
-
-            body.CertificateUpdateReq.eMAID.charactersLen = inJson["Body"]["CertificateUpdateReq"]["eMAID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateReq.eMAID.charactersLen; i++) {
-                body.CertificateUpdateReq.eMAID.characters[i] = inJson["Body"]["CertificateUpdateReq"]["eMAID"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["arrayLen"].template get<uint8_t>();
-            for (int i = 0; i < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.arrayLen; i++) {
-                body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["charactersLen"].template get<uint16_t>();
-                for (int j = 0; j < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.charactersLen; j++) {
-                    body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509IssuerName.characters[j] = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509IssuerName"]["characters"][j].template get<char>();
-                }
-                body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octetsCount"].template get<uint8_t>();
-                for (size_t j = 0; j < body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets_count; j++) {
-                    body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.data.octets[j] = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["data"]["octets"][j].template get<uint8_t>();
-                }
-                body.CertificateUpdateReq.ListOfRootCertificateIDs.RootCertificateID.array[i].X509SerialNumber.is_negative = inJson["Body"]["CertificateUpdateReq"]["ListOfRootCertificateIDs"]["RootCertificateID"]["array"][i]["X509SerialNumber"]["isNegative"].template get<bool>();
-            }
-        
-        } else if (packetType == "CertificateUpdateRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CertificateUpdateResType(&body.CertificateUpdateRes);
-            body.CertificateUpdateRes_isUsed = true;
-
-            body.CertificateUpdateRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["CertificateUpdateRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"].contains("Id")) {
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.Id_isUsed = true;
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.charactersLen; i++) {
-                    body.CertificateUpdateRes.SAProvisioningCertificateChain.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.Id_isUsed = false;
-            }
-
-            body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytesLen = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytesLen; i++) {
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-
-            if (inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"].contains("SubCertificates")) {
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates_isUsed = true;
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["CertificateUpdateRes"]["SAProvisioningCertificateChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.CertificateUpdateRes.SAProvisioningCertificateChain.SubCertificates_isUsed = false;
-            }
-
-            if (inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"].contains("Id")) {
-                body.CertificateUpdateRes.ContractSignatureCertChain.Id_isUsed = true;
-                body.CertificateUpdateRes.ContractSignatureCertChain.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    body.CertificateUpdateRes.ContractSignatureCertChain.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.CertificateUpdateRes.ContractSignatureCertChain.Id_isUsed = false;
-            }
-            body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                body.CertificateUpdateRes.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-            if (inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"].contains("SubCertificates")) {
-                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed = true;
-                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.CertificateUpdateRes.ContractSignatureCertChain.SubCertificates_isUsed = false;
-            }
-
-            body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.charactersLen; i++) {
-                body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["Id"]["characters"][i].template get<char>();
-            }
-
-            body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytesLen; i++) {
-                body.CertificateUpdateRes.ContractSignatureEncryptedPrivateKey.CONTENT.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["ContractSignatureEncryptedPrivateKey"]["CONTENT"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.CertificateUpdateRes.DHpublickey.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.DHpublickey.Id.charactersLen; i++) {
-                body.CertificateUpdateRes.DHpublickey.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["Id"]["characters"][i].template get<char>();
-            }
-            body.CertificateUpdateRes.DHpublickey.CONTENT.bytesLen = inJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["CONTENT"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.DHpublickey.CONTENT.bytesLen; i++) {
-                body.CertificateUpdateRes.DHpublickey.CONTENT.bytes[i] = inJson["Body"]["CertificateUpdateRes"]["DHpublickey"]["CONTENT"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.CertificateUpdateRes.eMAID.Id.charactersLen = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.Id.charactersLen; i++) {
-                body.CertificateUpdateRes.eMAID.Id.characters[i] = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["Id"]["characters"][i].template get<char>();
-            }
-            body.CertificateUpdateRes.eMAID.CONTENT.charactersLen = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CertificateUpdateRes.eMAID.CONTENT.charactersLen; i++) {
-                body.CertificateUpdateRes.eMAID.CONTENT.characters[i] = inJson["Body"]["CertificateUpdateRes"]["eMAID"]["CONTENT"]["characters"][i].template get<char>();
-            }
-        } else if (packetType == "ChargeParameterDiscoveryReq") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ChargeParameterDiscoveryReqType(&body.ChargeParameterDiscoveryReq);
-            body.ChargeParameterDiscoveryReq_isUsed = true;
-
-            if (inJson["Body"]["ChargeParameterDiscoveryReq"].contains("MaxEntriesSAScheduleTuple")) {
-                body.ChargeParameterDiscoveryReq.MaxEntriesSAScheduleTuple_isUsed = true;
-                body.ChargeParameterDiscoveryReq.MaxEntriesSAScheduleTuple = inJson["Body"]["ChargeParameterDiscoveryReq"]["MaxEntriesSAScheduleTuple"].template get<uint8_t>();
-            } else {
-                body.ChargeParameterDiscoveryReq.MaxEntriesSAScheduleTuple_isUsed = false;
-            }
-
-            body.ChargeParameterDiscoveryReq.RequestedEnergyTransferMode = static_cast<iso2_EnergyTransferModeType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["RequestedEnergyTransferMode"].template get<int>());
-
-            if (inJson["Body"]["ChargeParameterDiscoveryReq"].contains("AC_EVChargeParameter")) {
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter_isUsed = true;
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"].contains("DepartureTime")) {
-                    body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.DepartureTime_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.DepartureTime = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["DepartureTime"].template get<uint32_t>();
-                }
-
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EAmount.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EAmount"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxVoltage.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMaxCurrent.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter.EVMinCurrent.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["AC_EVChargeParameter"]["EVMinCurrent"]["Value"].template get<uint32_t>();
-            } else {
-                body.ChargeParameterDiscoveryReq.AC_EVChargeParameter_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargeParameterDiscoveryReq"].contains("DC_EVChargeParameter")) {
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter_isUsed = true;
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"].contains("DepartureTime")) {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DepartureTime_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DepartureTime = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DepartureTime"].template get<uint32_t>();
-                }
-                
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVReady = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVReady"].template get<bool>();
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.DC_EVStatus.EVRESSSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumCurrentLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Value"].template get<uint32_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"].contains("EVMaximumPowerLimit")) {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Value"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed = false;
-                }
-
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVMaximumVoltageLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Value"].template get<uint32_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"].contains("EVEnergyCapacity")) {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Value"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.EVEnergyCapacity_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"].contains("FullSOC")) {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.FullSOC_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.FullSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["FullSOC"].template get<uint8_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.FullSOC_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"].contains("BulkSOC")) {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.BulkSOC_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.BulkSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["DC_EVChargeParameter"]["BulkSOC"].template get<uint8_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.DC_EVChargeParameter.BulkSOC_isUsed = false;
-                }
-            } else {
-                body.ChargeParameterDiscoveryReq.DC_EVChargeParameter_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargeParameterDiscoveryReq"].contains("EVChargeParameter")) {
-                body.ChargeParameterDiscoveryReq.EVChargeParameter_isUsed = true;
-                
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"].contains("DepartureTime")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.DepartureTime_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.DepartureTime = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["DepartureTime"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.DepartureTime_isUsed = false;
-                }
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EAmount.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EAmount"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxVoltage.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxVoltage"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMaxCurrent.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMaxCurrent"]["Value"].template get<uint32_t>();
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.AC_EVChargeParameter.EVMinCurrent.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["AC_EVChargeParameter"]["EVMinCurrent"]["Value"].template get<uint32_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"].contains("DepartureTime")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DepartureTime_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DepartureTime = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DepartureTime"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DepartureTime_isUsed = false;
-                }
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVReady = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVReady"].template get<bool>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.DC_EVStatus.EVRESSSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumCurrentLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumCurrentLimit"]["Value"].template get<uint32_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"].contains("EVMaximumPowerLimit")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumPowerLimit"]["Value"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumPowerLimit_isUsed = false;
-                }
-
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVMaximumVoltageLimit.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVMaximumVoltageLimit"]["Value"].template get<uint32_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"].contains("EVEnergyCapacity")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Multiplier = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity.Value = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["EVEnergyCapacity"]["Value"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.EVEnergyCapacity_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"].contains("FullSOC")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.FullSOC_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.FullSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["FullSOC"].template get<uint8_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.FullSOC_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"].contains("BulkSOC")) {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.BulkSOC_isUsed = true;
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.BulkSOC = inJson["Body"]["ChargeParameterDiscoveryReq"]["EVChargeParameter"]["DC_EVChargeParameter"]["BulkSOC"].template get<uint8_t>();
-                } else {
-                    body.ChargeParameterDiscoveryReq.EVChargeParameter.DC_EVChargeParameter.BulkSOC_isUsed = false;
-                }
-            }
-        } else if (packetType == "ChargeParameterDiscoveryRes") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ChargeParameterDiscoveryResType(&body.ChargeParameterDiscoveryRes);
-            body.ChargeParameterDiscoveryRes_isUsed = true;
-
-            body.ChargeParameterDiscoveryRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("SAScheduleList")) {
-                body.ChargeParameterDiscoveryRes.SAScheduleList_isUsed = true;
-                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.arrayLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["arrayLen"].template get<uint8_t>();
-                for (int i = 0; i < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.arrayLen; i++) {
-                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SAScheduleTupleID = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SAScheduleTupleID"].template get<uint8_t>();
-                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.arrayLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["arrayLen"].template get<uint8_t>();
-                    for (int j = 0; j < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.arrayLen; j++) {
-                        if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j].contains("RelativeTimeInterval")) {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.start = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["RelativeTimeInterval"]["start"].template get<uint32_t>();
-                            if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["RelativeTimeInterval"].contains("duration")) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.duration_isUsed = true;
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].RelativeTimeInterval.duration = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["RelativeTimeInterval"]["duration"].template get<uint32_t>();
-                            }
-                        }
-                        if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j].contains("TimeInterval")) {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].TimeInterval._unused = 0;
-                        }
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Multiplier"].template get<int8_t>();
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Unit"].template get<int>());
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].PMaxSchedule.PMaxScheduleEntry.array[j].PMax.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["PMaxSchedule"]["PMaxScheduleEntry"]["array"][j]["PMax"]["Value"].template get<uint32_t>();
-                    }
-                    if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i].contains("SalesTariff")) {
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff_isUsed = true;
-                        if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"].contains("Id")) {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.charactersLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["Id"]["charactersLen"].template get<uint16_t>();
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.charactersLen; k++) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id.characters[k] = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["Id"]["characters"][k].template get<char>();
-                            }
-                        } else {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.Id_isUsed = false;
-                        }
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffID = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffID"].template get<uint32_t>();
-                        if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"].contains("SalesTariffDescription")) {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.charactersLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffDescription"]["charactersLen"].template get<uint16_t>();
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.charactersLen; k++) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription.characters[k] = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffDescription"]["characters"][k].template get<char>();
-                            }
-                        } else {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffDescription_isUsed = false;
-                        }
-                        if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"].contains("NumEPriceLevels")) {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.NumEPriceLevels_isUsed = true;
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.NumEPriceLevels = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["NumEPriceLevels"].template get<uint8_t>();
-                        } else {
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.NumEPriceLevels_isUsed = false;
-                        }
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.arrayLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["arrayLen"].template get<uint8_t>();
-                        for (int j = 0; j < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.arrayLen; j++) {
-                            if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j].contains("RelativeTimeInterval")) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval_isUsed = true;
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.start = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["RelativeTimeInterval"]["start"].template get<uint32_t>();
-                                if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["RelativeTimeInterval"].contains("duration")) {
-                                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.duration_isUsed = true;
-                                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.duration = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["RelativeTimeInterval"]["duration"].template get<uint32_t>();
-                                } else {
-                                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval.duration_isUsed = false;
-                                }
-                            } else {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].RelativeTimeInterval_isUsed = false;
-                            }
-                            if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j].contains("TimeInterval")) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed = true;
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval._unused = 0;
-                            } else {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].TimeInterval_isUsed = false;
-                            }
-                            if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j].contains("EPriceLevel")) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel_isUsed = true;
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["EPriceLevel"].template get<uint8_t>();
-                            } else {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].EPriceLevel_isUsed = false;
-                            }
-                            body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.arrayLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["arrayLen"].template get<uint8_t>();
-                            for (int k = 0; k < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.arrayLen; k++) {
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Multiplier"].template get<int8_t>();
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Unit"].template get<int>());
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].startValue.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["startValue"]["Value"].template get<uint32_t>();
-                                
-                                body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.arrayLen = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["arrayLen"].template get<uint8_t>();
-                                for (int l = 0; l < body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.arrayLen; l++) {
-                                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].costKind = static_cast<iso2_costKindType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["costKind"].template get<int>());
-                                    body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amount = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["amount"].template get<uint32_t>();
-                                    if (inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l].contains("amountMultiplier")) {
-                                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amountMultiplier_isUsed = true;
-                                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amountMultiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["SAScheduleList"]["SAScheduleTuple"]["array"][i]["SalesTariff"]["SalesTariffEntry"]["array"][j]["ConsumptionCost"]["array"][k]["Cost"]["array"][l]["amountMultiplier"].template get<int8_t>();
-                                    } else {
-                                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff.SalesTariffEntry.array[j].ConsumptionCost.array[k].Cost.array[l].amountMultiplier_isUsed = false;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        body.ChargeParameterDiscoveryRes.SAScheduleList.SAScheduleTuple.array[i].SalesTariff_isUsed = false;
-                    }
-                }
-            } else {
-                body.ChargeParameterDiscoveryRes.SAScheduleList_isUsed = false;
-            }
-            if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("SASchedules")) {
-                body.ChargeParameterDiscoveryRes.SASchedules_isUsed = true;
-                body.ChargeParameterDiscoveryRes.SASchedules._unused = 0;
-            } else {
-                body.ChargeParameterDiscoveryRes.SASchedules_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("AC_EVSEChargeParameter")) {
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter_isUsed = true;
-
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.AC_EVSEStatus.RCD = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSENominalVoltage.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSENominalVoltage"]["Value"].template get<int16_t>();
-
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.AC_EVSEChargeParameter.EVSEMaxCurrent.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["AC_EVSEChargeParameter"]["EVSEMaxCurrent"]["Value"].template get<int16_t>();
-            }
-
-            if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("DC_EVSEChargeParameter")) {
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter_isUsed = true;
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-                if (inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-                } else {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-                }
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumCurrentLimit.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumCurrentLimit"]["Value"].template get<int16_t>();
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumPowerLimit.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumPowerLimit"]["Value"].template get<int16_t>();
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMaximumVoltageLimit.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMaximumVoltageLimit"]["Value"].template get<int16_t>();
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumCurrentLimit.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumCurrentLimit"]["Value"].template get<int16_t>();
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEMinimumVoltageLimit.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEMinimumVoltageLimit"]["Value"].template get<int16_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"].contains("EVSECurrentRegulationTolerance")) {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance_isUsed = true;
-
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSECurrentRegulationTolerance"]["Value"].template get<uint16_t>();
-                } else {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSECurrentRegulationTolerance_isUsed = false;
-                }
-
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Multiplier"].template get<int8_t>();
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Unit"].template get<int>());
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEPeakCurrentRipple.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEPeakCurrentRipple"]["Value"].template get<uint16_t>();
-
-                if (inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"].contains("EVSEEnergyToBeDelivered")) {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered_isUsed = true;
-
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Multiplier = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Multiplier"].template get<int8_t>();
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Unit"].template get<int>());
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered.Value = inJson["Body"]["ChargeParameterDiscoveryRes"]["DC_EVSEChargeParameter"]["EVSEEnergyToBeDelivered"]["Value"].template get<uint32_t>();
-                } else {
-                    body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter.EVSEEnergyToBeDelivered_isUsed = false;
-                }
-            } else {
-                body.ChargeParameterDiscoveryRes.DC_EVSEChargeParameter_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargeParameterDiscoveryRes"].contains("EVSEChargeParameter")) {
-                body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed = true;
-                body.ChargeParameterDiscoveryRes.EVSEChargeParameter._unused = 0;
-            } else {
-                body.ChargeParameterDiscoveryRes.EVSEChargeParameter_isUsed = false;
-            }
-        } else if (packetType == "ChargingStatusReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ChargingStatusReqType(&body.ChargingStatusReq);
-            body.ChargingStatusReq_isUsed = true;
-
-            body.ChargingStatusReq._unused = 0;
-        } else if (packetType == "ChargingStatusRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ChargingStatusResType(&body.ChargingStatusRes);
-            body.ChargingStatusRes_isUsed = true;
-
-            body.ChargingStatusRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["ChargingStatusRes"]["ResponseCode"].template get<int>());
-
-            body.ChargingStatusRes.EVSEID.charactersLen = inJson["Body"]["ChargingStatusRes"]["EVSEID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.ChargingStatusRes.EVSEID.charactersLen; i++) {
-                body.ChargingStatusRes.EVSEID.characters[i] = inJson["Body"]["ChargingStatusRes"]["EVSEID"]["characters"][i].template get<char>();
-            }
-
-            if (inJson["Body"]["ChargingStatusRes"].contains("EVSEMaxCurrent")) {
-                body.ChargingStatusRes.EVSEMaxCurrent_isUsed = true;
-                body.ChargingStatusRes.EVSEMaxCurrent.Multiplier = inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Multiplier"].template get<int8_t>();
-                body.ChargingStatusRes.EVSEMaxCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Unit"].template get<int>());
-                body.ChargingStatusRes.EVSEMaxCurrent.Value = inJson["Body"]["ChargingStatusRes"]["EVSEMaxCurrent"]["Value"].template get<uint16_t>();
-            } else {
-                body.ChargingStatusRes.EVSEMaxCurrent_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargingStatusRes"].contains("MeterInfo")) {
-                body.ChargingStatusRes.MeterInfo_isUsed = true;
-                body.ChargingStatusRes.MeterInfo.MeterID.charactersLen = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ChargingStatusRes.MeterInfo.MeterID.charactersLen; i++) {
-                    body.ChargingStatusRes.MeterInfo.MeterID.characters[i] = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterID"]["characters"][i].template get<char>();
-                }
-
-                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("MeterReading")) {
-                    body.ChargingStatusRes.MeterInfo.MeterReading_isUsed = true;
-                    body.ChargingStatusRes.MeterInfo.MeterReading = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterReading"].template get<uint64_t>();
-                } else {
-                    body.ChargingStatusRes.MeterInfo.MeterReading_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("SigMeterReading")) {
-                    body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed = true;
-                    body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"].template get<uint16_t>();
-                    for (int i = 0; i < body.ChargingStatusRes.MeterInfo.SigMeterReading.bytesLen; i++) {
-                        body.ChargingStatusRes.MeterInfo.SigMeterReading.bytes[i] = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i].template get<uint8_t>();
-                    }
-                } else {
-                    body.ChargingStatusRes.MeterInfo.SigMeterReading_isUsed = false;
-                }
-
-                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("MeterStatus")) {
-                    body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed = true;
-                    body.ChargingStatusRes.MeterInfo.MeterStatus = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["MeterStatus"].template get<int16_t>();
-                } else {
-                    body.ChargingStatusRes.MeterInfo.MeterStatus_isUsed = false;
-                }
-                
-                if (inJson["Body"]["ChargingStatusRes"]["MeterInfo"].contains("TMeter")) {
-                    body.ChargingStatusRes.MeterInfo.TMeter_isUsed = true;
-                    body.ChargingStatusRes.MeterInfo.TMeter = inJson["Body"]["ChargingStatusRes"]["MeterInfo"]["TMeter"].template get<int64_t>();
-                } else {
-                    body.ChargingStatusRes.MeterInfo.TMeter_isUsed = false;
-                }
-            } else {
-                body.ChargingStatusRes.MeterInfo_isUsed = false;
-            }
-
-            if (inJson["Body"]["ChargingStatusRes"].contains("ReceiptRequired")) {
-                body.ChargingStatusRes.ReceiptRequired_isUsed = true;
-                body.ChargingStatusRes.ReceiptRequired = inJson["Body"]["ChargingStatusRes"]["ReceiptRequired"].template get<bool>();
-            } else {
-                body.ChargingStatusRes.ReceiptRequired_isUsed = false;
-            }
-
-            body.ChargingStatusRes.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-            body.ChargingStatusRes.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-            body.ChargingStatusRes.AC_EVSEStatus.RCD = inJson["Body"]["ChargingStatusRes"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-        } else if (packetType == "CurrentDemandReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CurrentDemandReqType(&body.CurrentDemandReq);
-            body.CurrentDemandReq_isUsed = true;
-
-            body.CurrentDemandReq.DC_EVStatus.EVReady = inJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVReady"].template get<bool>();
-            body.CurrentDemandReq.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-            body.CurrentDemandReq.DC_EVStatus.EVRESSSOC = inJson["Body"]["CurrentDemandReq"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-
-            body.CurrentDemandReq.EVTargetCurrent.Multiplier = inJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Multiplier"].template get<int8_t>();
-            body.CurrentDemandReq.EVTargetCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Unit"].template get<int>());
-            body.CurrentDemandReq.EVTargetCurrent.Value = inJson["Body"]["CurrentDemandReq"]["EVTargetCurrent"]["Value"].template get<uint16_t>();
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("EVMaximumVoltageLimit")) {
-                body.CurrentDemandReq.EVMaximumVoltageLimit_isUsed = true;
-
-                body.CurrentDemandReq.EVMaximumVoltageLimit.Multiplier = inJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandReq.EVMaximumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Unit"].template get<int>());
-                body.CurrentDemandReq.EVMaximumVoltageLimit.Value = inJson["Body"]["CurrentDemandReq"]["EVMaximumVoltageLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandReq.EVMaximumVoltageLimit_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("EVMaximumCurrentLimit")) {
-                body.CurrentDemandReq.EVMaximumCurrentLimit_isUsed = true;
-
-                body.CurrentDemandReq.EVMaximumCurrentLimit.Multiplier = inJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandReq.EVMaximumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Unit"].template get<int>());
-                body.CurrentDemandReq.EVMaximumCurrentLimit.Value = inJson["Body"]["CurrentDemandReq"]["EVMaximumCurrentLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandReq.EVMaximumCurrentLimit_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("EVMaximumPowerLimit")) {
-                body.CurrentDemandReq.EVMaximumPowerLimit_isUsed = true;
-
-                body.CurrentDemandReq.EVMaximumPowerLimit.Multiplier = inJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandReq.EVMaximumPowerLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Unit"].template get<int>());
-                body.CurrentDemandReq.EVMaximumPowerLimit.Value = inJson["Body"]["CurrentDemandReq"]["EVMaximumPowerLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandReq.EVMaximumPowerLimit_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("BulkChargingComplete")) {
-                body.CurrentDemandReq.BulkChargingComplete_isUsed = true;
-                body.CurrentDemandReq.BulkChargingComplete = inJson["Body"]["CurrentDemandReq"]["BulkChargingComplete"].template get<bool>();
-            } else {
-                body.CurrentDemandReq.BulkChargingComplete_isUsed = false;
-            }
-
-            body.CurrentDemandReq.ChargingComplete = inJson["Body"]["CurrentDemandReq"]["ChargingComplete"].template get<bool>();
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("RemainingTimeToFullSoC")) {
-                body.CurrentDemandReq.RemainingTimeToFullSoC_isUsed = true;
-                
-                body.CurrentDemandReq.RemainingTimeToFullSoC.Multiplier = inJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandReq.RemainingTimeToFullSoC.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Unit"].template get<int>());
-                body.CurrentDemandReq.RemainingTimeToFullSoC.Value = inJson["Body"]["CurrentDemandReq"]["RemainingTimeToFullSoC"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandReq.RemainingTimeToFullSoC_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandReq"].contains("RemainingTimeToBulkSoC")) {
-                body.CurrentDemandReq.RemainingTimeToBulkSoC_isUsed = true;
-                
-                body.CurrentDemandReq.RemainingTimeToBulkSoC.Multiplier = inJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandReq.RemainingTimeToBulkSoC.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Unit"].template get<int>());
-                body.CurrentDemandReq.RemainingTimeToBulkSoC.Value = inJson["Body"]["CurrentDemandReq"]["RemainingTimeToBulkSoC"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandReq.RemainingTimeToBulkSoC_isUsed = false;
-            }
-
-            body.CurrentDemandReq.EVTargetVoltage.Multiplier = inJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Multiplier"].template get<int8_t>();
-            body.CurrentDemandReq.EVTargetVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Unit"].template get<int>());
-            body.CurrentDemandReq.EVTargetVoltage.Value = inJson["Body"]["CurrentDemandReq"]["EVTargetVoltage"]["Value"].template get<int16_t>();
-        } else if (packetType == "CurrentDemandRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_CurrentDemandResType(&body.CurrentDemandRes);
-            body.CurrentDemandRes_isUsed = true;
-
-            body.CurrentDemandRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["CurrentDemandRes"]["ResponseCode"].template get<int>());
-
-            body.CurrentDemandRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-            body.CurrentDemandRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-            if (inJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-            } else {
-                body.CurrentDemandRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-            }
-            body.CurrentDemandRes.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["CurrentDemandRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-
-            body.CurrentDemandRes.EVSEPresentVoltage.Multiplier = inJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Multiplier"].template get<int8_t>();
-            body.CurrentDemandRes.EVSEPresentVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Unit"].template get<int>());
-            body.CurrentDemandRes.EVSEPresentVoltage.Value = inJson["Body"]["CurrentDemandRes"]["EVSEPresentVoltage"]["Value"].template get<int16_t>();
-
-            body.CurrentDemandRes.EVSEPresentCurrent.Multiplier = inJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Multiplier"].template get<int8_t>();
-            body.CurrentDemandRes.EVSEPresentCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Unit"].template get<int>());
-            body.CurrentDemandRes.EVSEPresentCurrent.Value = inJson["Body"]["CurrentDemandRes"]["EVSEPresentCurrent"]["Value"].template get<int16_t>();
-
-            body.CurrentDemandRes.EVSECurrentLimitAchieved = inJson["Body"]["CurrentDemandRes"]["EVSECurrentLimitAchieved"].template get<bool>();
-            body.CurrentDemandRes.EVSEVoltageLimitAchieved = inJson["Body"]["CurrentDemandRes"]["EVSEVoltageLimitAchieved"].template get<bool>();
-            body.CurrentDemandRes.EVSEPowerLimitAchieved = inJson["Body"]["CurrentDemandRes"]["EVSEPowerLimitAchieved"].template get<bool>();
-
-            if (inJson["Body"]["CurrentDemandRes"].contains("EVSEMaximumVoltageLimit")) {
-                body.CurrentDemandRes.EVSEMaximumVoltageLimit_isUsed = true;
-
-                body.CurrentDemandRes.EVSEMaximumVoltageLimit.Multiplier = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandRes.EVSEMaximumVoltageLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Unit"].template get<int>());
-                body.CurrentDemandRes.EVSEMaximumVoltageLimit.Value = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumVoltageLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandRes.EVSEMaximumVoltageLimit_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandRes"].contains("EVSEMaximumCurrentLimit")) {
-                body.CurrentDemandRes.EVSEMaximumCurrentLimit_isUsed = true;
-
-                body.CurrentDemandRes.EVSEMaximumCurrentLimit.Multiplier = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandRes.EVSEMaximumCurrentLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Unit"].template get<int>());
-                body.CurrentDemandRes.EVSEMaximumCurrentLimit.Value = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumCurrentLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandRes.EVSEMaximumCurrentLimit_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandRes"].contains("EVSEMaximumPowerLimit")) {
-                body.CurrentDemandRes.EVSEMaximumPowerLimit_isUsed = true;
-
-                body.CurrentDemandRes.EVSEMaximumPowerLimit.Multiplier = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Multiplier"].template get<int8_t>();
-                body.CurrentDemandRes.EVSEMaximumPowerLimit.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Unit"].template get<int>());
-                body.CurrentDemandRes.EVSEMaximumPowerLimit.Value = inJson["Body"]["CurrentDemandRes"]["EVSEMaximumPowerLimit"]["Value"].template get<int16_t>();
-            } else {
-                body.CurrentDemandRes.EVSEMaximumPowerLimit_isUsed = false;
-            }
-
-            body.CurrentDemandRes.EVSEID.charactersLen = inJson["Body"]["CurrentDemandRes"]["EVSEID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.CurrentDemandRes.EVSEID.charactersLen; i++) {
-                body.CurrentDemandRes.EVSEID.characters[i] = inJson["Body"]["CurrentDemandRes"]["EVSEID"]["characters"][i].template get<char>();
-            }
-
-            body.CurrentDemandRes.SAScheduleTupleID = inJson["Body"]["CurrentDemandRes"]["SAScheduleTupleID"].template get<uint8_t>();
-
-            if (inJson["Body"]["CurrentDemandRes"].contains("MeterInfo")) {
-                body.CurrentDemandRes.MeterInfo_isUsed = true;
-                body.CurrentDemandRes.MeterInfo.MeterID.charactersLen = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterID"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.CurrentDemandRes.MeterInfo.MeterID.charactersLen; i++) {
-                    body.CurrentDemandRes.MeterInfo.MeterID.characters[i] = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterID"]["characters"][i].template get<char>();
-                }
-
-                if (inJson["Body"]["CurrentDemandRes"]["MeterInfo"].contains("MeterReading")) {
-                    body.CurrentDemandRes.MeterInfo.MeterReading_isUsed = true;
-                    body.CurrentDemandRes.MeterInfo.MeterReading = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterReading"].template get<uint64_t>();
-                } else {
-                    body.CurrentDemandRes.MeterInfo.MeterReading_isUsed = false;
-                }
-
-                if (inJson["Body"]["CurrentDemandRes"]["MeterInfo"].contains("SigMeterReading")) {
-                    body.CurrentDemandRes.MeterInfo.SigMeterReading_isUsed = true;
-                    body.CurrentDemandRes.MeterInfo.SigMeterReading.bytesLen = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["SigMeterReading"]["bytesLen"].template get<uint16_t>();
-                    for (int i = 0; i < body.CurrentDemandRes.MeterInfo.SigMeterReading.bytesLen; i++) {
-                        body.CurrentDemandRes.MeterInfo.SigMeterReading.bytes[i] = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["SigMeterReading"]["bytes"][i].template get<uint8_t>();
-                    }
-                } else {
-                    body.CurrentDemandRes.MeterInfo.SigMeterReading_isUsed = false;
-                }
-
-                if (inJson["Body"]["CurrentDemandRes"]["MeterInfo"].contains("MeterStatus")) {
-                    body.CurrentDemandRes.MeterInfo.MeterStatus_isUsed = true;
-                    body.CurrentDemandRes.MeterInfo.MeterStatus = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["MeterStatus"].template get<int16_t>();
-                } else {
-                    body.CurrentDemandRes.MeterInfo.MeterStatus_isUsed = false;
-                }
-
-                if (inJson["Body"]["CurrentDemandRes"]["MeterInfo"].contains("TMeter")) {
-                    body.CurrentDemandRes.MeterInfo.TMeter_isUsed = true;
-                    body.CurrentDemandRes.MeterInfo.TMeter = inJson["Body"]["CurrentDemandRes"]["MeterInfo"]["TMeter"].template get<int64_t>();
-                } else {
-                    body.CurrentDemandRes.MeterInfo.TMeter_isUsed = false;
-                }
-            } else {
-                body.CurrentDemandRes.MeterInfo_isUsed = false;
-            }
-
-            if (inJson["Body"]["CurrentDemandRes"].contains("ReceiptRequired")) {
-                body.CurrentDemandRes.ReceiptRequired_isUsed = true;
-                body.CurrentDemandRes.ReceiptRequired = inJson["Body"]["CurrentDemandRes"]["ReceiptRequired"].template get<bool>();
-            } else {
-                body.CurrentDemandRes.ReceiptRequired_isUsed = false;
-            }
-        } else if (packetType == "MeteringReceiptReq") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_MeteringReceiptReqType(&body.MeteringReceiptReq);
-            body.MeteringReceiptReq_isUsed = true;
-
-            if (inJson["Body"]["MeteringReceiptReq"].contains("Id")) {
-                body.MeteringReceiptReq.Id_isUsed = true;
-                body.MeteringReceiptReq.Id.charactersLen = inJson["Body"]["MeteringReceiptReq"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.MeteringReceiptReq.Id.charactersLen; i++) {
-                    body.MeteringReceiptReq.Id.characters[i] = inJson["Body"]["MeteringReceiptReq"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.MeteringReceiptReq.Id_isUsed = false;
-            }
-
-            body.MeteringReceiptReq.SessionID.bytesLen = inJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytesLen"].template get<uint8_t>();
-            for (int i = 0; i < body.MeteringReceiptReq.SessionID.bytesLen; i++) {
-                body.MeteringReceiptReq.SessionID.bytes[i] = inJson["Body"]["MeteringReceiptReq"]["SessionID"]["bytes"][i].template get<uint8_t>();
-            }
-
-            if (inJson["Body"]["MeteringReceiptReq"].contains("SAScheduleTupleID")) {
-                body.MeteringReceiptReq.SAScheduleTupleID_isUsed = true;
-                body.MeteringReceiptReq.SAScheduleTupleID = inJson["Body"]["MeteringReceiptReq"]["SAScheduleTupleID"].template get<uint8_t>();
-            } else {
-                body.MeteringReceiptReq.SAScheduleTupleID_isUsed = false;
-            }
-
-            body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.MeterID.charactersLen; i++) {
-                body.MeteringReceiptReq.MeterInfo.MeterID.characters[i] = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterID"]["characters"][i].template get<char>();
-            }
-
-            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("MeterReading")) {
-                body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed = true;
-                body.MeteringReceiptReq.MeterInfo.MeterReading = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterReading"].template get<uint64_t>();
-            } else {
-                body.MeteringReceiptReq.MeterInfo.MeterReading_isUsed = false;
-            }
-
-            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("SigMeterReading")) {
-                body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed = true;
-                body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytesLen"].template get<uint16_t>();
-                for (int i = 0; i < body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytesLen; i++) {
-                    body.MeteringReceiptReq.MeterInfo.SigMeterReading.bytes[i] = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["SigMeterReading"]["bytes"][i].template get<uint8_t>();
-                }
-            } else {
-                body.MeteringReceiptReq.MeterInfo.SigMeterReading_isUsed = false;
-            }
-
-            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("MeterStatus")) {
-                body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed = true;
-                body.MeteringReceiptReq.MeterInfo.MeterStatus = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["MeterStatus"].template get<int16_t>();
-            } else {
-                body.MeteringReceiptReq.MeterInfo.MeterStatus_isUsed = false;
-            }
-
-            if (inJson["Body"]["MeteringReceiptReq"]["MeterInfo"].contains("TMeter")) {
-                body.MeteringReceiptReq.MeterInfo.TMeter_isUsed = true;
-                body.MeteringReceiptReq.MeterInfo.TMeter = inJson["Body"]["MeteringReceiptReq"]["MeterInfo"]["TMeter"].template get<int64_t>();
-            } else {
-                body.MeteringReceiptReq.MeterInfo.TMeter_isUsed = false;
-            }
-        } else if (packetType == "MeteringReceiptRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_MeteringReceiptResType(&body.MeteringReceiptRes);
-            body.MeteringReceiptRes_isUsed = true;
-
-            body.MeteringReceiptRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["MeteringReceiptRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["MeteringReceiptRes"].contains("AC_EVSEStatus")) {
-                body.MeteringReceiptRes.AC_EVSEStatus_isUsed = true;
-
-                body.MeteringReceiptRes.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.MeteringReceiptRes.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-                body.MeteringReceiptRes.AC_EVSEStatus.RCD = inJson["Body"]["MeteringReceiptRes"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-            } else {
-                body.MeteringReceiptRes.AC_EVSEStatus_isUsed = false;
-            }
-
-            if (inJson["Body"]["MeteringReceiptRes"].contains("DC_EVSEStatus")) {
-                body.MeteringReceiptRes.DC_EVSEStatus_isUsed = true;
-
-                body.MeteringReceiptRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.MeteringReceiptRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-                if (inJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                    body.MeteringReceiptRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                    body.MeteringReceiptRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-                } else {
-                    body.MeteringReceiptRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-                }
-                body.MeteringReceiptRes.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["MeteringReceiptRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-            } else {
-                body.MeteringReceiptRes.DC_EVSEStatus_isUsed = false;
-            }
-
-            if (inJson["Body"]["MeteringReceiptRes"].contains("EVSEStatus")) {
-                body.MeteringReceiptRes.EVSEStatus_isUsed = true;
-                
-                body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-                body.MeteringReceiptRes.EVSEStatus.AC_EVSEStatus.RCD = inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-
-                body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-                if (inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                    body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                    body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-                } else {
-                    body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-                }
-                body.MeteringReceiptRes.EVSEStatus.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["MeteringReceiptRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-            } else {
-                body.MeteringReceiptRes.EVSEStatus_isUsed = false;
-            }
-        } else if (packetType == "PaymentDetailsReq") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PaymentDetailsReqType(&body.PaymentDetailsReq);
-            body.PaymentDetailsReq_isUsed = true;
-
-            body.PaymentDetailsReq.eMAID.charactersLen = inJson["Body"]["PaymentDetailsReq"]["eMAID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.PaymentDetailsReq.eMAID.charactersLen; i++) {
-                body.PaymentDetailsReq.eMAID.characters[i] = inJson["Body"]["PaymentDetailsReq"]["eMAID"]["characters"][i].template get<char>();
-            }
-
-            if (inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"].contains("Id")) {
-                body.PaymentDetailsReq.ContractSignatureCertChain.Id_isUsed = true;
-                body.PaymentDetailsReq.ContractSignatureCertChain.Id.charactersLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Id"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.Id.charactersLen; i++) {
-                    body.PaymentDetailsReq.ContractSignatureCertChain.Id.characters[i] = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Id"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.PaymentDetailsReq.ContractSignatureCertChain.Id_isUsed = false;
-            }
-
-            body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytesLen"].template get<uint16_t>();
-            for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytesLen; i++) {
-                body.PaymentDetailsReq.ContractSignatureCertChain.Certificate.bytes[i] = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["Certificate"]["bytes"][i].template get<uint8_t>();
-            }
-
-            if (inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"].contains("SubCertificates")) {
-                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed = true;
-                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["arrayLen"].template get<uint16_t>();
-                for (int i = 0; i < body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.arrayLen; i++) {
-                    body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytesLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytesLen; j++) {
-                        body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates.Certificate.array[i].bytes[j] = inJson["Body"]["PaymentDetailsReq"]["ContractSignatureCertChain"]["SubCertificates"]["Certificate"]["array"][i]["bytes"][j].template get<uint8_t>();
-                    }
-                }
-            } else {
-                body.PaymentDetailsReq.ContractSignatureCertChain.SubCertificates_isUsed = false;
-            }
-        } else if (packetType == "PaymentDetailsRes") {/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PaymentDetailsResType(&body.PaymentDetailsRes);
-            body.PaymentDetailsRes_isUsed = true;
-
-            body.PaymentDetailsRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["PaymentDetailsRes"]["ResponseCode"].template get<int>());
-
-            body.PaymentDetailsRes.GenChallenge.bytesLen = inJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["bytesLen"].template get<uint8_t>();
-            for (int i = 0; i < body.PaymentDetailsRes.GenChallenge.bytesLen; i++) {
-                body.PaymentDetailsRes.GenChallenge.bytes[i] = inJson["Body"]["PaymentDetailsRes"]["GenChallenge"]["bytes"][i].template get<uint8_t>();
-            }
-
-            body.PaymentDetailsRes.EVSETimeStamp = inJson["Body"]["PaymentDetailsRes"]["EVSETimeStamp"].template get<int64_t>();
-        } else if (packetType == "PaymentServiceSelectionReq") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PaymentServiceSelectionReqType(&body.PaymentServiceSelectionReq);
-            body.PaymentServiceSelectionReq_isUsed = true;
-
-            body.PaymentServiceSelectionReq.SelectedPaymentOption = static_cast<iso2_paymentOptionType>(inJson["Body"]["PaymentServiceSelectionReq"]["SelectedPaymentOption"].template get<int>());
-
-            body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.arrayLen = inJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["arrayLen"].template get<uint16_t>();
-            for (int i = 0; i < body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.arrayLen; i++) {
-                body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ServiceID = inJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["array"][i]["ServiceID"].template get<uint8_t>();
-                if (inJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["array"][i].contains("ParameterSetID")) {
-                    body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ParameterSetID_isUsed = true;
-                    body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ParameterSetID = inJson["Body"]["PaymentServiceSelectionReq"]["SelectedServiceList"]["SelectedService"]["array"][i]["ParameterSetID"].template get<uint8_t>();
-                } else {
-                    body.PaymentServiceSelectionReq.SelectedServiceList.SelectedService.array[i].ParameterSetID_isUsed = false;
-                }
-            }
-        } else if (packetType == "PaymentServiceSelectionRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PaymentServiceSelectionResType(&body.PaymentServiceSelectionRes);
-            body.PaymentServiceSelectionRes_isUsed = true;
-
-            body.PaymentServiceSelectionRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["PaymentServiceSelectionRes"]["ResponseCode"].template get<int>());
-        } else if (packetType == "PowerDeliveryReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PowerDeliveryReqType(&body.PowerDeliveryReq);
-            body.PowerDeliveryReq_isUsed = true;
-
-            body.PowerDeliveryReq.ChargeProgress = static_cast<iso2_chargeProgressType>(inJson["Body"]["PowerDeliveryReq"]["ChargeProgress"].template get<int>());
-
-            body.PowerDeliveryReq.SAScheduleTupleID = inJson["Body"]["PowerDeliveryReq"]["SAScheduleTupleID"].template get<uint8_t>();
-
-            if (inJson["Body"]["PowerDeliveryReq"].contains("ChargingProfile")) {
-                body.PowerDeliveryReq.ChargingProfile_isUsed = true;
-
-                body.PowerDeliveryReq.ChargingProfile.ProfileEntry.arrayLen = inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["arrayLen"].template get<uint16_t>();
-                for (int i = 0; i < body.PowerDeliveryReq.ChargingProfile.ProfileEntry.arrayLen; i++) {
-                    body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryStart = inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryStart"].template get<uint32_t>();
-
-                    body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Multiplier = inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Multiplier"].template get<int8_t>();
-                    body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Unit"].template get<int>());
-                    body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxPower.Value = inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxPower"]["Value"].template get<int16_t>();
-
-                    if (inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i].contains("ChargingProfileEntryMaxNumberOfPhasesInUse")) {
-                        body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed = true;
-                        body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxNumberOfPhasesInUse = inJson["Body"]["PowerDeliveryReq"]["ChargingProfile"]["ProfileEntry"]["array"][i]["ChargingProfileEntryMaxNumberOfPhasesInUse"].template get<uint8_t>();
-                    } else {
-                        body.PowerDeliveryReq.ChargingProfile.ProfileEntry.array[i].ChargingProfileEntryMaxNumberOfPhasesInUse_isUsed = false;
-                    }
-                }
-            } else {
-                body.PowerDeliveryReq.ChargingProfile_isUsed = false;
-            }
-
-            if (inJson["Body"]["PowerDeliveryReq"].contains("DC_EVPowerDeliveryParameter")) {
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter_isUsed = true;
-
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVReady = inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVReady"].template get<bool>();
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.DC_EVStatus.EVRESSSOC = inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-
-                if (inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"].contains("BulkChargingComplete")) {
-                    body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.BulkChargingComplete_isUsed = true;
-                    body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.BulkChargingComplete = inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["BulkChargingComplete"].template get<bool>();
-                } else {
-                    body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.BulkChargingComplete_isUsed = false;
-                }
-
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter.ChargingComplete = inJson["Body"]["PowerDeliveryReq"]["DC_EVPowerDeliveryParameter"]["ChargingComplete"].template get<bool>();
-            } else {
-                body.PowerDeliveryReq.DC_EVPowerDeliveryParameter_isUsed = false;
-            }
-
-            if (inJson["Body"]["PowerDeliveryReq"].contains("EVPowerDeliveryParameter")) {
-                body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed = true;
-
-                body.PowerDeliveryReq.EVPowerDeliveryParameter._unused = 0;
-            } else {    
-                body.PowerDeliveryReq.EVPowerDeliveryParameter_isUsed = false;
-            }
-        } else if (packetType == "PowerDeliveryRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PowerDeliveryResType(&body.PowerDeliveryRes);
-            body.PowerDeliveryRes_isUsed = true;
-
-            body.PowerDeliveryRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["PowerDeliveryRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["PowerDeliveryRes"].contains("AC_EVSEStatus")) {
-                body.PowerDeliveryRes.AC_EVSEStatus_isUsed = true;
-
-                body.PowerDeliveryRes.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.PowerDeliveryRes.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-                body.PowerDeliveryRes.AC_EVSEStatus.RCD = inJson["Body"]["PowerDeliveryRes"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-            } else {
-                body.PowerDeliveryRes.AC_EVSEStatus_isUsed = false;
-            }
-
-            if (inJson["Body"]["PowerDeliveryRes"].contains("DC_EVSEStatus")) {
-                body.PowerDeliveryRes.DC_EVSEStatus_isUsed = true;
-
-                body.PowerDeliveryRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.PowerDeliveryRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-                if (inJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                    body.PowerDeliveryRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                    body.PowerDeliveryRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-                } else {
-                    body.PowerDeliveryRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-                }
-                body.PowerDeliveryRes.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["PowerDeliveryRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-            } else {
-                body.PowerDeliveryRes.DC_EVSEStatus_isUsed = false;
-            }
-
-            if (inJson["Body"]["PowerDeliveryRes"].contains("EVSEStatus")) {
-                body.PowerDeliveryRes.EVSEStatus_isUsed = true;
-                
-                body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["EVSENotification"].template get<int>());
-                body.PowerDeliveryRes.EVSEStatus.AC_EVSEStatus.RCD = inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["AC_EVSEStatus"]["RCD"].template get<bool>();
-
-                body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-                body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-                if (inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                    body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                    body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-                } else {
-                    body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-                }
-                body.PowerDeliveryRes.EVSEStatus.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["PowerDeliveryRes"]["EVSEStatus"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-            } else {
-                body.PowerDeliveryRes.EVSEStatus_isUsed = false;
-            }
-        } else if (packetType == "PreChargeReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PreChargeReqType(&body.PreChargeReq);
-            body.PreChargeReq_isUsed = true;
-
-            body.PreChargeReq.DC_EVStatus.EVReady = inJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVReady"].template get<bool>();
-            body.PreChargeReq.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-            body.PreChargeReq.DC_EVStatus.EVRESSSOC = inJson["Body"]["PreChargeReq"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-
-            body.PreChargeReq.EVTargetVoltage.Multiplier = inJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Multiplier"].template get<int8_t>();
-            body.PreChargeReq.EVTargetVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Unit"].template get<int>());
-            body.PreChargeReq.EVTargetVoltage.Value = inJson["Body"]["PreChargeReq"]["EVTargetVoltage"]["Value"].template get<int16_t>();
-
-            body.PreChargeReq.EVTargetCurrent.Multiplier = inJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Multiplier"].template get<int8_t>();
-            body.PreChargeReq.EVTargetCurrent.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Unit"].template get<int>());
-            body.PreChargeReq.EVTargetCurrent.Value = inJson["Body"]["PreChargeReq"]["EVTargetCurrent"]["Value"].template get<int16_t>();
-        } else if (packetType == "PreChargeRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_PreChargeResType(&body.PreChargeRes);
-            body.PreChargeRes_isUsed = true;
-
-            body.PreChargeRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["PreChargeRes"]["ResponseCode"].template get<int>());
-
-            body.PreChargeRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-            body.PreChargeRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-            if (inJson["Body"]["PreChargeRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-            } else {
-                body.PreChargeRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-            }
-            body.PreChargeRes.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["PreChargeRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-
-            body.PreChargeRes.EVSEPresentVoltage.Multiplier = inJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Multiplier"].template get<int8_t>();
-            body.PreChargeRes.EVSEPresentVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Unit"].template get<int>());
-            body.PreChargeRes.EVSEPresentVoltage.Value = inJson["Body"]["PreChargeRes"]["EVSEPresentVoltage"]["Value"].template get<int16_t>();
-        } else if (packetType == "ServiceDetailReq") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ServiceDetailReqType(&body.ServiceDetailReq);
-            body.ServiceDetailReq_isUsed = true;
-
-            body.ServiceDetailReq.ServiceID = inJson["Body"]["ServiceDetailReq"]["ServiceID"].template get<uint8_t>();
-        } else if (packetType == "ServiceDetailRes") {//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ServiceDetailResType(&body.ServiceDetailRes);
-            body.ServiceDetailRes_isUsed = true;
-
-            body.ServiceDetailRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["ServiceDetailRes"]["ResponseCode"].template get<int>());
-
-            if (inJson["Body"]["ServiceDetailRes"].contains("ServiceParameterList")) {
-                body.ServiceDetailRes.ServiceParameterList_isUsed = true;
-                body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["arrayLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ServiceDetailRes.ServiceParameterList.ParameterSet.arrayLen; i++) {
-                    body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].ParameterSetID = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["ParameterSetID"].template get<uint8_t>();
-                    body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.arrayLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["arrayLen"].template get<uint16_t>();
-                    for (int j = 0; j < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.arrayLen; j++) {
-                        body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.charactersLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["Name"]["charactersLen"].template get<uint16_t>();
-                        for (int k = 0; k < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.charactersLen; k++) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].Name.characters[k] = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["Name"]["characters"][k].template get<char>();
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("boolValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].boolValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].boolValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["boolValue"].template get<bool>();
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].boolValue_isUsed = false;
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("byteValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].byteValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].byteValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["byteValue"].template get<uint8_t>();
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].byteValue_isUsed = false;
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("shortValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].shortValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].shortValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["shortValue"].template get<int16_t>();
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].shortValue_isUsed = false;
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("intValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].intValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].intValue = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["intValue"].template get<int32_t>();
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].intValue_isUsed = false;
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("physicalValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Multiplier = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Multiplier"].template get<int8_t>();
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Unit"].template get<int>());
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue.Value = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["physicalValue"]["Value"].template get<int16_t>();
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].physicalValue_isUsed = false;
-                        }
-                        if (inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j].contains("stringValue")) {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue_isUsed = true;
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.charactersLen = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["stringValue"]["charactersLen"].template get<uint16_t>();
-                            for (int k = 0; k < body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.charactersLen; k++) {
-                                body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue.characters[k] = inJson["Body"]["ServiceDetailRes"]["ServiceParameterList"]["ParameterSet"]["array"][i]["Parameter"]["array"][j]["stringValue"]["characters"][k].template get<char>();
-                            }
-                        } else {
-                            body.ServiceDetailRes.ServiceParameterList.ParameterSet.array[i].Parameter.array[j].stringValue_isUsed = false;
-                        }
-                    }
-                }
-            } else {
-                body.ServiceDetailRes.ServiceParameterList_isUsed = false;
-            }
-        } else if (packetType == "ServiceDiscoveryReq") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ServiceDiscoveryReqType(&body.ServiceDiscoveryReq);
-            body.ServiceDiscoveryReq_isUsed = true;
-
-            if (inJson["Body"]["ServiceDiscoveryReq"].contains("ServiceScope")) {
-                body.ServiceDiscoveryReq.ServiceScope_isUsed = true;
-                body.ServiceDiscoveryReq.ServiceScope.charactersLen = inJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ServiceDiscoveryReq.ServiceScope.charactersLen; i++) {
-                    body.ServiceDiscoveryReq.ServiceScope.characters[i] = inJson["Body"]["ServiceDiscoveryReq"]["ServiceScope"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.ServiceDiscoveryReq.ServiceScope_isUsed = false;
-            }
-
-            if (inJson["Body"]["ServiceDiscoveryReq"].contains("ServiceCategory")) {
-                body.ServiceDiscoveryReq.ServiceCategory_isUsed = true;
-                body.ServiceDiscoveryReq.ServiceCategory = static_cast<iso2_serviceCategoryType>(inJson["Body"]["ServiceDiscoveryReq"]["ServiceCategory"].template get<int>());
-            } else {
-                body.ServiceDiscoveryReq.ServiceCategory_isUsed = false;
-            }
-        } else if (packetType == "ServiceDiscoveryRes") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_ServiceDiscoveryResType(&body.ServiceDiscoveryRes);
-            body.ServiceDiscoveryRes_isUsed = true;
-
-            body.ServiceDiscoveryRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["ServiceDiscoveryRes"]["ResponseCode"].template get<int>());
-
-            body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.arrayLen = inJson["Body"]["ServiceDiscoveryRes"]["PaymentOptionList"]["PaymentOption"]["arrayLen"].template get<uint16_t>();
-            for (int i = 0; i < body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.arrayLen; i++) {
-                body.ServiceDiscoveryRes.PaymentOptionList.PaymentOption.array[i] = static_cast<iso2_paymentOptionType>(inJson["Body"]["ServiceDiscoveryRes"]["PaymentOptionList"]["PaymentOption"]["array"][i].template get<int>());
-            }
-
-            body.ServiceDiscoveryRes.ChargeService.ServiceID = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceID"].template get<uint8_t>();
-
-            if (inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"].contains("ServiceName")) {
-                body.ServiceDiscoveryRes.ChargeService.ServiceName_isUsed = true;
-                body.ServiceDiscoveryRes.ChargeService.ServiceName.charactersLen = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceName"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.ServiceName.charactersLen; i++) {
-                    body.ServiceDiscoveryRes.ChargeService.ServiceName.characters[i] = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceName"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.ServiceDiscoveryRes.ChargeService.ServiceName_isUsed = false;
-            }
-
-            body.ServiceDiscoveryRes.ChargeService.ServiceCategory = static_cast<iso2_serviceCategoryType>(inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceCategory"].template get<int>());
-
-            if (inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"].contains("ServiceScope")) {
-                body.ServiceDiscoveryRes.ChargeService.ServiceScope_isUsed = true;
-                body.ServiceDiscoveryRes.ChargeService.ServiceScope.charactersLen = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceScope"]["charactersLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.ServiceScope.charactersLen; i++) {
-                    body.ServiceDiscoveryRes.ChargeService.ServiceScope.characters[i] = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["ServiceScope"]["characters"][i].template get<char>();
-                }
-            } else {
-                body.ServiceDiscoveryRes.ChargeService.ServiceScope_isUsed = false;
-            }
-
-            body.ServiceDiscoveryRes.ChargeService.FreeService = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["FreeService"].template get<bool>();
-
-            body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.arrayLen = inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["SupportedEnergyTransferMode"]["EnergyTransferMode"]["arrayLen"].template get<uint16_t>();
-            for (int i = 0; i < body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.arrayLen; i++) {
-                body.ServiceDiscoveryRes.ChargeService.SupportedEnergyTransferMode.EnergyTransferMode.array[i] = static_cast<iso2_EnergyTransferModeType>(inJson["Body"]["ServiceDiscoveryRes"]["ChargeService"]["SupportedEnergyTransferMode"]["EnergyTransferMode"]["array"][i].template get<int>());
-            }
-
-            if (inJson["Body"]["ServiceDiscoveryRes"].contains("ServiceList")) {
-                body.ServiceDiscoveryRes.ServiceList_isUsed = true;
-                body.ServiceDiscoveryRes.ServiceList.Service.arrayLen = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["arrayLen"].template get<uint16_t>();
-                for (int i = 0; i < body.ServiceDiscoveryRes.ServiceList.Service.arrayLen; i++) {
-                    body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceID = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceID"].template get<uint8_t>();
-
-                    if (inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i].contains("ServiceName")) {
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName_isUsed = true;
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.charactersLen = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceName"]["charactersLen"].template get<uint16_t>();
-                        for (int j = 0; j < body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.charactersLen; j++) {
-                            body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName.characters[j] = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceName"]["characters"][j].template get<char>();
-                        }
-                    } else {
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceName_isUsed = false;
-                    }
-
-                    body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceCategory = static_cast<iso2_serviceCategoryType>(inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceCategory"].template get<int>());
-
-                    if (inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i].contains("ServiceScope")) {
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope_isUsed = true;
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.charactersLen = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceScope"]["charactersLen"].template get<uint16_t>();
-                        for (int j = 0; j < body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.charactersLen; j++) {
-                            body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope.characters[j] = inJson["Body"]["ServiceDiscoveryRes"]["ServiceList"]["Service"]["array"][i]["ServiceScope"]["characters"][j].template get<char>();
-                        }
-                    } else {
-                        body.ServiceDiscoveryRes.ServiceList.Service.array[i].ServiceScope_isUsed = false;
-                    }
-                }
-            } else {
-                body.ServiceDiscoveryRes.ServiceList_isUsed = false;
-            }
-        } else if (packetType == "SessionSetupReq") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_SessionSetupReqType(&body.SessionSetupReq);
-            body.SessionSetupReq_isUsed = true;
-
-            body.SessionSetupReq.EVCCID.bytesLen = inJson["Body"]["SessionSetupReq"]["EVCCID"]["bytesLen"].template get<uint8_t>();
-            for (int i = 0; i < body.SessionSetupReq.EVCCID.bytesLen; i++) {
-                body.SessionSetupReq.EVCCID.bytes[i] = inJson["Body"]["SessionSetupReq"]["EVCCID"]["bytes"][i].template get<uint8_t>();
-            }
-        } else if (packetType == "SessionSetupRes") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_SessionSetupResType(&body.SessionSetupRes);
-            body.SessionSetupRes_isUsed = true;
-
-            body.SessionSetupRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["SessionSetupRes"]["ResponseCode"].template get<int>());
-
-            body.SessionSetupRes.EVSEID.charactersLen = inJson["Body"]["SessionSetupRes"]["EVSEID"]["charactersLen"].template get<uint16_t>();
-            for (int i = 0; i < body.SessionSetupRes.EVSEID.charactersLen; i++) {
-                body.SessionSetupRes.EVSEID.characters[i] = inJson["Body"]["SessionSetupRes"]["EVSEID"]["characters"][i].template get<char>();
-            }
-
-            if (inJson["Body"]["SessionSetupRes"].contains("EVSETimeStamp")) {
-                body.SessionSetupRes.EVSETimeStamp_isUsed = true;
-                body.SessionSetupRes.EVSETimeStamp = inJson["Body"]["SessionSetupRes"]["EVSETimeStamp"].template get<uint64_t>();
-            } else {
-                body.SessionSetupRes.EVSETimeStamp_isUsed = false;
-            }
-        } else if (packetType == "SessionStopReq") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_SessionStopReqType(&body.SessionStopReq);
-            body.SessionStopReq_isUsed = true;
-
-            body.SessionStopReq.ChargingSession = static_cast<iso2_chargingSessionType>(inJson["Body"]["SessionStopReq"]["ChargingSession"].template get<int>());
-        } else if (packetType == "SessionStopRes") {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_SessionStopResType(&body.SessionStopRes);
-            body.SessionStopRes_isUsed = true;
-
-            body.SessionStopRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["SessionStopRes"]["ResponseCode"].template get<int>());
-        } else if (packetType == "WeldingDetectionReq") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_WeldingDetectionReqType(&body.WeldingDetectionReq);
-            body.WeldingDetectionReq_isUsed = true;
-
-            body.WeldingDetectionReq.DC_EVStatus.EVReady = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVReady"].template get<bool>();
-            body.WeldingDetectionReq.DC_EVStatus.EVErrorCode = static_cast<iso2_DC_EVErrorCodeType>(inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVErrorCode"].template get<int>());
-            body.WeldingDetectionReq.DC_EVStatus.EVRESSSOC = inJson["Body"]["WeldingDetectionReq"]["DC_EVStatus"]["EVRESSSOC"].template get<uint8_t>();
-        } else if (packetType == "WeldingDetectionRes") {///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            init_iso2_WeldingDetectionResType(&body.WeldingDetectionRes);
-            body.WeldingDetectionRes_isUsed = true;
-
-            body.WeldingDetectionRes.ResponseCode = static_cast<iso2_responseCodeType>(inJson["Body"]["WeldingDetectionRes"]["ResponseCode"].template get<int>());
-
-            body.WeldingDetectionRes.DC_EVSEStatus.NotificationMaxDelay = inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["NotificationMaxDelay"].template get<uint16_t>();
-            body.WeldingDetectionRes.DC_EVSEStatus.EVSENotification = static_cast<iso2_EVSENotificationType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSENotification"].template get<int>());
-            if (inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"].contains("EVSEIsolationStatus")) {
-                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = true;
-                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus = static_cast<iso2_isolationLevelType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEIsolationStatus"].template get<int>());
-            } else {
-                body.WeldingDetectionRes.DC_EVSEStatus.EVSEIsolationStatus_isUsed = false;
-            }
-            body.WeldingDetectionRes.DC_EVSEStatus.EVSEStatusCode = static_cast<iso2_DC_EVSEStatusCodeType>(inJson["Body"]["WeldingDetectionRes"]["DC_EVSEStatus"]["EVSEStatusCode"].template get<int>());
-
-            body.WeldingDetectionRes.EVSEPresentVoltage.Multiplier = inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Multiplier"].template get<int8_t>();
-            body.WeldingDetectionRes.EVSEPresentVoltage.Unit = static_cast<iso2_unitSymbolType>(inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Unit"].template get<int>());
-            body.WeldingDetectionRes.EVSEPresentVoltage.Value = inJson["Body"]["WeldingDetectionRes"]["EVSEPresentVoltage"]["Value"].template get<int16_t>();
-        } else {////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            return nullptr;
-        }
+        inDoc = getDoc_exiDocument(inJson);
 
         uint8_t* stream = new uint8_t[256];
         exi_bitstream_t outEXI;
