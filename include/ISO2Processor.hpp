@@ -1,0 +1,328 @@
+#ifndef ISO2_PROCESSOR_HPP
+#define ISO2_PROCESSOR_HPP
+
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
+
+json getJson_CostType(const struct iso2_CostType& CostTypeDoc);
+struct iso2_CostType getDoc_CostType(const json& CostTypeJson);
+
+json getJson_TransformType(const struct iso2_TransformType& TransformTypeDoc);
+struct iso2_TransformType getDoc_TransformType(const json& TransformTypeJson);
+
+json getJson_IntervalType(const struct iso2_IntervalType& IntervalTypeDoc);
+struct iso2_IntervalType getDoc_IntervalType(const json& IntervalTypeJson);
+
+json getJson_TransformsType(const struct iso2_TransformsType& TransformsTypeDoc);
+struct iso2_TransformsType getDoc_TransformsType(const json& TransformsTypeJson);
+
+json getJson_DSAKeyValueType(const struct iso2_DSAKeyValueType& DSAKeyValueTypeDoc);
+struct iso2_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJson);
+
+json getJson_X509IssuerSerialType(const struct iso2_X509IssuerSerialType& X509IssuerSerialTypeDoc);
+struct iso2_X509IssuerSerialType getDoc_X509IssuerSerialType(const json& X509IssuerSerialTypeJson);
+
+json getJson_RelativeTimeIntervalType(const struct iso2_RelativeTimeIntervalType& RelativeTimeIntervalTypeDoc);
+struct iso2_RelativeTimeIntervalType getDoc_RelativeTimeIntervalType(const json& RelativeTimeIntervalTypeJson);
+
+json getJson_DigestMethodType(const struct iso2_DigestMethodType& DigestMethodTypeDoc);
+struct iso2_DigestMethodType getDoc_DigestMethodType(const json& DigestMethodTypeJson);
+
+json getJson_RSAKeyValueType(const struct iso2_RSAKeyValueType& RSAKeyValueTypeDoc);
+struct iso2_RSAKeyValueType getDoc_RSAKeyValueType(const json& RSAKeyValueTypeJson);
+
+json getJson_CanonicalizationMethodType(const struct iso2_CanonicalizationMethodType& CanonicalizationMethodTypeDoc);
+struct iso2_CanonicalizationMethodType getDoc_CanonicalizationMethodType(const json& CanonicalizationMethodTypeJson);
+
+json getJson_SignatureMethodType(const struct iso2_SignatureMethodType& SignatureMethodTypeDoc);
+struct iso2_SignatureMethodType getDoc_SignatureMethodType(const json& SignatureMethodTypeJson);
+
+json getJson_KeyValueType(const struct iso2_KeyValueType& KeyValueTypeDoc);
+struct iso2_KeyValueType getDoc_KeyValueType(const json& KeyValueTypeJson);
+
+json getJson_PhysicalValueType(const struct iso2_PhysicalValueType& PhysicalValueTypeDoc);
+struct iso2_PhysicalValueType getDoc_PhysicalValueType(const json& PhysicalValueTypeJson);
+
+json getJson_ConsumptionCostType(const struct iso2_ConsumptionCostType& ConsumptionCostTypeDoc);
+struct iso2_ConsumptionCostType getDoc_ConsumptionCostType(const json& ConsumptionCostTypeJson);
+
+json getJson_PMaxScheduleEntryType(const struct iso2_PMaxScheduleEntryType& PMaxScheduleEntryTypeDoc);
+struct iso2_PMaxScheduleEntryType getDoc_PMaxScheduleEntryType(const json& PMaxScheduleEntryTypeJson);
+
+json getJson_SalesTariffEntryType(const struct iso2_SalesTariffEntryType& SalesTariffEntryTypeDoc);
+struct iso2_SalesTariffEntryType getDoc_SalesTariffEntryType(const json& SalesTariffEntryTypeJson);
+
+json getJson_ParameterType(const struct iso2_ParameterType& ParameterTypeDoc);
+struct iso2_ParameterType getDoc_ParameterType(const json& ParameterTypeJson);
+
+json getJson_PMaxScheduleType(const struct iso2_PMaxScheduleType& PMaxScheduleTypeDoc);
+struct iso2_PMaxScheduleType getDoc_PMaxScheduleType(const json& PMaxScheduleTypeJson);
+
+json getJson_ReferenceType(const struct iso2_ReferenceType& ReferenceTypeDoc);
+struct iso2_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson);
+
+json getJson_RetrievalMethodType(const struct iso2_RetrievalMethodType& RetrievalMethodTypeDoc);
+struct iso2_RetrievalMethodType getDoc_RetrievalMethodType(const json& RetrievalMethodTypeJson);
+
+json getJson_SalesTariffType(const struct iso2_SalesTariffType& SalesTariffTypeDoc);
+struct iso2_SalesTariffType getDoc_SalesTariffType(const json& SalesTariffTypeJson);
+
+json getJson_X509DataType(const struct iso2_X509DataType& X509DataTypeDoc);
+struct iso2_X509DataType getDoc_X509DataType(const json& X509DataTypeJson);
+
+json getJson_PGPDataType(const struct iso2_PGPDataType& PGPDataTypeDoc);
+struct iso2_PGPDataType getDoc_PGPDataType(const json& PGPDataTypeJson);
+
+json getJson_SPKIDataType(const struct iso2_SPKIDataType& SPKIDataTypeDoc);
+struct iso2_SPKIDataType getDoc_SPKIDataType(const json& SPKIDataTypeJson);
+
+json getJson_SignedInfoType(const struct iso2_SignedInfoType& SignedInfoTypeDoc);
+struct iso2_SignedInfoType getDoc_SignedInfoType(const json& SignedInfoTypeJson);
+
+json getJson_ProfileEntryType(const struct iso2_ProfileEntryType& ProfileEntryTypeDoc);
+struct iso2_ProfileEntryType getDoc_ProfileEntryType(const json& ProfileEntryTypeJson);
+
+json getJson_DC_EVStatusType(const struct iso2_DC_EVStatusType& DC_EVStatusTypeDoc);
+struct iso2_DC_EVStatusType getDoc_DC_EVStatusType(const json& DC_EVStatusTypeJson);
+
+json getJson_ParameterSetType(const struct iso2_ParameterSetType& ParameterSetTypeDoc);
+struct iso2_ParameterSetType getDoc_ParameterSetType(const json& ParameterSetTypeJson);
+
+json getJson_SAScheduleTupleType(const struct iso2_SAScheduleTupleType& SAScheduleTupleTypeDoc);
+struct iso2_SAScheduleTupleType getDoc_SAScheduleTupleType(const json& SAScheduleTupleTypeJson);
+
+json getJson_SelectedServiceType(const struct iso2_SelectedServiceType& SelectedServiceTypeDoc);
+struct iso2_SelectedServiceType getDoc_SelectedServiceType(const json& SelectedServiceTypeJson);
+
+json getJson_ServiceType(const struct iso2_ServiceType& ServiceTypeDoc);
+struct iso2_ServiceType getDoc_ServiceType(const json& ServiceTypeJson);
+
+json getJson_SignatureValueType(const struct iso2_SignatureValueType& SignatureValueTypeDoc);
+struct iso2_SignatureValueType getDoc_SignatureValueType(const json& SignatureValueTypeJson);
+
+json getJson_SubCertificatesType(const struct iso2_SubCertificatesType& SubCertificatesTypeDoc);
+struct iso2_SubCertificatesType getDoc_SubCertificatesType(const json& SubCertificatesTypeJson);
+
+json getJson_KeyInfoType(const struct iso2_KeyInfoType& KeyInfoTypeDoc);
+struct iso2_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson);
+
+json getJson_ObjectType(const struct iso2_ObjectType& ObjectTypeDoc);
+struct iso2_ObjectType getDoc_ObjectType(const json& ObjectTypeJson);
+
+json getJson_SupportedEnergyTransferModeType(const struct iso2_SupportedEnergyTransferModeType& SupportedEnergyTransferModeTypeDoc);
+struct iso2_SupportedEnergyTransferModeType getDoc_SupportedEnergyTransferModeType(const json& SupportedEnergyTransferModeTypeJson);
+
+json getJson_CertificateChainType(const struct iso2_CertificateChainType& CertificateChainTypeDoc);
+struct iso2_CertificateChainType getDoc_CertificateChainType(const json& CertificateChainTypeJson);
+
+json getJson_BodyBaseType(const struct iso2_BodyBaseType& BodyBaseTypeDoc);
+struct iso2_BodyBaseType getDoc_BodyBaseType(const json& BodyBaseTypeJson);
+
+json getJson_NotificationType(const struct iso2_NotificationType& NotificationTypeDoc);
+struct iso2_NotificationType getDoc_NotificationType(const json& NotificationTypeJson);
+
+json getJson_DC_EVSEStatusType(const struct iso2_DC_EVSEStatusType& DC_EVSEStatusTypeDoc);
+struct iso2_DC_EVSEStatusType getDoc_DC_EVSEStatusType(const json& DC_EVSEStatusTypeJson);
+
+json getJson_SelectedServiceListType(const struct iso2_SelectedServiceListType& SelectedServiceListTypeDoc);
+struct iso2_SelectedServiceListType getDoc_SelectedServiceListType(const json& SelectedServiceListTypeJson);
+
+json getJson_PaymentOptionListType(const struct iso2_PaymentOptionListType& PaymentOptionListTypeDoc);
+struct iso2_PaymentOptionListType getDoc_PaymentOptionListType(const json& PaymentOptionListTypeJson);
+
+json getJson_SignatureType(const struct iso2_SignatureType& SignatureTypeDoc);
+struct iso2_SignatureType getDoc_SignatureType(const json& SignatureTypeJson);
+
+json getJson_ChargingProfileType(const struct iso2_ChargingProfileType& ChargingProfileTypeDoc);
+struct iso2_ChargingProfileType getDoc_ChargingProfileType(const json& ChargingProfileTypeJson);
+
+json getJson_ServiceParameterListType(const struct iso2_ServiceParameterListType& ServiceParameterListTypeDoc);
+struct iso2_ServiceParameterListType getDoc_ServiceParameterListType(const json& ServiceParameterListTypeJson);
+
+json getJson_ListOfRootCertificateIDsType(const struct iso2_ListOfRootCertificateIDsType& ListOfRootCertificateIDsTypeDoc);
+struct iso2_ListOfRootCertificateIDsType getDoc_ListOfRootCertificateIDsType(const json& ListOfRootCertificateIDsTypeJson);
+
+json getJson_AC_EVChargeParameterType(const struct iso2_AC_EVChargeParameterType& AC_EVChargeParameterTypeDoc);
+struct iso2_AC_EVChargeParameterType getDoc_AC_EVChargeParameterType(const json& AC_EVChargeParameterTypeJson);
+
+json getJson_DC_EVChargeParameterType(const struct iso2_DC_EVChargeParameterType& DC_EVChargeParameterTypeDoc);
+struct iso2_DC_EVChargeParameterType getDoc_DC_EVChargeParameterType(const json& DC_EVChargeParameterTypeJson);
+
+json getJson_EVChargeParameterType(const struct iso2_EVChargeParameterType& EVChargeParameterTypeDoc);
+struct iso2_EVChargeParameterType getDoc_EVChargeParameterType(const json& EVChargeParameterTypeJson);
+
+json getJson_SASchedulesType(const struct iso2_SASchedulesType& SASchedulesTypeDoc);
+struct iso2_SASchedulesType getDoc_SASchedulesType(const json& SASchedulesTypeJson);
+
+json getJson_SAScheduleListType(const struct iso2_SAScheduleListType& SAScheduleListTypeDoc);
+struct iso2_SAScheduleListType getDoc_SAScheduleListType(const json& SAScheduleListTypeJson);
+
+json getJson_ChargeServiceType(const struct iso2_ChargeServiceType& ChargeServiceTypeDoc);
+struct iso2_ChargeServiceType getDoc_ChargeServiceType(const json& ChargeServiceTypeJson);
+
+json getJson_EVPowerDeliveryParameterType(const struct iso2_EVPowerDeliveryParameterType& EVPowerDeliveryParameterTypeDoc);
+struct iso2_EVPowerDeliveryParameterType getDoc_EVPowerDeliveryParameterType(const json& EVPowerDeliveryParameterTypeJson);
+
+json getJson_DC_EVPowerDeliveryParameterType(const struct iso2_DC_EVPowerDeliveryParameterType& DC_EVPowerDeliveryParameterTypeDoc);
+struct iso2_DC_EVPowerDeliveryParameterType getDoc_DC_EVPowerDeliveryParameterType(const json& DC_EVPowerDeliveryParameterTypeJson);
+
+json getJson_ContractSignatureEncryptedPrivateKeyType(const struct iso2_ContractSignatureEncryptedPrivateKeyType& ContractSignatureEncryptedPrivateKeyTypeDoc);
+struct iso2_ContractSignatureEncryptedPrivateKeyType getDoc_ContractSignatureEncryptedPrivateKeyType(const json& ContractSignatureEncryptedPrivateKeyTypeJson);
+
+json getJson_EVSEChargeParameterType(const struct iso2_EVSEChargeParameterType& EVSEChargeParameterTypeDoc);
+struct iso2_EVSEChargeParameterType getDoc_EVSEChargeParameterType(const json& EVSEChargeParameterTypeJson);
+
+json getJson_DC_EVSEChargeParameterType(const struct iso2_DC_EVSEChargeParameterType& DC_EVSEChargeParameterTypeDoc);
+struct iso2_DC_EVSEChargeParameterType getDoc_DC_EVSEChargeParameterType(const json& DC_EVSEChargeParameterTypeJson);
+
+json getJson_ServiceListType(const struct iso2_ServiceListType& ServiceListTypeDoc);
+struct iso2_ServiceListType getDoc_ServiceListType(const json& ServiceListTypeJson);
+
+json getJson_DiffieHellmanPublickeyType(const struct iso2_DiffieHellmanPublickeyType& DiffieHellmanPublickeyTypeDoc);
+struct iso2_DiffieHellmanPublickeyType getDoc_DiffieHellmanPublickeyType(const json& DiffieHellmanPublickeyTypeJson);
+
+json getJson_EMAIDType(const struct iso2_EMAIDType& EMAIDTypeDoc);
+struct iso2_EMAIDType getDoc_EMAIDType(const json& EMAIDTypeJson);
+
+json getJson_AC_EVSEStatusType(const struct iso2_AC_EVSEStatusType& AC_EVSEStatusTypeDoc);
+struct iso2_AC_EVSEStatusType getDoc_AC_EVSEStatusType(const json& AC_EVSEStatusTypeJson);
+
+json getJson_EVSEStatusType(const struct iso2_EVSEStatusType& EVSEStatusTypeDoc);
+struct iso2_EVSEStatusType getDoc_EVSEStatusType(const json& EVSEStatusTypeJson);
+
+json getJson_AC_EVSEChargeParameterType(const struct iso2_AC_EVSEChargeParameterType& AC_EVSEChargeParameterTypeDoc);
+struct iso2_AC_EVSEChargeParameterType getDoc_AC_EVSEChargeParameterType(const json& AC_EVSEChargeParameterTypeJson);
+
+json getJson_MeterInfoType(const struct iso2_MeterInfoType& MeterInfoTypeDoc);
+struct iso2_MeterInfoType getDoc_MeterInfoType(const json& MeterInfoTypeJson);
+
+json getJson_MessageHeaderType(const struct iso2_MessageHeaderType& MessageHeaderTypeDoc);
+struct iso2_MessageHeaderType getDoc_MessageHeaderType(const json& MessageHeaderTypeJson);
+
+json getJson_PowerDeliveryReqType(const struct iso2_PowerDeliveryReqType& PowerDeliveryReqTypeDoc);
+struct iso2_PowerDeliveryReqType getDoc_PowerDeliveryReqType(const json& PowerDeliveryReqTypeJson);
+
+json getJson_CurrentDemandResType(const struct iso2_CurrentDemandResType& CurrentDemandResTypeDoc);
+struct iso2_CurrentDemandResType getDoc_CurrentDemandResType(const json& CurrentDemandResTypeJson);
+
+json getJson_ChargingStatusResType(const struct iso2_ChargingStatusResType& ChargingStatusResTypeDoc);
+struct iso2_ChargingStatusResType getDoc_ChargingStatusResType(const json& ChargingStatusResTypeJson);
+
+json getJson_AuthorizationReqType(const struct iso2_AuthorizationReqType& AuthorizationReqTypeDoc);
+struct iso2_AuthorizationReqType getDoc_AuthorizationReqType(const json& AuthorizationReqTypeJson);
+
+json getJson_PreChargeReqType(const struct iso2_PreChargeReqType& PreChargeReqTypeDoc);
+struct iso2_PreChargeReqType getDoc_PreChargeReqType(const json& PreChargeReqTypeJson);
+
+json getJson_ServiceDetailResType(const struct iso2_ServiceDetailResType& ServiceDetailResTypeDoc);
+struct iso2_ServiceDetailResType getDoc_ServiceDetailResType(const json& ServiceDetailResTypeJson);
+
+json getJson_PaymentServiceSelectionResType(const struct iso2_PaymentServiceSelectionResType& PaymentServiceSelectionResTypeDoc);
+struct iso2_PaymentServiceSelectionResType getDoc_PaymentServiceSelectionResType(const json& PaymentServiceSelectionResTypeJson);
+
+json getJson_CertificateUpdateReqType(const struct iso2_CertificateUpdateReqType& CertificateUpdateReqTypeDoc);
+struct iso2_CertificateUpdateReqType getDoc_CertificateUpdateReqType(const json& CertificateUpdateReqTypeJson);
+
+json getJson_SessionSetupResType(const struct iso2_SessionSetupResType& SessionSetupResTypeDoc);
+struct iso2_SessionSetupResType getDoc_SessionSetupResType(const json& SessionSetupResTypeJson);
+
+json getJson_CertificateInstallationReqType(const struct iso2_CertificateInstallationReqType& CertificateInstallationReqTypeDoc);
+struct iso2_CertificateInstallationReqType getDoc_CertificateInstallationReqType(const json& CertificateInstallationReqTypeJson);
+
+json getJson_CertificateInstallationResType(const struct iso2_CertificateInstallationResType& CertificateInstallationResTypeDoc);
+struct iso2_CertificateInstallationResType getDoc_CertificateInstallationResType(const json& CertificateInstallationResTypeJson);
+
+json getJson_WeldingDetectionResType(const struct iso2_WeldingDetectionResType& WeldingDetectionResTypeDoc);
+struct iso2_WeldingDetectionResType getDoc_WeldingDetectionResType(const json& WeldingDetectionResTypeJson);
+
+json getJson_CurrentDemandReqType(const struct iso2_CurrentDemandReqType& CurrentDemandReqTypeDoc);
+struct iso2_CurrentDemandReqType getDoc_CurrentDemandReqType(const json& CurrentDemandReqTypeJson);
+
+json getJson_PreChargeResType(const struct iso2_PreChargeResType& PreChargeResTypeDoc);
+struct iso2_PreChargeResType getDoc_PreChargeResType(const json& PreChargeResTypeJson);
+
+json getJson_CertificateUpdateResType(const struct iso2_CertificateUpdateResType& CertificateUpdateResTypeDoc);
+struct iso2_CertificateUpdateResType getDoc_CertificateUpdateResType(const json& CertificateUpdateResTypeJson);
+
+json getJson_MeteringReceiptReqType(const struct iso2_MeteringReceiptReqType& MeteringReceiptReqTypeDoc);
+struct iso2_MeteringReceiptReqType getDoc_MeteringReceiptReqType(const json& MeteringReceiptReqTypeJson);
+
+json getJson_ChargingStatusReqType(const struct iso2_ChargingStatusReqType& ChargingStatusReqTypeDoc);
+struct iso2_ChargingStatusReqType getDoc_ChargingStatusReqType(const json& ChargingStatusReqTypeJson);
+
+json getJson_SessionStopResType(const struct iso2_SessionStopResType& SessionStopResTypeDoc);
+struct iso2_SessionStopResType getDoc_SessionStopResType(const json& SessionStopResTypeJson);
+
+json getJson_ChargeParameterDiscoveryReqType(const struct iso2_ChargeParameterDiscoveryReqType& ChargeParameterDiscoveryReqTypeDoc);
+struct iso2_ChargeParameterDiscoveryReqType getDoc_ChargeParameterDiscoveryReqType(const json& ChargeParameterDiscoveryReqTypeJson);
+
+json getJson_CableCheckReqType(const struct iso2_CableCheckReqType& CableCheckReqTypeDoc);
+struct iso2_CableCheckReqType getDoc_CableCheckReqType(const json& CableCheckReqTypeJson);
+
+json getJson_WeldingDetectionReqType(const struct iso2_WeldingDetectionReqType& WeldingDetectionReqTypeDoc);
+struct iso2_WeldingDetectionReqType getDoc_WeldingDetectionReqType(const json& WeldingDetectionReqTypeJson);
+
+json getJson_PowerDeliveryResType(const struct iso2_PowerDeliveryResType& PowerDeliveryResTypeDoc);
+struct iso2_PowerDeliveryResType getDoc_PowerDeliveryResType(const json& PowerDeliveryResTypeJson);
+
+json getJson_ChargeParameterDiscoveryResType(const struct iso2_ChargeParameterDiscoveryResType& ChargeParameterDiscoveryResTypeDoc);
+struct iso2_ChargeParameterDiscoveryResType getDoc_ChargeParameterDiscoveryResType(const json& ChargeParameterDiscoveryResTypeJson);
+
+json getJson_PaymentServiceSelectionReqType(const struct iso2_PaymentServiceSelectionReqType& PaymentServiceSelectionReqTypeDoc);
+struct iso2_PaymentServiceSelectionReqType getDoc_PaymentServiceSelectionReqType(const json& PaymentServiceSelectionReqTypeJson);
+
+json getJson_MeteringReceiptResType(const struct iso2_MeteringReceiptResType& MeteringReceiptResTypeDoc);
+struct iso2_MeteringReceiptResType getDoc_MeteringReceiptResType(const json& MeteringReceiptResTypeJson);
+
+json getJson_CableCheckResType(const struct iso2_CableCheckResType& CableCheckResTypeDoc);
+struct iso2_CableCheckResType getDoc_CableCheckResType(const json& CableCheckResTypeJson);
+
+json getJson_ServiceDiscoveryResType(const struct iso2_ServiceDiscoveryResType& ServiceDiscoveryResTypeDoc);
+struct iso2_ServiceDiscoveryResType getDoc_ServiceDiscoveryResType(const json& ServiceDiscoveryResTypeJson);
+
+json getJson_ServiceDetailReqType(const struct iso2_ServiceDetailReqType& ServiceDetailReqTypeDoc);
+struct iso2_ServiceDetailReqType getDoc_ServiceDetailReqType(const json& ServiceDetailReqTypeJson);
+
+json getJson_SessionSetupReqType(const struct iso2_SessionSetupReqType& SessionSetupReqTypeDoc);
+struct iso2_SessionSetupReqType getDoc_SessionSetupReqType(const json& SessionSetupReqTypeJson);
+
+json getJson_SessionStopReqType(const struct iso2_SessionStopReqType& SessionStopReqTypeDoc);
+struct iso2_SessionStopReqType getDoc_SessionStopReqType(const json& SessionStopReqTypeJson);
+
+json getJson_ServiceDiscoveryReqType(const struct iso2_ServiceDiscoveryReqType& ServiceDiscoveryReqTypeDoc);
+struct iso2_ServiceDiscoveryReqType getDoc_ServiceDiscoveryReqType(const json& ServiceDiscoveryReqTypeJson);
+
+json getJson_AuthorizationResType(const struct iso2_AuthorizationResType& AuthorizationResTypeDoc);
+struct iso2_AuthorizationResType getDoc_AuthorizationResType(const json& AuthorizationResTypeJson);
+
+json getJson_PaymentDetailsReqType(const struct iso2_PaymentDetailsReqType& PaymentDetailsReqTypeDoc);
+struct iso2_PaymentDetailsReqType getDoc_PaymentDetailsReqType(const json& PaymentDetailsReqTypeJson);
+
+json getJson_PaymentDetailsResType(const struct iso2_PaymentDetailsResType& PaymentDetailsResTypeDoc);
+struct iso2_PaymentDetailsResType getDoc_PaymentDetailsResType(const json& PaymentDetailsResTypeJson);
+
+json getJson_BodyType(const struct iso2_BodyType& BodyTypeDoc);
+struct iso2_BodyType getDoc_BodyType(const json& BodyTypeJson);
+
+json getJson_V2G_Message(const struct iso2_V2G_Message& V2G_MessageDoc);
+struct iso2_V2G_Message getDoc_V2G_Message(const json& V2G_MessageJson);
+
+json getJson_exiDocument(const struct iso2_exiDocument& exiDocumentDoc);
+struct iso2_exiDocument getDoc_exiDocument(const json& exiDocumentJson);
+
+json getJson_exiFragment(const struct iso2_exiFragment& exiFragmentDoc);
+struct iso2_exiFragment getDoc_exiFragment(const json& exiFragmentJson);
+
+json getJson_xmldsigFragment(const struct iso2_xmldsigFragment& xmldsigFragmentDoc);
+struct iso2_xmldsigFragment getDoc_xmldsigFragment(const json& xmldsigFragmentJson);
+
+struct encoded_data {
+    uint8_t* buffer;
+    size_t size;
+};
+
+const char* decodeFromPythonBytes(const uint8_t* data, size_t size);
+encoded_data* encodeFromPythonDict(const char* inString);
+void free_encoded_data(encoded_data* data);
+
+#endif // ISO2_PROCESSOR_HPP
