@@ -1,3 +1,7 @@
+/*
+    Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
+*/
+
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
