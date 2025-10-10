@@ -1,3 +1,7 @@
+/*
+    Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
+*/
+
 #ifndef APP_HANDSHAKE_PROCESSOR_HPP
 #define APP_HANDSHAKE_PROCESSOR_HPP
 

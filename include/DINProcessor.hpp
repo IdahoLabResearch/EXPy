@@ -1,3 +1,7 @@
+/*
+    Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
+*/
+
 #ifndef DIN_PROCESSOR_HPP
 #define DIN_PROCESSOR_HPP
 
