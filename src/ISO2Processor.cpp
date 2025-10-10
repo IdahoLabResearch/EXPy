@@ -552,7 +552,7 @@ struct iso2_ConsumptionCostType getDoc_ConsumptionCostType(const json& Consumpti
     return outDoc;
 }
 
-json getjson_PMaxScheduleEntryType(const struct iso2_PMaxScheduleEntryType& PMaxScheduleEntryTypeDoc) {
+json getJson_PMaxScheduleEntryType(const struct iso2_PMaxScheduleEntryType& PMaxScheduleEntryTypeDoc) {
     json outJson;
 
     if (PMaxScheduleEntryTypeDoc.RelativeTimeInterval_isUsed) {
@@ -725,7 +725,7 @@ json getJson_PMaxScheduleType(const struct iso2_PMaxScheduleType& PMaxScheduleTy
 
     outJson["PMaxScheduleEntry"]["arrayLen"] = PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen;
     for (uint16_t i = 0; i < PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen && i < iso2_PMaxScheduleEntryType_12_ARRAY_SIZE; ++i) {
-        outJson["PMaxScheduleEntry"]["array"][i] = getjson_PMaxScheduleEntryType(PMaxScheduleTypeDoc.PMaxScheduleEntry.array[i]);
+        outJson["PMaxScheduleEntry"]["array"][i] = getJson_PMaxScheduleEntryType(PMaxScheduleTypeDoc.PMaxScheduleEntry.array[i]);
     }
 
     return outJson;

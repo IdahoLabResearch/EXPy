@@ -181,7 +181,7 @@ extern "C" {
 }
 
 int main(int argc, char* argv[]) {
-    cxxopts::Options options("./AppHandshakeProcessor --[encode/decode]='STRING_OPTIONAL' -i FILE_INPUT -o FILE_OUTPUT\n  ./AppHandshakeProcessor --decode='80400040'\n  ./AppHandshakeProcessor -e -i input.json -o output.txt\n  ./AppHandshakeProcessor", "Encode and decode AppHandshake EXI messages\nIf no arguement specified for input/outfile, will default to stdin/stdout\nMUST use double quotes (\") and lower case true/false");
+    cxxopts::Options options("./AppHandshakeProcessor --[encode/decode]='STRING_OPTIONAL' -i FILE_INPUT -o FILE_OUTPUT\n  ./AppHandshakeProcessor --decode='80400040'\n  ./AppHandshakeProcessor -e -i input.json -o output.txt\n  ./AppHandshakeProcessor", "Encode and decode AppHandshake EXI messages\nIf no argument specified for input/outfile, will default to stdin/stdout\nMUST use double quotes (\") and lower case true/false");
     options.add_options()
         ("h,help", "Show help")
         ("e,encode", "Encode EXI message from JSON to EXI bytes", cxxopts::value<std::string>()->implicit_value("cmd"))
