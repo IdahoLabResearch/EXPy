@@ -36,7 +36,7 @@ json getJson_exi_unsigned_t(const exi_unsigned_t& exiUnsigned) {
     json outJson;
 
     outJson["octets_count"] = exiUnsigned.octets_count;
-    for (size_t i = 0; i < exiUnsigned.octets_count; ++i) {
+    for (size_t i = 0; i < exiUnsigned.octets_count && i < EXI_BASETYPES_MAX_OCTETS_SUPPORTED; ++i) {
         outJson["octets"][i] = exiUnsigned.octets[i];
     }
     return outJson;
@@ -46,7 +46,7 @@ exi_unsigned_t getDoc_exi_unsigned_t(const json& exiUnsignedJson) {
     exi_unsigned_t outDoc;
 
     outDoc.octets_count = exiUnsignedJson["octets_count"].template get<size_t>();
-    for (size_t i = 0; i < outDoc.octets_count; ++i) {
+    for (size_t i = 0; i < outDoc.octets_count && i < EXI_BASETYPES_MAX_OCTETS_SUPPORTED; ++i) {
         outDoc.octets[i] = exiUnsignedJson["octets"][i].template get<uint8_t>();
     }
     return outDoc;

@@ -26,8 +26,8 @@ json getJson_AppProtocolType(const struct appHand_AppProtocolType& appProtocolDo
     json outJson;
 
     outJson["ProtocolNamespace"]["charactersLen"] = appProtocolDoc.ProtocolNamespace.charactersLen;
-    for (uint16_t j = 0; j < appProtocolDoc.ProtocolNamespace.charactersLen; ++j) {
-        outJson["ProtocolNamespace"]["characters"][j] = appProtocolDoc.ProtocolNamespace.characters[j];
+    for (uint16_t i = 0; i < appProtocolDoc.ProtocolNamespace.charactersLen && i < appHand_ProtocolNamespace_CHARACTER_SIZE; ++i) {
+        outJson["ProtocolNamespace"]["characters"][i] = appProtocolDoc.ProtocolNamespace.characters[i];
     }
     outJson["VersionNumberMajor"] = appProtocolDoc.VersionNumberMajor;
     outJson["VersionNumberMinor"] = appProtocolDoc.VersionNumberMinor;
@@ -41,8 +41,8 @@ struct appHand_AppProtocolType getDoc_AppProtocolType(const json& appProtocolJso
     init_appHand_AppProtocolType(&outDoc);
 
     outDoc.ProtocolNamespace.charactersLen = appProtocolJson["ProtocolNamespace"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t j = 0; j < outDoc.ProtocolNamespace.charactersLen; ++j) {
-        outDoc.ProtocolNamespace.characters[j] = appProtocolJson["ProtocolNamespace"]["characters"][j].template get<char>();
+    for (uint16_t i = 0; i < outDoc.ProtocolNamespace.charactersLen && i < appHand_ProtocolNamespace_CHARACTER_SIZE; ++i) {
+        outDoc.ProtocolNamespace.characters[i] = appProtocolJson["ProtocolNamespace"]["characters"][i].template get<char>();
     }
     outDoc.VersionNumberMajor = appProtocolJson["VersionNumberMajor"].template get<uint32_t>();
     outDoc.VersionNumberMinor = appProtocolJson["VersionNumberMinor"].template get<uint32_t>();
@@ -55,7 +55,7 @@ json getJson_supportedAppProtocolReq(const struct appHand_supportedAppProtocolRe
     json outJson;
 
     outJson["AppProtocol"]["arrayLen"] = supportedAppProtocolReqDoc.AppProtocol.arrayLen;
-    for (uint16_t i = 0; i < supportedAppProtocolReqDoc.AppProtocol.arrayLen; ++i) {
+    for (uint16_t i = 0; i < supportedAppProtocolReqDoc.AppProtocol.arrayLen && i < appHand_AppProtocolType_5_ARRAY_SIZE; ++i) {
         outJson["AppProtocol"]["array"][i] = getJson_AppProtocolType(supportedAppProtocolReqDoc.AppProtocol.array[i]);
     }
     return outJson;
@@ -66,7 +66,7 @@ struct appHand_supportedAppProtocolReq getDoc_supportedAppProtocolReq(const json
     init_appHand_supportedAppProtocolReq(&outDoc);
 
     outDoc.AppProtocol.arrayLen = supportedAppProtocolReqJson["AppProtocol"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.AppProtocol.arrayLen; ++i) {
+    for (uint16_t i = 0; i < outDoc.AppProtocol.arrayLen && i < appHand_AppProtocolType_5_ARRAY_SIZE; ++i) {
         outDoc.AppProtocol.array[i] = getDoc_AppProtocolType(supportedAppProtocolReqJson["AppProtocol"]["array"][i]);
     }
     return outDoc;
