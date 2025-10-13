@@ -125,18 +125,18 @@ json getJson_TransformType(const struct din_TransformType& TransformTypeDoc) {
     json outJson;
 
     outJson["Algorithm"]["charactersLen"] = TransformTypeDoc.Algorithm.charactersLen;
-    for (uint16_t i = 0; i < TransformTypeDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < TransformTypeDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outJson["Algorithm"]["characters"][i] = TransformTypeDoc.Algorithm.characters[i];
     }
     if (TransformTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = TransformTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < TransformTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < TransformTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = TransformTypeDoc.ANY.bytes[i];
         }
     }
     if (TransformTypeDoc.XPath_isUsed) {
         outJson["XPath"]["charactersLen"] = TransformTypeDoc.XPath.charactersLen;
-        for (uint16_t i = 0; i < TransformTypeDoc.XPath.charactersLen; i++) {
+        for (uint16_t i = 0; i < TransformTypeDoc.XPath.charactersLen && i < din_XPath_CHARACTER_SIZE; i++) {
             outJson["XPath"]["characters"][i] = TransformTypeDoc.XPath.characters[i];
         }
     }
@@ -149,13 +149,13 @@ struct din_TransformType getDoc_TransformType(const json& TransformTypeJson) {
     init_din_TransformType(&outDoc);
 
     outDoc.Algorithm.charactersLen = TransformTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen & i < din_Algorithm_CHARACTER_SIZE; i++) {
         outDoc.Algorithm.characters[i] = TransformTypeJson["Algorithm"]["characters"][i].template get<char>();
     }
     if (TransformTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = TransformTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen & i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = TransformTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -164,7 +164,7 @@ struct din_TransformType getDoc_TransformType(const json& TransformTypeJson) {
     if (TransformTypeJson.contains("XPath")) {
         outDoc.XPath_isUsed = 1;
         outDoc.XPath.charactersLen = TransformTypeJson["XPath"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.XPath.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.XPath.charactersLen & i < din_XPath_CHARACTER_SIZE; i++) {
             outDoc.XPath.characters[i] = TransformTypeJson["XPath"]["characters"][i].template get<char>();
         }
     } else {
@@ -275,41 +275,41 @@ json getJson_DSAKeyValueType(const struct din_DSAKeyValueType& DSAKeyValueTypeDo
 
     if (DSAKeyValueTypeDoc.P_isUsed) {
         outJson["P"]["bytesLen"] = DSAKeyValueTypeDoc.P.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.P.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.P.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["P"]["bytes"][i] = DSAKeyValueTypeDoc.P.bytes[i];
         }
     }
     if (DSAKeyValueTypeDoc.Q_isUsed) {
         outJson["Q"]["bytesLen"] = DSAKeyValueTypeDoc.Q.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Q.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Q.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["Q"]["bytes"][i] = DSAKeyValueTypeDoc.Q.bytes[i];
         }
     }
     if (DSAKeyValueTypeDoc.G_isUsed) {
         outJson["G"]["bytesLen"] = DSAKeyValueTypeDoc.G.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.G.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.G.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["G"]["bytes"][i] = DSAKeyValueTypeDoc.G.bytes[i];
         }
     }
     outJson["Y"]["bytesLen"] = DSAKeyValueTypeDoc.Y.bytesLen;
-    for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Y.bytesLen; i++) {
+    for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Y.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outJson["Y"]["bytes"][i] = DSAKeyValueTypeDoc.Y.bytes[i];
     }
     if (DSAKeyValueTypeDoc.J_isUsed) {
         outJson["J"]["bytesLen"] = DSAKeyValueTypeDoc.J.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.J.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.J.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["J"]["bytes"][i] = DSAKeyValueTypeDoc.J.bytes[i];
         }
     }
     if (DSAKeyValueTypeDoc.Seed_isUsed) {
         outJson["Seed"]["bytesLen"] = DSAKeyValueTypeDoc.Seed.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Seed.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.Seed.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["Seed"]["bytes"][i] = DSAKeyValueTypeDoc.Seed.bytes[i];
         }
     }
     if (DSAKeyValueTypeDoc.PgenCounter_isUsed) {
         outJson["PgenCounter"]["bytesLen"] = DSAKeyValueTypeDoc.PgenCounter.bytesLen;
-        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.PgenCounter.bytesLen; i++) {
+        for (uint16_t i = 0; i < DSAKeyValueTypeDoc.PgenCounter.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outJson["PgenCounter"]["bytes"][i] = DSAKeyValueTypeDoc.PgenCounter.bytes[i];
         }
     }
@@ -324,7 +324,7 @@ struct din_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJso
     if (DSAKeyValueTypeJson.contains("P")) {
         outDoc.P_isUsed = 1;
         outDoc.P.bytesLen = DSAKeyValueTypeJson["P"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.P.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.P.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.P.bytes[i] = DSAKeyValueTypeJson["P"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -333,7 +333,7 @@ struct din_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJso
     if (DSAKeyValueTypeJson.contains("Q")) {
         outDoc.Q_isUsed = 1;
         outDoc.Q.bytesLen = DSAKeyValueTypeJson["Q"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Q.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Q.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.Q.bytes[i] = DSAKeyValueTypeJson["Q"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -342,20 +342,20 @@ struct din_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJso
     if (DSAKeyValueTypeJson.contains("G")) {
         outDoc.G_isUsed = 1;
         outDoc.G.bytesLen = DSAKeyValueTypeJson["G"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.G.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.G.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.G.bytes[i] = DSAKeyValueTypeJson["G"]["bytes"][i].template get<uint8_t>();
         }
     } else {
         outDoc.G_isUsed = 0;
     }
     outDoc.Y.bytesLen = DSAKeyValueTypeJson["Y"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Y.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Y.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outDoc.Y.bytes[i] = DSAKeyValueTypeJson["Y"]["bytes"][i].template get<uint8_t>();
     }
     if (DSAKeyValueTypeJson.contains("J")) {
         outDoc.J_isUsed = 1;
         outDoc.J.bytesLen = DSAKeyValueTypeJson["J"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.J.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.J.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.J.bytes[i] = DSAKeyValueTypeJson["J"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -364,7 +364,7 @@ struct din_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJso
     if (DSAKeyValueTypeJson.contains("Seed")) {
         outDoc.Seed_isUsed = 1;
         outDoc.Seed.bytesLen = DSAKeyValueTypeJson["Seed"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Seed.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Seed.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.Seed.bytes[i] = DSAKeyValueTypeJson["Seed"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -373,7 +373,7 @@ struct din_DSAKeyValueType getDoc_DSAKeyValueType(const json& DSAKeyValueTypeJso
     if (DSAKeyValueTypeJson.contains("PgenCounter")) {
         outDoc.PgenCounter_isUsed = 1;
         outDoc.PgenCounter.bytesLen = DSAKeyValueTypeJson["PgenCounter"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.PgenCounter.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.PgenCounter.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
             outDoc.PgenCounter.bytes[i] = DSAKeyValueTypeJson["PgenCounter"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -387,7 +387,7 @@ json getJson_X509IssuerSerialType(const struct din_X509IssuerSerialType& X509Iss
     json outJson;
 
     outJson["X509IssuerName"]["charactersLen"] = X509IssuerSerialTypeDoc.X509IssuerName.charactersLen;
-    for (uint16_t i = 0; i < X509IssuerSerialTypeDoc.X509IssuerName.charactersLen; i++) {
+    for (uint16_t i = 0; i < X509IssuerSerialTypeDoc.X509IssuerName.charactersLen && i < din_X509IssuerName_CHARACTER_SIZE; i++) {
         outJson["X509IssuerName"]["characters"][i] = X509IssuerSerialTypeDoc.X509IssuerName.characters[i];
     }
     outJson["X509SerialNumber"] = getJson_exi_signed_t(X509IssuerSerialTypeDoc.X509SerialNumber);
@@ -400,7 +400,7 @@ struct din_X509IssuerSerialType getDoc_X509IssuerSerialType(const json& X509Issu
     init_din_X509IssuerSerialType(&outDoc);
 
     outDoc.X509IssuerName.charactersLen = X509IssuerSerialTypeJson["X509IssuerName"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.X509IssuerName.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.X509IssuerName.charactersLen && i < din_X509IssuerName_CHARACTER_SIZE; i++) {
         outDoc.X509IssuerName.characters[i] = X509IssuerSerialTypeJson["X509IssuerName"]["characters"][i].template get<char>();
     }
     outDoc.X509SerialNumber = getDoc_exi_signed_t(X509IssuerSerialTypeJson["X509SerialNumber"]);
@@ -412,12 +412,12 @@ json getJson_DigestMethodType(const struct din_DigestMethodType& DigestMethodTyp
     json outJson;
 
     outJson["Algorithm"]["charactersLen"] = DigestMethodTypeDoc.Algorithm.charactersLen;
-    for (uint16_t i = 0; i < DigestMethodTypeDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < DigestMethodTypeDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outJson["Algorithm"]["characters"][i] = DigestMethodTypeDoc.Algorithm.characters[i];
     }
     if (DigestMethodTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = DigestMethodTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < DigestMethodTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < DigestMethodTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = DigestMethodTypeDoc.ANY.bytes[i];
         }
     }
@@ -430,13 +430,13 @@ struct din_DigestMethodType getDoc_DigestMethodType(const json& DigestMethodType
     init_din_DigestMethodType(&outDoc);
 
     outDoc.Algorithm.charactersLen = DigestMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outDoc.Algorithm.characters[i] = DigestMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
     }
     if (DigestMethodTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = DigestMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = DigestMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -450,11 +450,11 @@ json getJson_RSAKeyValueType(const struct din_RSAKeyValueType& RSAKeyValueTypeDo
     json outJson;
 
     outJson["Modulus"]["bytesLen"] = RSAKeyValueTypeDoc.Modulus.bytesLen;
-    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Modulus.bytesLen; i++) {
+    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Modulus.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outJson["Modulus"]["bytes"][i] = RSAKeyValueTypeDoc.Modulus.bytes[i];
     }
     outJson["Exponent"]["bytesLen"] = RSAKeyValueTypeDoc.Exponent.bytesLen;
-    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Exponent.bytesLen; i++) {
+    for (uint16_t i = 0; i < RSAKeyValueTypeDoc.Exponent.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outJson["Exponent"]["bytes"][i] = RSAKeyValueTypeDoc.Exponent.bytes[i];
     }
 
@@ -466,11 +466,11 @@ struct din_RSAKeyValueType getDoc_RSAKeyValueType(const json& RSAKeyValueTypeJso
     init_din_RSAKeyValueType(&outDoc);
 
     outDoc.Modulus.bytesLen = RSAKeyValueTypeJson["Modulus"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Modulus.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Modulus.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outDoc.Modulus.bytes[i] = RSAKeyValueTypeJson["Modulus"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.Exponent.bytesLen = RSAKeyValueTypeJson["Exponent"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Exponent.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Exponent.bytesLen && i < din_CryptoBinary_BYTES_SIZE; i++) {
         outDoc.Exponent.bytes[i] = RSAKeyValueTypeJson["Exponent"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -482,7 +482,7 @@ json getJson_PMaxScheduleType(const struct din_PMaxScheduleType& PMaxScheduleTyp
 
     outJson["PMaxScheduleID"] = PMaxScheduleTypeDoc.PMaxScheduleID;
     outJson["PMaxScheduleEntry"]["arrayLen"] = PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen;
-    for (uint16_t i = 0; i < PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < PMaxScheduleTypeDoc.PMaxScheduleEntry.arrayLen && i < din_PMaxScheduleEntryType_5_ARRAY_SIZE; i++) {
         outJson["PMaxScheduleEntry"]["array"][i] = getJson_PMaxScheduleEntryType(PMaxScheduleTypeDoc.PMaxScheduleEntry.array[i]);
     }
 
@@ -495,7 +495,7 @@ struct din_PMaxScheduleType getDoc_PMaxScheduleType(const json& PMaxScheduleType
 
     outDoc.PMaxScheduleID = PMaxScheduleTypeJson["PMaxScheduleID"].template get<uint8_t>();
     outDoc.PMaxScheduleEntry.arrayLen = PMaxScheduleTypeJson["PMaxScheduleEntry"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.PMaxScheduleEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.PMaxScheduleEntry.arrayLen && i < din_PMaxScheduleEntryType_5_ARRAY_SIZE; i++) {
         outDoc.PMaxScheduleEntry.array[i] = getDoc_PMaxScheduleEntryType(PMaxScheduleTypeJson["PMaxScheduleEntry"]["array"][i]);
     }
 
@@ -506,19 +506,19 @@ json getJson_SalesTariffType(const struct din_SalesTariffType& SalesTariffTypeDo
     json outJson;
 
     outJson["Id"]["charactersLen"] = SalesTariffTypeDoc.Id.charactersLen;
-    for (uint16_t i = 0; i < SalesTariffTypeDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < SalesTariffTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outJson["Id"]["characters"][i] = SalesTariffTypeDoc.Id.characters[i];
     }
     outJson["SalesTariffID"] = SalesTariffTypeDoc.SalesTariffID;
     if (SalesTariffTypeDoc.SalesTariffDescription_isUsed) {
         outJson["SalesTariffDescription"]["charactersLen"] = SalesTariffTypeDoc.SalesTariffDescription.charactersLen;
-        for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffDescription.charactersLen; i++) {
+        for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffDescription.charactersLen && i < din_SalesTariffDescription_CHARACTER_SIZE; i++) {
             outJson["SalesTariffDescription"]["characters"][i] = SalesTariffTypeDoc.SalesTariffDescription.characters[i];
         }
     }
     outJson["NumEPriceLevels"] = SalesTariffTypeDoc.NumEPriceLevels;
     outJson["SalesTariffEntry"]["arrayLen"] = SalesTariffTypeDoc.SalesTariffEntry.arrayLen;
-    for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < SalesTariffTypeDoc.SalesTariffEntry.arrayLen && i < din_SalesTariffEntryType_5_ARRAY_SIZE; i++) {
         outJson["SalesTariffEntry"]["array"][i] = getJson_SalesTariffEntryType(SalesTariffTypeDoc.SalesTariffEntry.array[i]);
     }
 
@@ -530,14 +530,14 @@ struct din_SalesTariffType getDoc_SalesTariffType(const json& SalesTariffTypeJso
     init_din_SalesTariffType(&outDoc);
 
     outDoc.Id.charactersLen = SalesTariffTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outDoc.Id.characters[i] = SalesTariffTypeJson["Id"]["characters"][i].template get<char>();
     }
     outDoc.SalesTariffID = SalesTariffTypeJson["SalesTariffID"].template get<int16_t>();
     if (SalesTariffTypeJson.contains("SalesTariffDescription")) {
         outDoc.SalesTariffDescription_isUsed = 1;
         outDoc.SalesTariffDescription.charactersLen = SalesTariffTypeJson["SalesTariffDescription"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.SalesTariffDescription.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.SalesTariffDescription.charactersLen && i < din_SalesTariffDescription_CHARACTER_SIZE; i++) {
             outDoc.SalesTariffDescription.characters[i] = SalesTariffTypeJson["SalesTariffDescription"]["characters"][i].template get<char>();
         }
     } else {
@@ -545,7 +545,7 @@ struct din_SalesTariffType getDoc_SalesTariffType(const json& SalesTariffTypeJso
     }
     outDoc.NumEPriceLevels = SalesTariffTypeJson["NumEPriceLevels"].template get<uint8_t>();
     outDoc.SalesTariffEntry.arrayLen = SalesTariffTypeJson["SalesTariffEntry"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SalesTariffEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SalesTariffEntry.arrayLen && i < din_SalesTariffEntryType_5_ARRAY_SIZE; i++) {
         outDoc.SalesTariffEntry.array[i] = getDoc_SalesTariffEntryType(SalesTariffTypeJson["SalesTariffEntry"]["array"][i]);
     }
 
@@ -556,12 +556,12 @@ json getJson_CanonicalizationMethodType(const struct din_CanonicalizationMethodT
     json outJson;
 
     outJson["Algorithm"]["charactersLen"] = CanonicalizationMethodTypeDoc.Algorithm.charactersLen;
-    for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outJson["Algorithm"]["characters"][i] = CanonicalizationMethodTypeDoc.Algorithm.characters[i];
     }
     if (CanonicalizationMethodTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = CanonicalizationMethodTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < CanonicalizationMethodTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = CanonicalizationMethodTypeDoc.ANY.bytes[i];
         }
     }
@@ -574,13 +574,13 @@ struct din_CanonicalizationMethodType getDoc_CanonicalizationMethodType(const js
     init_din_CanonicalizationMethodType(&outDoc);
 
     outDoc.Algorithm.charactersLen = CanonicalizationMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outDoc.Algorithm.characters[i] = CanonicalizationMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
     }
     if (CanonicalizationMethodTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = CanonicalizationMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = CanonicalizationMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -596,14 +596,14 @@ json getJson_ServiceTagType(const struct din_ServiceTagType& ServiceTagTypeDoc) 
     outJson["ServiceID"] = ServiceTagTypeDoc.ServiceID;
     if (ServiceTagTypeDoc.ServiceName_isUsed) {
         outJson["ServiceName"]["charactersLen"] = ServiceTagTypeDoc.ServiceName.charactersLen;
-        for (uint16_t i = 0; i < ServiceTagTypeDoc.ServiceName.charactersLen; i++) {
+        for (uint16_t i = 0; i < ServiceTagTypeDoc.ServiceName.charactersLen && i < din_ServiceName_CHARACTER_SIZE; i++) {
             outJson["ServiceName"]["characters"][i] = ServiceTagTypeDoc.ServiceName.characters[i];
         }
     }
     outJson["ServiceCategory"] = ServiceTagTypeDoc.ServiceCategory;
     if (ServiceTagTypeDoc.ServiceScope_isUsed) {
         outJson["ServiceScope"]["charactersLen"] = ServiceTagTypeDoc.ServiceScope.charactersLen;
-        for (uint16_t i = 0; i < ServiceTagTypeDoc.ServiceScope.charactersLen; i++) {
+        for (uint16_t i = 0; i < ServiceTagTypeDoc.ServiceScope.charactersLen && i < din_ServiceScope_CHARACTER_SIZE; i++) {
             outJson["ServiceScope"]["characters"][i] = ServiceTagTypeDoc.ServiceScope.characters[i];
         }
     }
@@ -619,7 +619,7 @@ struct din_ServiceTagType getDoc_ServiceTagType(const json& ServiceTagTypeJson) 
     if (ServiceTagTypeJson.contains("ServiceName")) {
         outDoc.ServiceName_isUsed = 1;
         outDoc.ServiceName.charactersLen = ServiceTagTypeJson["ServiceName"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ServiceName.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ServiceName.charactersLen && i < din_ServiceName_CHARACTER_SIZE; i++) {
             outDoc.ServiceName.characters[i] = ServiceTagTypeJson["ServiceName"]["characters"][i].template get<char>();
         }
     } else {
@@ -629,7 +629,7 @@ struct din_ServiceTagType getDoc_ServiceTagType(const json& ServiceTagTypeJson) 
     if (ServiceTagTypeJson.contains("ServiceScope")) {
         outDoc.ServiceScope_isUsed = 1;
         outDoc.ServiceScope.charactersLen = ServiceTagTypeJson["ServiceScope"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen && i < din_ServiceScope_CHARACTER_SIZE; i++) {
             outDoc.ServiceScope.characters[i] = ServiceTagTypeJson["ServiceScope"]["characters"][i].template get<char>();
         }
     } else {
@@ -739,7 +739,7 @@ json getJson_SignatureMethodType(const struct din_SignatureMethodType& Signature
     json outJson;
 
     outJson["Algorithm"]["charactersLen"] = SignatureMethodTypeDoc.Algorithm.charactersLen;
-    for (uint16_t i = 0; i < SignatureMethodTypeDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < SignatureMethodTypeDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outJson["Algorithm"]["characters"][i] = SignatureMethodTypeDoc.Algorithm.characters[i];
     }
     if (SignatureMethodTypeDoc.HMACOutputLength_isUsed) {
@@ -747,7 +747,7 @@ json getJson_SignatureMethodType(const struct din_SignatureMethodType& Signature
     }
     if (SignatureMethodTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = SignatureMethodTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < SignatureMethodTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < SignatureMethodTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = SignatureMethodTypeDoc.ANY.bytes[i];
         }
     }
@@ -760,7 +760,7 @@ struct din_SignatureMethodType getDoc_SignatureMethodType(const json& SignatureM
     init_din_SignatureMethodType(&outDoc);
 
     outDoc.Algorithm.charactersLen = SignatureMethodTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outDoc.Algorithm.characters[i] = SignatureMethodTypeJson["Algorithm"]["characters"][i].template get<char>();
     }
     if (SignatureMethodTypeJson.contains("HMACOutputLength")) {
@@ -772,7 +772,7 @@ struct din_SignatureMethodType getDoc_SignatureMethodType(const json& SignatureM
     if (SignatureMethodTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = SignatureMethodTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = SignatureMethodTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -793,7 +793,7 @@ json getJson_KeyValueType(const struct din_KeyValueType& KeyValueTypeDoc) {
     }
     if (KeyValueTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = KeyValueTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < KeyValueTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < KeyValueTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = KeyValueTypeDoc.ANY.bytes[i];
         }
     }
@@ -820,7 +820,7 @@ struct din_KeyValueType getDoc_KeyValueType(const json& KeyValueTypeJson) {
     if (KeyValueTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = KeyValueTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = KeyValueTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -834,7 +834,7 @@ json getJson_SubCertificatesType(const struct din_SubCertificatesType& SubCertif
     json outJson;
 
     outJson["Certificate"]["bytesLen"] = SubCertificatesTypeDoc.Certificate.bytesLen;
-    for (uint16_t i = 0; i < SubCertificatesTypeDoc.Certificate.bytesLen; i++) {
+    for (uint16_t i = 0; i < SubCertificatesTypeDoc.Certificate.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outJson["Certificate"]["bytes"][i] = SubCertificatesTypeDoc.Certificate.bytes[i];
     }
 
@@ -846,7 +846,7 @@ struct din_SubCertificatesType getDoc_SubCertificatesType(const json& SubCertifi
     init_din_SubCertificatesType(&outDoc);
 
     outDoc.Certificate.bytesLen = SubCertificatesTypeJson["Certificate"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Certificate.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Certificate.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outDoc.Certificate.bytes[i] = SubCertificatesTypeJson["Certificate"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -877,19 +877,19 @@ json getJson_ReferenceType(const struct din_ReferenceType& ReferenceTypeDoc) {
 
     if (ReferenceTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = ReferenceTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < ReferenceTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < ReferenceTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = ReferenceTypeDoc.Id.characters[i];
         }
     }
     if (ReferenceTypeDoc.Type_isUsed) {
         outJson["Type"]["charactersLen"] = ReferenceTypeDoc.Type.charactersLen;
-        for (uint16_t i = 0; i < ReferenceTypeDoc.Type.charactersLen; i++) {
+        for (uint16_t i = 0; i < ReferenceTypeDoc.Type.charactersLen && i < din_Type_CHARACTER_SIZE; i++) {
             outJson["Type"]["characters"][i] = ReferenceTypeDoc.Type.characters[i];
         }
     }
     if (ReferenceTypeDoc.URI_isUsed) {
         outJson["URI"]["charactersLen"] = ReferenceTypeDoc.URI.charactersLen;
-        for (uint16_t i = 0; i < ReferenceTypeDoc.URI.charactersLen; i++) {
+        for (uint16_t i = 0; i < ReferenceTypeDoc.URI.charactersLen && i < din_URI_CHARACTER_SIZE; i++) {
             outJson["URI"]["characters"][i] = ReferenceTypeDoc.URI.characters[i];
         }
     }
@@ -898,7 +898,7 @@ json getJson_ReferenceType(const struct din_ReferenceType& ReferenceTypeDoc) {
     }
     outJson["DigestMethod"] = getJson_DigestMethodType(ReferenceTypeDoc.DigestMethod);
     outJson["DigestValue"]["bytesLen"] = ReferenceTypeDoc.DigestValue.bytesLen;
-    for (uint16_t i = 0; i < ReferenceTypeDoc.DigestValue.bytesLen; i++) {
+    for (uint16_t i = 0; i < ReferenceTypeDoc.DigestValue.bytesLen && i < din_DigestValueType_BYTES_SIZE; i++) {
         outJson["DigestValue"]["bytes"][i] = ReferenceTypeDoc.DigestValue.bytes[i];
     }
 
@@ -912,7 +912,7 @@ struct din_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson) {
     if (ReferenceTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = ReferenceTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = ReferenceTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -921,7 +921,7 @@ struct din_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson) {
     if (ReferenceTypeJson.contains("Type")) {
         outDoc.Type_isUsed = 1;
         outDoc.Type.charactersLen = ReferenceTypeJson["Type"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Type.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Type.charactersLen && i < din_Type_CHARACTER_SIZE; i++) {
             outDoc.Type.characters[i] = ReferenceTypeJson["Type"]["characters"][i].template get<char>();
         }
     } else {
@@ -930,7 +930,7 @@ struct din_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson) {
     if (ReferenceTypeJson.contains("URI")) {
         outDoc.URI_isUsed = 1;
         outDoc.URI.charactersLen = ReferenceTypeJson["URI"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.URI.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.URI.charactersLen && i < din_URI_CHARACTER_SIZE; i++) {
             outDoc.URI.characters[i] = ReferenceTypeJson["URI"]["characters"][i].template get<char>();
         }
     } else {
@@ -944,7 +944,7 @@ struct din_ReferenceType getDoc_ReferenceType(const json& ReferenceTypeJson) {
     }
     outDoc.DigestMethod = getDoc_DigestMethodType(ReferenceTypeJson["DigestMethod"]);
     outDoc.DigestValue.bytesLen = ReferenceTypeJson["DigestValue"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.DigestValue.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.DigestValue.bytesLen && i < din_DigestValueType_BYTES_SIZE; i++) {
         outDoc.DigestValue.bytes[i] = ReferenceTypeJson["DigestValue"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -956,13 +956,13 @@ json getJson_RetrievalMethodType(const struct din_RetrievalMethodType& Retrieval
 
     if (RetrievalMethodTypeDoc.Type_isUsed) {
         outJson["Type"]["charactersLen"] = RetrievalMethodTypeDoc.Type.charactersLen;
-        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.Type.charactersLen; i++) {
+        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.Type.charactersLen && i < din_Type_CHARACTER_SIZE; i++) {
             outJson["Type"]["characters"][i] = RetrievalMethodTypeDoc.Type.characters[i];
         }
     }
     if (RetrievalMethodTypeDoc.URI_isUsed) {
         outJson["URI"]["charactersLen"] = RetrievalMethodTypeDoc.URI.charactersLen;
-        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.URI.charactersLen; i++) {
+        for (uint16_t i = 0; i < RetrievalMethodTypeDoc.URI.charactersLen && i < din_URI_CHARACTER_SIZE; i++) {
             outJson["URI"]["characters"][i] = RetrievalMethodTypeDoc.URI.characters[i];
         }
     }
@@ -980,7 +980,7 @@ struct din_RetrievalMethodType getDoc_RetrievalMethodType(const json& RetrievalM
     if (RetrievalMethodTypeJson.contains("Type")) {
         outDoc.Type_isUsed = 1;
         outDoc.Type.charactersLen = RetrievalMethodTypeJson["Type"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Type.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Type.charactersLen && i < din_Type_CHARACTER_SIZE; i++) {
             outDoc.Type.characters[i] = RetrievalMethodTypeJson["Type"]["characters"][i].template get<char>();
         }
     } else {
@@ -989,7 +989,7 @@ struct din_RetrievalMethodType getDoc_RetrievalMethodType(const json& RetrievalM
     if (RetrievalMethodTypeJson.contains("URI")) {
         outDoc.URI_isUsed = 1;
         outDoc.URI.charactersLen = RetrievalMethodTypeJson["URI"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.URI.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.URI.charactersLen && i < din_URI_CHARACTER_SIZE; i++) {
             outDoc.URI.characters[i] = RetrievalMethodTypeJson["URI"]["characters"][i].template get<char>();
         }
     } else {
@@ -1013,31 +1013,31 @@ json getJson_X509DataType(const struct din_X509DataType& X509DataTypeDoc) {
     }
     if (X509DataTypeDoc.X509SKI_isUsed) {
         outJson["X509SKI"]["bytesLen"] = X509DataTypeDoc.X509SKI.bytesLen;
-        for (uint16_t i = 0; i < X509DataTypeDoc.X509SKI.bytesLen; i++) {
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509SKI.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["X509SKI"]["bytes"][i] = X509DataTypeDoc.X509SKI.bytes[i];
         }
     }
     if (X509DataTypeDoc.X509SubjectName_isUsed) {
         outJson["X509SubjectName"]["charactersLen"] = X509DataTypeDoc.X509SubjectName.charactersLen;
-        for (uint16_t i = 0; i < X509DataTypeDoc.X509SubjectName.charactersLen; i++) {
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509SubjectName.charactersLen && i < din_X509SubjectName_CHARACTER_SIZE; i++) {
             outJson["X509SubjectName"]["characters"][i] = X509DataTypeDoc.X509SubjectName.characters[i];
         }
     }
     if (X509DataTypeDoc.X509Certificate_isUsed) {
         outJson["X509Certificate"]["bytesLen"] = X509DataTypeDoc.X509Certificate.bytesLen;
-        for (uint16_t i = 0; i < X509DataTypeDoc.X509Certificate.bytesLen; i++) {
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509Certificate.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["X509Certificate"]["bytes"][i] = X509DataTypeDoc.X509Certificate.bytes[i];
         }
     }
     if (X509DataTypeDoc.X509CRL_isUsed) {
         outJson["X509CRL"]["bytesLen"] = X509DataTypeDoc.X509CRL.bytesLen;
-        for (uint16_t i = 0; i < X509DataTypeDoc.X509CRL.bytesLen; i++) {
+        for (uint16_t i = 0; i < X509DataTypeDoc.X509CRL.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["X509CRL"]["bytes"][i] = X509DataTypeDoc.X509CRL.bytes[i];
         }
     }
     if (X509DataTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = X509DataTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < X509DataTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < X509DataTypeDoc.ANY.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = X509DataTypeDoc.ANY.bytes[i];
         }
     }
@@ -1058,7 +1058,7 @@ struct din_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
     if (X509DataTypeJson.contains("X509SKI")) {
         outDoc.X509SKI_isUsed = 1;
         outDoc.X509SKI.bytesLen = X509DataTypeJson["X509SKI"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.X509SKI.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.X509SKI.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outDoc.X509SKI.bytes[i] = X509DataTypeJson["X509SKI"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1067,7 +1067,7 @@ struct din_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
     if (X509DataTypeJson.contains("X509SubjectName")) {
         outDoc.X509SubjectName_isUsed = 1;
         outDoc.X509SubjectName.charactersLen = X509DataTypeJson["X509SubjectName"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.X509SubjectName.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.X509SubjectName.charactersLen && i < din_X509SubjectName_CHARACTER_SIZE; i++) {
             outDoc.X509SubjectName.characters[i] = X509DataTypeJson["X509SubjectName"]["characters"][i].template get<char>();
         }
     } else {
@@ -1076,7 +1076,7 @@ struct din_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
     if (X509DataTypeJson.contains("X509Certificate")) {
         outDoc.X509Certificate_isUsed = 1;
         outDoc.X509Certificate.bytesLen = X509DataTypeJson["X509Certificate"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.X509Certificate.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.X509Certificate.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outDoc.X509Certificate.bytes[i] = X509DataTypeJson["X509Certificate"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1085,7 +1085,7 @@ struct din_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
     if (X509DataTypeJson.contains("X509CRL")) {
         outDoc.X509CRL_isUsed = 1;
         outDoc.X509CRL.bytesLen = X509DataTypeJson["X509CRL"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.X509CRL.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.X509CRL.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outDoc.X509CRL.bytes[i] = X509DataTypeJson["X509CRL"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1094,7 +1094,7 @@ struct din_X509DataType getDoc_X509DataType(const json& X509DataTypeJson) {
     if (X509DataTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = X509DataTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = X509DataTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1109,30 +1109,30 @@ json getJson_PGPDataType(const struct din_PGPDataType& PGPDataTypeDoc) {
 
     if (PGPDataTypeDoc.choice_1_isUsed) {
         outJson["choice_1"]["PGPKeyID"]["bytesLen"] = PGPDataTypeDoc.choice_1.PGPKeyID.bytesLen;
-        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyID.bytesLen; i++) {
+        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyID.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["choice_1"]["PGPKeyID"]["bytes"][i] = PGPDataTypeDoc.choice_1.PGPKeyID.bytes[i];
         }
         if (PGPDataTypeDoc.choice_1.PGPKeyPacket_isUsed) {
             outJson["choice_1"]["PGPKeyPacket"]["bytesLen"] = PGPDataTypeDoc.choice_1.PGPKeyPacket.bytesLen;
-            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyPacket.bytesLen; i++) {
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.PGPKeyPacket.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
                 outJson["choice_1"]["PGPKeyPacket"]["bytes"][i] = PGPDataTypeDoc.choice_1.PGPKeyPacket.bytes[i];
             }
         }
         if (PGPDataTypeDoc.choice_1.ANY_isUsed) {
             outJson["choice_1"]["ANY"]["bytesLen"] = PGPDataTypeDoc.choice_1.ANY.bytesLen;
-            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.ANY.bytesLen; i++) {
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_1.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
                 outJson["choice_1"]["ANY"]["bytes"][i] = PGPDataTypeDoc.choice_1.ANY.bytes[i];
             }
         }
     }
     if (PGPDataTypeDoc.choice_2_isUsed) {
         outJson["choice_2"]["PGPKeyPacket"]["bytesLen"] = PGPDataTypeDoc.choice_2.PGPKeyPacket.bytesLen;
-        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.PGPKeyPacket.bytesLen; i++) {
+        for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.PGPKeyPacket.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outJson["choice_2"]["PGPKeyPacket"]["bytes"][i] = PGPDataTypeDoc.choice_2.PGPKeyPacket.bytes[i];
         }
         if (PGPDataTypeDoc.choice_2.ANY_isUsed) {
             outJson["choice_2"]["ANY"]["bytesLen"] = PGPDataTypeDoc.choice_2.ANY.bytesLen;
-            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.ANY.bytesLen; i++) {
+            for (uint16_t i = 0; i < PGPDataTypeDoc.choice_2.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
                 outJson["choice_2"]["ANY"]["bytes"][i] = PGPDataTypeDoc.choice_2.ANY.bytes[i];
             }
         }
@@ -1148,13 +1148,13 @@ struct din_PGPDataType getDoc_PGPDataType(const json& PGPDataTypeJson) {
     if (PGPDataTypeJson.contains("choice_1")) {
         outDoc.choice_1_isUsed = 1;
         outDoc.choice_1.PGPKeyID.bytesLen = PGPDataTypeJson["choice_1"]["PGPKeyID"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyID.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyID.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outDoc.choice_1.PGPKeyID.bytes[i] = PGPDataTypeJson["choice_1"]["PGPKeyID"]["bytes"][i].template get<uint8_t>();
         }
         if (PGPDataTypeJson["choice_1"].contains("PGPKeyPacket")) {
             outDoc.choice_1.PGPKeyPacket_isUsed = 1;
             outDoc.choice_1.PGPKeyPacket.bytesLen = PGPDataTypeJson["choice_1"]["PGPKeyPacket"]["bytesLen"].template get<uint16_t>();
-            for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyPacket.bytesLen; i++) {
+            for (uint16_t i = 0; i < outDoc.choice_1.PGPKeyPacket.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
                 outDoc.choice_1.PGPKeyPacket.bytes[i] = PGPDataTypeJson["choice_1"]["PGPKeyPacket"]["bytes"][i].template get<uint8_t>();
             }
         } else {
@@ -1163,7 +1163,7 @@ struct din_PGPDataType getDoc_PGPDataType(const json& PGPDataTypeJson) {
         if (PGPDataTypeJson["choice_1"].contains("ANY")) {
             outDoc.choice_1.ANY_isUsed = 1;
             outDoc.choice_1.ANY.bytesLen = PGPDataTypeJson["choice_1"]["ANY"]["bytesLen"].template get<uint16_t>();
-            for (uint16_t i = 0; i < outDoc.choice_1.ANY.bytesLen; i++) {
+            for (uint16_t i = 0; i < outDoc.choice_1.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
                 outDoc.choice_1.ANY.bytes[i] = PGPDataTypeJson["choice_1"]["ANY"]["bytes"][i].template get<uint8_t>();
             }
         } else {
@@ -1175,13 +1175,13 @@ struct din_PGPDataType getDoc_PGPDataType(const json& PGPDataTypeJson) {
     if (PGPDataTypeJson.contains("choice_2")) {
         outDoc.choice_2_isUsed = 1;
         outDoc.choice_2.PGPKeyPacket.bytesLen = PGPDataTypeJson["choice_2"]["PGPKeyPacket"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.choice_2.PGPKeyPacket.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.choice_2.PGPKeyPacket.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
             outDoc.choice_2.PGPKeyPacket.bytes[i] = PGPDataTypeJson["choice_2"]["PGPKeyPacket"]["bytes"][i].template get<uint8_t>();
         }
         if (PGPDataTypeJson["choice_2"].contains("ANY")) {
             outDoc.choice_2.ANY_isUsed = 1;
             outDoc.choice_2.ANY.bytesLen = PGPDataTypeJson["choice_2"]["ANY"]["bytesLen"].template get<uint16_t>();
-            for (uint16_t i = 0; i < outDoc.choice_2.ANY.bytesLen; i++) {
+            for (uint16_t i = 0; i < outDoc.choice_2.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
                 outDoc.choice_2.ANY.bytes[i] = PGPDataTypeJson["choice_2"]["ANY"]["bytes"][i].template get<uint8_t>();
             }
         } else {
@@ -1198,12 +1198,12 @@ json getJson_SPKIDataType(const struct din_SPKIDataType& SPKIDataTypeDoc) {
     json outJson;
 
     outJson["SPKISexp"]["bytesLen"] = SPKIDataTypeDoc.SPKISexp.bytesLen;
-    for (uint16_t i = 0; i < SPKIDataTypeDoc.SPKISexp.bytesLen; i++) {
+    for (uint16_t i = 0; i < SPKIDataTypeDoc.SPKISexp.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
         outJson["SPKISexp"]["bytes"][i] = SPKIDataTypeDoc.SPKISexp.bytes[i];
     }
     if (SPKIDataTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = SPKIDataTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < SPKIDataTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < SPKIDataTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = SPKIDataTypeDoc.ANY.bytes[i];
         }
     }
@@ -1216,13 +1216,13 @@ struct din_SPKIDataType getDoc_SPKIDataType(const json& SPKIDataTypeJson) {
     init_din_SPKIDataType(&outDoc);
 
     outDoc.SPKISexp.bytesLen = SPKIDataTypeJson["SPKISexp"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SPKISexp.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SPKISexp.bytesLen && i < din_base64Binary_BYTES_SIZE; i++) {
         outDoc.SPKISexp.bytes[i] = SPKIDataTypeJson["SPKISexp"]["bytes"][i].template get<uint8_t>();
     }
     if (SPKIDataTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = SPKIDataTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = SPKIDataTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1237,7 +1237,7 @@ json getJson_SignedInfoType(const struct din_SignedInfoType& SignedInfoTypeDoc) 
 
     if (SignedInfoTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = SignedInfoTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < SignedInfoTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < SignedInfoTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = SignedInfoTypeDoc.Id.characters[i];
         }
     }
@@ -1255,7 +1255,7 @@ struct din_SignedInfoType getDoc_SignedInfoType(const json& SignedInfoTypeJson) 
     if (SignedInfoTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = SignedInfoTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = SignedInfoTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -1312,12 +1312,12 @@ json getJson_SignatureValueType(const struct din_SignatureValueType& SignatureVa
 
     if (SignatureValueTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = SignatureValueTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < SignatureValueTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < SignatureValueTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = SignatureValueTypeDoc.Id.characters[i];
         }
     }
     outJson["CONTENT"]["bytesLen"] = SignatureValueTypeDoc.CONTENT.bytesLen;
-    for (uint16_t i = 0; i < SignatureValueTypeDoc.CONTENT.bytesLen; i++) {
+    for (uint16_t i = 0; i < SignatureValueTypeDoc.CONTENT.bytesLen && i < din_SignatureValueType_BYTES_SIZE; i++) {
         outJson["CONTENT"]["bytes"][i] = SignatureValueTypeDoc.CONTENT.bytes[i];
     }
 
@@ -1331,14 +1331,14 @@ struct din_SignatureValueType getDoc_SignatureValueType(const json& SignatureVal
     if (SignatureValueTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = SignatureValueTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = SignatureValueTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
         outDoc.Id_isUsed = 0;
     }
     outDoc.CONTENT.bytesLen = SignatureValueTypeJson["CONTENT"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.CONTENT.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.CONTENT.bytesLen && i < din_SignatureValueType_BYTES_SIZE; i++) {
         outDoc.CONTENT.bytes[i] = SignatureValueTypeJson["CONTENT"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -1349,7 +1349,7 @@ json getJson_CertificateChainType(const struct din_CertificateChainType& Certifi
     json outJson;
 
     outJson["Certificate"]["bytesLen"] = CertificateChainTypeDoc.Certificate.bytesLen;
-    for (uint16_t i = 0; i < CertificateChainTypeDoc.Certificate.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateChainTypeDoc.Certificate.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outJson["Certificate"]["bytes"][i] = CertificateChainTypeDoc.Certificate.bytes[i];
     }
     if (CertificateChainTypeDoc.SubCertificates_isUsed) {
@@ -1364,7 +1364,7 @@ struct din_CertificateChainType getDoc_CertificateChainType(const json& Certific
     init_din_CertificateChainType(&outDoc);
 
     outDoc.Certificate.bytesLen = CertificateChainTypeJson["Certificate"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Certificate.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Certificate.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outDoc.Certificate.bytes[i] = CertificateChainTypeJson["Certificate"]["bytes"][i].template get<uint8_t>();
     }
     if (CertificateChainTypeJson.contains("SubCertificates")) {
@@ -1439,7 +1439,7 @@ json getJson_ParameterType(const struct din_ParameterType& ParameterTypeDoc) {
     json outJson;
 
     outJson["Name"]["charactersLen"] = ParameterTypeDoc.Name.charactersLen;
-    for (uint16_t i = 0; i < ParameterTypeDoc.Name.charactersLen; i++) {
+    for (uint16_t i = 0; i < ParameterTypeDoc.Name.charactersLen && i < din_Name_CHARACTER_SIZE; i++) {
         outJson["Name"]["characters"][i] = ParameterTypeDoc.Name.characters[i];
     }
     outJson["ValueType"] = ParameterTypeDoc.ValueType;
@@ -1460,7 +1460,7 @@ json getJson_ParameterType(const struct din_ParameterType& ParameterTypeDoc) {
     }
     if (ParameterTypeDoc.stringValue_isUsed) {
         outJson["stringValue"]["charactersLen"] = ParameterTypeDoc.stringValue.charactersLen;
-        for (uint16_t i = 0; i < ParameterTypeDoc.stringValue.charactersLen; i++) {
+        for (uint16_t i = 0; i < ParameterTypeDoc.stringValue.charactersLen && i < din_stringValue_CHARACTER_SIZE; i++) {
             outJson["stringValue"]["characters"][i] = ParameterTypeDoc.stringValue.characters[i];
         }
     }
@@ -1473,7 +1473,7 @@ struct din_ParameterType getDoc_ParameterType(const json& ParameterTypeJson) {
     init_din_ParameterType(&outDoc);
 
     outDoc.Name.charactersLen = ParameterTypeJson["Name"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Name.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Name.charactersLen && i < din_Name_CHARACTER_SIZE; i++) {
         outDoc.Name.characters[i] = ParameterTypeJson["Name"]["characters"][i].template get<char>();
     }
     outDoc.ValueType = ParameterTypeJson["ValueType"].template get<din_valueType>();
@@ -1510,7 +1510,7 @@ struct din_ParameterType getDoc_ParameterType(const json& ParameterTypeJson) {
     if (ParameterTypeJson.contains("stringValue")) {
         outDoc.stringValue_isUsed = 1;
         outDoc.stringValue.charactersLen = ParameterTypeJson["stringValue"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.stringValue.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.stringValue.charactersLen && i < din_stringValue_CHARACTER_SIZE; i++) {
             outDoc.stringValue.characters[i] = ParameterTypeJson["stringValue"]["characters"][i].template get<char>();
         }
     } else {
@@ -1543,9 +1543,9 @@ json getJson_ListOfRootCertificateIDsType(const struct din_ListOfRootCertificate
     json outJson;
 
     outJson["RootCertificateID"]["arrayLen"] = ListOfRootCertificateIDsTypeDoc.RootCertificateID.arrayLen;
-    for (uint16_t i = 0; i < ListOfRootCertificateIDsTypeDoc.RootCertificateID.arrayLen; i++) {
+    for (uint16_t i = 0; i < ListOfRootCertificateIDsTypeDoc.RootCertificateID.arrayLen && i < din_rootCertificateIDType_5_ARRAY_SIZE; i++) {
         outJson["RootCertificateID"]["array"][i]["charactersLen"] = ListOfRootCertificateIDsTypeDoc.RootCertificateID.array[i].charactersLen;
-        for (uint16_t j = 0; j < ListOfRootCertificateIDsTypeDoc.RootCertificateID.array[i].charactersLen; j++) {
+        for (uint16_t j = 0; j < ListOfRootCertificateIDsTypeDoc.RootCertificateID.array[i].charactersLen && j < din_RootCertificateID_CHARACTER_SIZE; j++) {
             outJson["RootCertificateID"]["array"][i]["characters"][j] = ListOfRootCertificateIDsTypeDoc.RootCertificateID.array[i].characters[j];
         }
     }
@@ -1558,9 +1558,9 @@ struct din_ListOfRootCertificateIDsType getDoc_ListOfRootCertificateIDsType(cons
     init_din_ListOfRootCertificateIDsType(&outDoc);
 
     outDoc.RootCertificateID.arrayLen = ListOfRootCertificateIDsTypeJson["RootCertificateID"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.RootCertificateID.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.RootCertificateID.arrayLen && i < din_rootCertificateIDType_5_ARRAY_SIZE; i++) {
         outDoc.RootCertificateID.array[i].charactersLen = ListOfRootCertificateIDsTypeJson["RootCertificateID"]["array"][i]["charactersLen"].template get<uint16_t>();
-        for (uint16_t j = 0; j < outDoc.RootCertificateID.array[i].charactersLen; j++) {
+        for (uint16_t j = 0; j < outDoc.RootCertificateID.array[i].charactersLen && j < din_RootCertificateID_CHARACTER_SIZE; j++) {
             outDoc.RootCertificateID.array[i].characters[j] = ListOfRootCertificateIDsTypeJson["RootCertificateID"]["array"][i]["characters"][j].template get<char>();
         }
     }
@@ -1572,7 +1572,7 @@ json getJson_PaymentOptionsType(const struct din_PaymentOptionsType& PaymentOpti
     json outJson;
 
     outJson["PaymentOption"]["arrayLen"] = PaymentOptionsTypeDoc.PaymentOption.arrayLen;
-    for (uint16_t i = 0; i < PaymentOptionsTypeDoc.PaymentOption.arrayLen; i++) {
+    for (uint16_t i = 0; i < PaymentOptionsTypeDoc.PaymentOption.arrayLen && i < din_paymentOptionType_2_ARRAY_SIZE; i++) {
         outJson["PaymentOption"]["array"][i] = PaymentOptionsTypeDoc.PaymentOption.array[i];
     }
 
@@ -1584,7 +1584,7 @@ struct din_PaymentOptionsType getDoc_PaymentOptionsType(const json& PaymentOptio
     init_din_PaymentOptionsType(&outDoc);
 
     outDoc.PaymentOption.arrayLen = PaymentOptionsTypeJson["PaymentOption"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.PaymentOption.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.PaymentOption.arrayLen && i < din_paymentOptionType_2_ARRAY_SIZE; i++) {
         outDoc.PaymentOption.array[i] = PaymentOptionsTypeJson["PaymentOption"]["array"][i].template get<din_paymentOptionType>();
     }
 
@@ -1595,7 +1595,7 @@ json getJson_SelectedServiceListType(const struct din_SelectedServiceListType& S
     json outJson;
 
     outJson["SelectedService"]["arrayLen"] = SelectedServiceListTypeDoc.SelectedService.arrayLen;
-    for (uint16_t i = 0; i < SelectedServiceListTypeDoc.SelectedService.arrayLen; i++) {
+    for (uint16_t i = 0; i < SelectedServiceListTypeDoc.SelectedService.arrayLen && i < din_SelectedServiceType_16_ARRAY_SIZE; i++) {
         outJson["SelectedService"]["array"][i] = getJson_SelectedServiceType(SelectedServiceListTypeDoc.SelectedService.array[i]);
     }
 
@@ -1607,7 +1607,7 @@ struct din_SelectedServiceListType getDoc_SelectedServiceListType(const json& Se
     init_din_SelectedServiceListType(&outDoc);
 
     outDoc.SelectedService.arrayLen = SelectedServiceListTypeJson["SelectedService"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SelectedService.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SelectedService.arrayLen && i < din_SelectedServiceType_16_ARRAY_SIZE; i++) {
         outDoc.SelectedService.array[i] = getDoc_SelectedServiceType(SelectedServiceListTypeJson["SelectedService"]["array"][i]);
     }
 
@@ -1727,7 +1727,7 @@ json getJson_ChargingProfileType(const struct din_ChargingProfileType& ChargingP
 
     outJson["SAScheduleTupleID"] = ChargingProfileTypeDoc.SAScheduleTupleID;
     outJson["ProfileEntry"]["arrayLen"] = ChargingProfileTypeDoc.ProfileEntry.arrayLen;
-    for (uint16_t i = 0; i < ChargingProfileTypeDoc.ProfileEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < ChargingProfileTypeDoc.ProfileEntry.arrayLen && i < din_ProfileEntryType_24_ARRAY_SIZE; i++) {
         outJson["ProfileEntry"]["array"][i] = getJson_ProfileEntryType(ChargingProfileTypeDoc.ProfileEntry.array[i]);
     }
 
@@ -1740,7 +1740,7 @@ struct din_ChargingProfileType getDoc_ChargingProfileType(const json& ChargingPr
 
     outDoc.SAScheduleTupleID = ChargingProfileTypeJson["SAScheduleTupleID"].template get<uint8_t>();
     outDoc.ProfileEntry.arrayLen = ChargingProfileTypeJson["ProfileEntry"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ProfileEntry.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ProfileEntry.arrayLen && i < din_ProfileEntryType_24_ARRAY_SIZE; i++) {
         outDoc.ProfileEntry.array[i] = getDoc_ProfileEntryType(ChargingProfileTypeJson["ProfileEntry"]["array"][i]);
     }
 
@@ -1769,13 +1769,13 @@ json getJson_KeyInfoType(const struct din_KeyInfoType& KeyInfoTypeDoc) {
 
     if (KeyInfoTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = KeyInfoTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < KeyInfoTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = KeyInfoTypeDoc.Id.characters[i];
         }
     }
     if (KeyInfoTypeDoc.KeyName_isUsed) {
         outJson["KeyName"]["charactersLen"] = KeyInfoTypeDoc.KeyName.charactersLen;
-        for (uint16_t i = 0; i < KeyInfoTypeDoc.KeyName.charactersLen; i++) {
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.KeyName.charactersLen && i < din_KeyName_CHARACTER_SIZE; i++) {
             outJson["KeyName"]["characters"][i] = KeyInfoTypeDoc.KeyName.characters[i];
         }
     }
@@ -1796,13 +1796,13 @@ json getJson_KeyInfoType(const struct din_KeyInfoType& KeyInfoTypeDoc) {
     }
     if (KeyInfoTypeDoc.MgmtData_isUsed) {
         outJson["MgmtData"]["charactersLen"] = KeyInfoTypeDoc.MgmtData.charactersLen;
-        for (uint16_t i = 0; i < KeyInfoTypeDoc.MgmtData.charactersLen; i++) {
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.MgmtData.charactersLen && i < din_MgmtData_CHARACTER_SIZE; i++) {
             outJson["MgmtData"]["characters"][i] = KeyInfoTypeDoc.MgmtData.characters[i];
         }
     }
     if (KeyInfoTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = KeyInfoTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < KeyInfoTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < KeyInfoTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = KeyInfoTypeDoc.ANY.bytes[i];
         }
     }
@@ -1817,7 +1817,7 @@ struct din_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson) {
     if (KeyInfoTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = KeyInfoTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = KeyInfoTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -1826,7 +1826,7 @@ struct din_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson) {
     if (KeyInfoTypeJson.contains("KeyName")) {
         outDoc.KeyName_isUsed = 1;
         outDoc.KeyName.charactersLen = KeyInfoTypeJson["KeyName"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.KeyName.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.KeyName.charactersLen && i < din_KeyName_CHARACTER_SIZE; i++) {
             outDoc.KeyName.characters[i] = KeyInfoTypeJson["KeyName"]["characters"][i].template get<char>();
         }
     } else {
@@ -1865,7 +1865,7 @@ struct din_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson) {
     if (KeyInfoTypeJson.contains("MgmtData")) {
         outDoc.MgmtData_isUsed = 1;
         outDoc.MgmtData.charactersLen = KeyInfoTypeJson["MgmtData"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.MgmtData.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.MgmtData.charactersLen && i < din_MgmtData_CHARACTER_SIZE; i++) {
             outDoc.MgmtData.characters[i] = KeyInfoTypeJson["MgmtData"]["characters"][i].template get<char>();
         }
     } else {
@@ -1874,7 +1874,7 @@ struct din_KeyInfoType getDoc_KeyInfoType(const json& KeyInfoTypeJson) {
     if (KeyInfoTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = KeyInfoTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = KeyInfoTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -1909,7 +1909,7 @@ json getJson_ServiceParameterListType(const struct din_ServiceParameterListType&
     json outJson;
 
     outJson["ParameterSet"]["arrayLen"] = ServiceParameterListTypeDoc.ParameterSet.arrayLen;
-    for (uint16_t i = 0; i < ServiceParameterListTypeDoc.ParameterSet.arrayLen; i++) {
+    for (uint16_t i = 0; i < ServiceParameterListTypeDoc.ParameterSet.arrayLen && i < din_ParameterSetType_5_ARRAY_SIZE; i++) {
         outJson["ParameterSet"]["array"][i] = getJson_ParameterSetType(ServiceParameterListTypeDoc.ParameterSet.array[i]);
     }
 
@@ -1921,7 +1921,7 @@ struct din_ServiceParameterListType getDoc_ServiceParameterListType(const json& 
     init_din_ServiceParameterListType(&outDoc);
 
     outDoc.ParameterSet.arrayLen = ServiceParameterListTypeJson["ParameterSet"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ParameterSet.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ParameterSet.arrayLen && i < din_ParameterSetType_5_ARRAY_SIZE; i++) {
         outDoc.ParameterSet.array[i] = getDoc_ParameterSetType(ServiceParameterListTypeJson["ParameterSet"]["array"][i]);
     }
 
@@ -1932,7 +1932,7 @@ json getJson_SAScheduleListType(const struct din_SAScheduleListType& SAScheduleL
     json outJson;
 
     outJson["SAScheduleTuple"]["arrayLen"] = SAScheduleListTypeDoc.SAScheduleTuple.arrayLen;
-    for (uint16_t i = 0; i < SAScheduleListTypeDoc.SAScheduleTuple.arrayLen; i++) {
+    for (uint16_t i = 0; i < SAScheduleListTypeDoc.SAScheduleTuple.arrayLen && i < din_SAScheduleTupleType_5_ARRAY_SIZE; i++) {
         outJson["SAScheduleTuple"]["array"][i] = getJson_SAScheduleTupleType(SAScheduleListTypeDoc.SAScheduleTuple.array[i]);
     }
 
@@ -1944,7 +1944,7 @@ struct din_SAScheduleListType getDoc_SAScheduleListType(const json& SAScheduleLi
     init_din_SAScheduleListType(&outDoc);
 
     outDoc.SAScheduleTuple.arrayLen = SAScheduleListTypeJson["SAScheduleTuple"]["arrayLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SAScheduleTuple.arrayLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SAScheduleTuple.arrayLen && i < din_SAScheduleTupleType_5_ARRAY_SIZE; i++) {
         outDoc.SAScheduleTuple.array[i] = getDoc_SAScheduleTupleType(SAScheduleListTypeJson["SAScheduleTuple"]["array"][i]);
     }
 
@@ -2018,25 +2018,25 @@ json getJson_ObjectType(const struct din_ObjectType& ObjectTypeDoc) {
 
     if (ObjectTypeDoc.Encoding_isUsed) {
         outJson["Encoding"]["charactersLen"] = ObjectTypeDoc.Encoding.charactersLen;
-        for (uint16_t i = 0; i < ObjectTypeDoc.Encoding.charactersLen; i++) {
+        for (uint16_t i = 0; i < ObjectTypeDoc.Encoding.charactersLen && i < din_Encoding_CHARACTER_SIZE; i++) {
             outJson["Encoding"]["characters"][i] = ObjectTypeDoc.Encoding.characters[i];
         }
     }
     if (ObjectTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = ObjectTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < ObjectTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < ObjectTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = ObjectTypeDoc.Id.characters[i];
         }
     }
     if (ObjectTypeDoc.MimeType_isUsed) {
         outJson["MimeType"]["charactersLen"] = ObjectTypeDoc.MimeType.charactersLen;
-        for (uint16_t i = 0; i < ObjectTypeDoc.MimeType.charactersLen; i++) {
+        for (uint16_t i = 0; i < ObjectTypeDoc.MimeType.charactersLen && i < din_MimeType_CHARACTER_SIZE; i++) {
             outJson["MimeType"]["characters"][i] = ObjectTypeDoc.MimeType.characters[i];
         }
     }
     if (ObjectTypeDoc.ANY_isUsed) {
         outJson["ANY"]["bytesLen"] = ObjectTypeDoc.ANY.bytesLen;
-        for (uint16_t i = 0; i < ObjectTypeDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < ObjectTypeDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outJson["ANY"]["bytes"][i] = ObjectTypeDoc.ANY.bytes[i];
         }
     }
@@ -2051,7 +2051,7 @@ struct din_ObjectType getDoc_ObjectType(const json& ObjectTypeJson) {
     if (ObjectTypeJson.contains("Encoding")) {
         outDoc.Encoding_isUsed = 1;
         outDoc.Encoding.charactersLen = ObjectTypeJson["Encoding"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Encoding.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Encoding.charactersLen && i < din_Encoding_CHARACTER_SIZE; i++) {
             outDoc.Encoding.characters[i] = ObjectTypeJson["Encoding"]["characters"][i].template get<char>();
         }
     } else {
@@ -2060,7 +2060,7 @@ struct din_ObjectType getDoc_ObjectType(const json& ObjectTypeJson) {
     if (ObjectTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = ObjectTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = ObjectTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -2069,7 +2069,7 @@ struct din_ObjectType getDoc_ObjectType(const json& ObjectTypeJson) {
     if (ObjectTypeJson.contains("MimeType")) {
         outDoc.MimeType_isUsed = 1;
         outDoc.MimeType.charactersLen = ObjectTypeJson["MimeType"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.MimeType.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.MimeType.charactersLen && i < din_MimeType_CHARACTER_SIZE; i++) {
             outDoc.MimeType.characters[i] = ObjectTypeJson["MimeType"]["characters"][i].template get<char>();
         }
     } else {
@@ -2078,7 +2078,7 @@ struct din_ObjectType getDoc_ObjectType(const json& ObjectTypeJson) {
     if (ObjectTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = ObjectTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = ObjectTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -2203,7 +2203,7 @@ json getJson_MeterInfoType(const struct din_MeterInfoType& MeterInfoTypeDoc) {
     json outJson;
 
     outJson["MeterID"]["charactersLen"] = MeterInfoTypeDoc.MeterID.charactersLen;
-    for (uint16_t i = 0; i < MeterInfoTypeDoc.MeterID.charactersLen; i++) {
+    for (uint16_t i = 0; i < MeterInfoTypeDoc.MeterID.charactersLen && i < din_MeterID_CHARACTER_SIZE; i++) {
         outJson["MeterID"]["characters"][i] = MeterInfoTypeDoc.MeterID.characters[i];
     }
     if (MeterInfoTypeDoc.MeterReading_isUsed) {
@@ -2211,7 +2211,7 @@ json getJson_MeterInfoType(const struct din_MeterInfoType& MeterInfoTypeDoc) {
     }
     if (MeterInfoTypeDoc.SigMeterReading_isUsed) {
         outJson["SigMeterReading"]["bytesLen"] = MeterInfoTypeDoc.SigMeterReading.bytesLen;
-        for (uint16_t i = 0; i < MeterInfoTypeDoc.SigMeterReading.bytesLen; i++) {
+        for (uint16_t i = 0; i < MeterInfoTypeDoc.SigMeterReading.bytesLen && i < din_sigMeterReadingType_BYTES_SIZE; i++) {
             outJson["SigMeterReading"]["bytes"][i] = MeterInfoTypeDoc.SigMeterReading.bytes[i];
         }
     }
@@ -2230,7 +2230,7 @@ struct din_MeterInfoType getDoc_MeterInfoType(const json& MeterInfoTypeJson) {
     init_din_MeterInfoType(&outDoc);
 
     outDoc.MeterID.charactersLen = MeterInfoTypeJson["MeterID"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.MeterID.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.MeterID.charactersLen && i < din_MeterID_CHARACTER_SIZE; i++) {
         outDoc.MeterID.characters[i] = MeterInfoTypeJson["MeterID"]["characters"][i].template get<char>();
     }
     if (MeterInfoTypeJson.contains("MeterReading")) {
@@ -2242,7 +2242,7 @@ struct din_MeterInfoType getDoc_MeterInfoType(const json& MeterInfoTypeJson) {
     if (MeterInfoTypeJson.contains("SigMeterReading")) {
         outDoc.SigMeterReading_isUsed = 1;
         outDoc.SigMeterReading.bytesLen = MeterInfoTypeJson["SigMeterReading"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.SigMeterReading.bytesLen; i++) {
+        for (uint16_t i = 0; i < outDoc.SigMeterReading.bytesLen && i < din_sigMeterReadingType_BYTES_SIZE; i++) {
             outDoc.SigMeterReading.bytes[i] = MeterInfoTypeJson["SigMeterReading"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -2268,21 +2268,21 @@ json getJson_CertificateInstallationResType(const struct din_CertificateInstalla
     json outJson;
 
     outJson["Id"]["charactersLen"] = CertificateInstallationResTypeDoc.Id.charactersLen;
-    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outJson["Id"]["characters"][i] = CertificateInstallationResTypeDoc.Id.characters[i];
     }
     outJson["ResponseCode"] = CertificateInstallationResTypeDoc.ResponseCode;
     outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateInstallationResTypeDoc.ContractSignatureCertChain);
     outJson["ContractSignatureEncryptedPrivateKey"]["bytesLen"] = CertificateInstallationResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen;
-    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen && i < din_privateKeyType_BYTES_SIZE; i++) {
         outJson["ContractSignatureEncryptedPrivateKey"]["bytes"][i] = CertificateInstallationResTypeDoc.ContractSignatureEncryptedPrivateKey.bytes[i];
     }
     outJson["DHParams"]["bytesLen"] = CertificateInstallationResTypeDoc.DHParams.bytesLen;
-    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outJson["DHParams"]["bytes"][i] = CertificateInstallationResTypeDoc.DHParams.bytes[i];
     }
     outJson["ContractID"]["charactersLen"] = CertificateInstallationResTypeDoc.ContractID.charactersLen;
-    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationResTypeDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outJson["ContractID"]["characters"][i] = CertificateInstallationResTypeDoc.ContractID.characters[i];
     }
 
@@ -2294,21 +2294,21 @@ struct din_CertificateInstallationResType getDoc_CertificateInstallationResType(
     init_din_CertificateInstallationResType(&outDoc);
 
     outDoc.Id.charactersLen = CertificateInstallationResTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outDoc.Id.characters[i] = CertificateInstallationResTypeJson["Id"]["characters"][i].template get<char>();
     }
     outDoc.ResponseCode = CertificateInstallationResTypeJson["ResponseCode"].template get<din_responseCodeType>();
     outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateInstallationResTypeJson["ContractSignatureCertChain"]);
     outDoc.ContractSignatureEncryptedPrivateKey.bytesLen = CertificateInstallationResTypeJson["ContractSignatureEncryptedPrivateKey"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractSignatureEncryptedPrivateKey.bytesLen && i < din_privateKeyType_BYTES_SIZE; i++) {
         outDoc.ContractSignatureEncryptedPrivateKey.bytes[i] = CertificateInstallationResTypeJson["ContractSignatureEncryptedPrivateKey"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.DHParams.bytesLen = CertificateInstallationResTypeJson["DHParams"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outDoc.DHParams.bytes[i] = CertificateInstallationResTypeJson["DHParams"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.ContractID.charactersLen = CertificateInstallationResTypeJson["ContractID"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outDoc.ContractID.characters[i] = CertificateInstallationResTypeJson["ContractID"]["characters"][i].template get<char>();
     }
 
@@ -2570,7 +2570,7 @@ json getJson_SessionSetupReqType(const struct din_SessionSetupReqType& SessionSe
     json outJson;
 
     outJson["EVCCID"]["bytesLen"] = SessionSetupReqTypeDoc.EVCCID.bytesLen;
-    for (uint8_t i = 0; i < SessionSetupReqTypeDoc.EVCCID.bytesLen; i++) {
+    for (uint8_t i = 0; i < SessionSetupReqTypeDoc.EVCCID.bytesLen && i < din_evccIDType_BYTES_SIZE; i++) {
         outJson["EVCCID"]["bytes"][i] = SessionSetupReqTypeDoc.EVCCID.bytes[i];
     }
 
@@ -2582,7 +2582,7 @@ struct din_SessionSetupReqType getDoc_SessionSetupReqType(const json& SessionSet
     init_din_SessionSetupReqType(&outDoc);
 
     outDoc.EVCCID.bytesLen = SessionSetupReqTypeJson["EVCCID"]["bytesLen"].template get<uint8_t>();
-    for (uint8_t i = 0; i < outDoc.EVCCID.bytesLen; i++) {
+    for (uint8_t i = 0; i < outDoc.EVCCID.bytesLen && i < din_evccIDType_BYTES_SIZE; i++) {
         outDoc.EVCCID.bytes[i] = SessionSetupReqTypeJson["EVCCID"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -2594,17 +2594,17 @@ json getJson_CertificateInstallationReqType(const struct din_CertificateInstalla
 
     if (CertificateInstallationReqTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = CertificateInstallationReqTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = CertificateInstallationReqTypeDoc.Id.characters[i];
         }
     }
     outJson["OEMProvisioningCert"]["bytesLen"] = CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytesLen;
-    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outJson["OEMProvisioningCert"]["bytes"][i] = CertificateInstallationReqTypeDoc.OEMProvisioningCert.bytes[i];
     }
     outJson["ListOfRootCertificateIDs"] = getJson_ListOfRootCertificateIDsType(CertificateInstallationReqTypeDoc.ListOfRootCertificateIDs);
     outJson["DHParams"]["bytesLen"] = CertificateInstallationReqTypeDoc.DHParams.bytesLen;
-    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateInstallationReqTypeDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outJson["DHParams"]["bytes"][i] = CertificateInstallationReqTypeDoc.DHParams.bytes[i];
     }
 
@@ -2618,19 +2618,19 @@ struct din_CertificateInstallationReqType getDoc_CertificateInstallationReqType(
     if (CertificateInstallationReqTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = CertificateInstallationReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = CertificateInstallationReqTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
         outDoc.Id_isUsed = 0;
     }
     outDoc.OEMProvisioningCert.bytesLen = CertificateInstallationReqTypeJson["OEMProvisioningCert"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.OEMProvisioningCert.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.OEMProvisioningCert.bytesLen && i < din_certificateType_BYTES_SIZE; i++) {
         outDoc.OEMProvisioningCert.bytes[i] = CertificateInstallationReqTypeJson["OEMProvisioningCert"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.ListOfRootCertificateIDs = getDoc_ListOfRootCertificateIDsType(CertificateInstallationReqTypeJson["ListOfRootCertificateIDs"]);
     outDoc.DHParams.bytesLen = CertificateInstallationReqTypeJson["DHParams"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outDoc.DHParams.bytes[i] = CertificateInstallationReqTypeJson["DHParams"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -2642,7 +2642,7 @@ json getJson_SessionSetupResType(const struct din_SessionSetupResType& SessionSe
 
     outJson["ResponseCode"] = SessionSetupResTypeDoc.ResponseCode;
     outJson["EVSEID"]["bytesLen"] = SessionSetupResTypeDoc.EVSEID.bytesLen;
-    for (uint8_t i = 0; i < SessionSetupResTypeDoc.EVSEID.bytesLen; i++) {
+    for (uint8_t i = 0; i < SessionSetupResTypeDoc.EVSEID.bytesLen && i < din_evseIDType_BYTES_SIZE; i++) {
         outJson["EVSEID"]["bytes"][i] = SessionSetupResTypeDoc.EVSEID.bytes[i];
     }
     if (SessionSetupResTypeDoc.DateTimeNow_isUsed) {
@@ -2658,7 +2658,7 @@ struct din_SessionSetupResType getDoc_SessionSetupResType(const json& SessionSet
 
     outDoc.ResponseCode = SessionSetupResTypeJson["ResponseCode"].template get<din_responseCodeType>();
     outDoc.EVSEID.bytesLen = SessionSetupResTypeJson["EVSEID"]["bytesLen"].template get<uint16_t>();
-    for (uint8_t i = 0; i < outDoc.EVSEID.bytesLen; i++) {
+    for (uint8_t i = 0; i < outDoc.EVSEID.bytesLen && i < din_evseIDType_BYTES_SIZE; i++) {
         outDoc.EVSEID.bytes[i] = SessionSetupResTypeJson["EVSEID"]["bytes"][i].template get<uint8_t>();
     }
     if (SessionSetupResTypeJson.contains("DateTimeNow")) {
@@ -2676,7 +2676,7 @@ json getJson_ServiceDiscoveryReqType(const struct din_ServiceDiscoveryReqType& S
 
     if (ServiceDiscoveryReqTypeDoc.ServiceScope_isUsed) {
         outJson["ServiceScope"]["charactersLen"] = ServiceDiscoveryReqTypeDoc.ServiceScope.charactersLen;
-        for (uint16_t i = 0; i < ServiceDiscoveryReqTypeDoc.ServiceScope.charactersLen; i++) {
+        for (uint16_t i = 0; i < ServiceDiscoveryReqTypeDoc.ServiceScope.charactersLen && i < din_ServiceScope_CHARACTER_SIZE; i++) {
             outJson["ServiceScope"]["characters"][i] = ServiceDiscoveryReqTypeDoc.ServiceScope.characters[i];
         }
     }
@@ -2694,7 +2694,7 @@ struct din_ServiceDiscoveryReqType getDoc_ServiceDiscoveryReqType(const json& Se
     if (ServiceDiscoveryReqTypeJson.contains("ServiceScope")) {
         outDoc.ServiceScope_isUsed = 1;
         outDoc.ServiceScope.charactersLen = ServiceDiscoveryReqTypeJson["ServiceScope"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.ServiceScope.charactersLen && i < din_ServiceScope_CHARACTER_SIZE; i++) {
             outDoc.ServiceScope.characters[i] = ServiceDiscoveryReqTypeJson["ServiceScope"]["characters"][i].template get<char>();
         }
     } else {
@@ -2825,7 +2825,7 @@ json getJson_PaymentDetailsReqType(const struct din_PaymentDetailsReqType& Payme
     json outJson;
 
     outJson["ContractID"]["charactersLen"] = PaymentDetailsReqTypeDoc.ContractID.charactersLen;
-    for (uint16_t i = 0; i < PaymentDetailsReqTypeDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < PaymentDetailsReqTypeDoc.ContractID.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outJson["ContractID"]["characters"][i] = PaymentDetailsReqTypeDoc.ContractID.characters[i];
     }
     outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(PaymentDetailsReqTypeDoc.ContractSignatureCertChain);
@@ -2838,7 +2838,7 @@ struct din_PaymentDetailsReqType getDoc_PaymentDetailsReqType(const json& Paymen
     init_din_PaymentDetailsReqType(&outDoc);
 
     outDoc.ContractID.charactersLen = PaymentDetailsReqTypeJson["ContractID"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outDoc.ContractID.characters[i] = PaymentDetailsReqTypeJson["ContractID"]["characters"][i].template get<char>();
     }
     outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(PaymentDetailsReqTypeJson["ContractSignatureCertChain"]);
@@ -2851,7 +2851,7 @@ json getJson_PaymentDetailsResType(const struct din_PaymentDetailsResType& Payme
 
     outJson["ResponseCode"] = PaymentDetailsResTypeDoc.ResponseCode;
     outJson["GenChallenge"]["charactersLen"] = PaymentDetailsResTypeDoc.GenChallenge.charactersLen;
-    for (uint16_t i = 0; i < PaymentDetailsResTypeDoc.GenChallenge.charactersLen; i++) {
+    for (uint16_t i = 0; i < PaymentDetailsResTypeDoc.GenChallenge.charactersLen && i < din_GenChallenge_CHARACTER_SIZE; i++) {
         outJson["GenChallenge"]["characters"][i] = PaymentDetailsResTypeDoc.GenChallenge.characters[i];
     }
     outJson["DateTimeNow"] = PaymentDetailsResTypeDoc.DateTimeNow;
@@ -2865,7 +2865,7 @@ struct din_PaymentDetailsResType getDoc_PaymentDetailsResType(const json& Paymen
 
     outDoc.ResponseCode = PaymentDetailsResTypeJson["ResponseCode"].template get<din_responseCodeType>();
     outDoc.GenChallenge.charactersLen = PaymentDetailsResTypeJson["GenChallenge"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.GenChallenge.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.GenChallenge.charactersLen && i < din_GenChallenge_CHARACTER_SIZE; i++) {
         outDoc.GenChallenge.characters[i] = PaymentDetailsResTypeJson["GenChallenge"]["characters"][i].template get<char>();
     }
     outDoc.DateTimeNow = PaymentDetailsResTypeJson["DateTimeNow"].template get<int64_t>();
@@ -2878,13 +2878,13 @@ json getJson_ContractAuthenticationReqType(const struct din_ContractAuthenticati
 
     if (ContractAuthenticationReqTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = ContractAuthenticationReqTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < ContractAuthenticationReqTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < ContractAuthenticationReqTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = ContractAuthenticationReqTypeDoc.Id.characters[i];
         }
     }
     if (ContractAuthenticationReqTypeDoc.GenChallenge_isUsed) {
         outJson["GenChallenge"]["charactersLen"] = ContractAuthenticationReqTypeDoc.GenChallenge.charactersLen;
-        for (uint16_t i = 0; i < ContractAuthenticationReqTypeDoc.GenChallenge.charactersLen; i++) {
+        for (uint16_t i = 0; i < ContractAuthenticationReqTypeDoc.GenChallenge.charactersLen && i < din_GenChallenge_CHARACTER_SIZE; i++) {
             outJson["GenChallenge"]["characters"][i] = ContractAuthenticationReqTypeDoc.GenChallenge.characters[i];
         }
     }
@@ -2899,7 +2899,7 @@ struct din_ContractAuthenticationReqType getDoc_ContractAuthenticationReqType(co
     if (ContractAuthenticationReqTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = ContractAuthenticationReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = ContractAuthenticationReqTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -2908,7 +2908,7 @@ struct din_ContractAuthenticationReqType getDoc_ContractAuthenticationReqType(co
     if (ContractAuthenticationReqTypeJson.contains("GenChallenge")) {
         outDoc.GenChallenge_isUsed = 1;
         outDoc.GenChallenge.charactersLen = ContractAuthenticationReqTypeJson["GenChallenge"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.GenChallenge.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.GenChallenge.charactersLen && i < din_GenChallenge_CHARACTER_SIZE; i++) {
             outDoc.GenChallenge.characters[i] = ContractAuthenticationReqTypeJson["GenChallenge"]["characters"][i].template get<char>();
         }
     } else {
@@ -3155,7 +3155,7 @@ json getJson_ChargingStatusResType(const struct din_ChargingStatusResType& Charg
 
     outJson["ResponseCode"] = ChargingStatusResTypeDoc.ResponseCode;
     outJson["EVSEID"]["bytesLen"] = ChargingStatusResTypeDoc.EVSEID.bytesLen;
-    for (uint16_t i = 0; i < ChargingStatusResTypeDoc.EVSEID.bytesLen; i++) {
+    for (uint16_t i = 0; i < ChargingStatusResTypeDoc.EVSEID.bytesLen && i < din_evseIDType_BYTES_SIZE; i++) {
         outJson["EVSEID"]["bytes"][i] = ChargingStatusResTypeDoc.EVSEID.bytes[i];
     }
     outJson["SAScheduleTupleID"] = ChargingStatusResTypeDoc.SAScheduleTupleID;
@@ -3177,7 +3177,7 @@ struct din_ChargingStatusResType getDoc_ChargingStatusResType(const json& Chargi
 
     outDoc.ResponseCode = ChargingStatusResTypeJson["ResponseCode"].template get<din_responseCodeType>();
     outDoc.EVSEID.bytesLen = ChargingStatusResTypeJson["EVSEID"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.EVSEID.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.EVSEID.bytesLen && i < din_evseIDType_BYTES_SIZE; i++) {
         outDoc.EVSEID.bytes[i] = ChargingStatusResTypeJson["EVSEID"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.SAScheduleTupleID = ChargingStatusResTypeJson["SAScheduleTupleID"].template get<int16_t>();
@@ -3204,12 +3204,12 @@ json getJson_MeteringReceiptReqType(const struct din_MeteringReceiptReqType& Met
 
     if (MeteringReceiptReqTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = MeteringReceiptReqTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = MeteringReceiptReqTypeDoc.Id.characters[i];
         }
     }
     outJson["SessionID"]["bytesLen"] = MeteringReceiptReqTypeDoc.SessionID.bytesLen;
-    for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.SessionID.bytesLen; i++) {
+    for (uint16_t i = 0; i < MeteringReceiptReqTypeDoc.SessionID.bytesLen && i < din_sessionIDType_BYTES_SIZE; i++) {
         outJson["SessionID"]["bytes"][i] = MeteringReceiptReqTypeDoc.SessionID.bytes[i];
     }
     if (MeteringReceiptReqTypeDoc.SAScheduleTupleID_isUsed) {
@@ -3227,14 +3227,14 @@ struct din_MeteringReceiptReqType getDoc_MeteringReceiptReqType(const json& Mete
     if (MeteringReceiptReqTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = MeteringReceiptReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = MeteringReceiptReqTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
         outDoc.Id_isUsed = 0;
     }
     outDoc.SessionID.bytesLen = MeteringReceiptReqTypeJson["SessionID"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen && i < din_sessionIDType_BYTES_SIZE; i++) {
         outDoc.SessionID.bytes[i] = MeteringReceiptReqTypeJson["SessionID"]["bytes"][i].template get<uint8_t>();
     }
     if (MeteringReceiptReqTypeJson.contains("SAScheduleTupleID")) {
@@ -3305,18 +3305,18 @@ json getJson_CertificateUpdateReqType(const struct din_CertificateUpdateReqType&
 
     if (CertificateUpdateReqTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = CertificateUpdateReqTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = CertificateUpdateReqTypeDoc.Id.characters[i];
         }
     }
     outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateUpdateReqTypeDoc.ContractSignatureCertChain);
     outJson["ContractID"]["charactersLen"] = CertificateUpdateReqTypeDoc.ContractID.charactersLen;
-    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outJson["ContractID"]["characters"][i] = CertificateUpdateReqTypeDoc.ContractID.characters[i];
     }
     outJson["ListOfRootCertificateIDs"] = getJson_ListOfRootCertificateIDsType(CertificateUpdateReqTypeDoc.ListOfRootCertificateIDs);
     outJson["DHParams"]["bytesLen"] = CertificateUpdateReqTypeDoc.DHParams.bytesLen;
-    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateReqTypeDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outJson["DHParams"]["bytes"][i] = CertificateUpdateReqTypeDoc.DHParams.bytes[i];
     }
 
@@ -3330,7 +3330,7 @@ struct din_CertificateUpdateReqType getDoc_CertificateUpdateReqType(const json& 
     if (CertificateUpdateReqTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = CertificateUpdateReqTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = CertificateUpdateReqTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -3338,12 +3338,12 @@ struct din_CertificateUpdateReqType getDoc_CertificateUpdateReqType(const json& 
     }
     outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateUpdateReqTypeJson["ContractSignatureCertChain"]);
     outDoc.ContractID.charactersLen = CertificateUpdateReqTypeJson["ContractID"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outDoc.ContractID.characters[i] = CertificateUpdateReqTypeJson["ContractID"]["characters"][i].template get<char>();
     }
     outDoc.ListOfRootCertificateIDs = getDoc_ListOfRootCertificateIDsType(CertificateUpdateReqTypeJson["ListOfRootCertificateIDs"]);
     outDoc.DHParams.bytesLen = CertificateUpdateReqTypeJson["DHParams"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outDoc.DHParams.bytes[i] = CertificateUpdateReqTypeJson["DHParams"]["bytes"][i].template get<uint8_t>();
     }
 
@@ -3354,21 +3354,21 @@ json getJson_CertificateUpdateResType(const struct din_CertificateUpdateResType&
     json outJson;
 
     outJson["Id"]["charactersLen"] = CertificateUpdateResTypeDoc.Id.charactersLen;
-    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outJson["Id"]["characters"][i] = CertificateUpdateResTypeDoc.Id.characters[i];
     }
     outJson["ResponseCode"] = CertificateUpdateResTypeDoc.ResponseCode;
     outJson["ContractSignatureCertChain"] = getJson_CertificateChainType(CertificateUpdateResTypeDoc.ContractSignatureCertChain);
     outJson["ContractSignatureEncryptedPrivateKey"]["bytesLen"] = CertificateUpdateResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen;
-    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.ContractSignatureEncryptedPrivateKey.bytesLen && i < din_privateKeyType_BYTES_SIZE; i++) {
         outJson["ContractSignatureEncryptedPrivateKey"]["bytes"][i] = CertificateUpdateResTypeDoc.ContractSignatureEncryptedPrivateKey.bytes[i];
     }
     outJson["DHParams"]["bytesLen"] = CertificateUpdateResTypeDoc.DHParams.bytesLen;
-    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outJson["DHParams"]["bytes"][i] = CertificateUpdateResTypeDoc.DHParams.bytes[i];
     }
     outJson["ContractID"]["charactersLen"] = CertificateUpdateResTypeDoc.ContractID.charactersLen;
-    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < CertificateUpdateResTypeDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outJson["ContractID"]["characters"][i] = CertificateUpdateResTypeDoc.ContractID.characters[i];
     }
     outJson["RetryCounter"] = CertificateUpdateResTypeDoc.RetryCounter;
@@ -3381,21 +3381,21 @@ struct din_CertificateUpdateResType getDoc_CertificateUpdateResType(const json& 
     init_din_CertificateUpdateResType(&outDoc);
 
     outDoc.Id.charactersLen = CertificateUpdateResTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
         outDoc.Id.characters[i] = CertificateUpdateResTypeJson["Id"]["characters"][i].template get<char>();
     }
     outDoc.ResponseCode = CertificateUpdateResTypeJson["ResponseCode"].template get<din_responseCodeType>();
     outDoc.ContractSignatureCertChain = getDoc_CertificateChainType(CertificateUpdateResTypeJson["ContractSignatureCertChain"]);
     outDoc.ContractSignatureEncryptedPrivateKey.bytesLen = CertificateUpdateResTypeJson["ContractSignatureEncryptedPrivateKey"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractSignatureEncryptedPrivateKey.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractSignatureEncryptedPrivateKey.bytesLen && i < din_privateKeyType_BYTES_SIZE; i++) {
         outDoc.ContractSignatureEncryptedPrivateKey.bytes[i] = CertificateUpdateResTypeJson["ContractSignatureEncryptedPrivateKey"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.DHParams.bytesLen = CertificateUpdateResTypeJson["DHParams"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.DHParams.bytesLen && i < din_dHParamsType_BYTES_SIZE; i++) {
         outDoc.DHParams.bytes[i] = CertificateUpdateResTypeJson["DHParams"]["bytes"][i].template get<uint8_t>();
     }
     outDoc.ContractID.charactersLen = CertificateUpdateResTypeJson["ContractID"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen; i++) {
+    for (uint16_t i = 0; i < outDoc.ContractID.charactersLen && i < din_ContractID_CHARACTER_SIZE; i++) {
         outDoc.ContractID.characters[i] = CertificateUpdateResTypeJson["ContractID"]["characters"][i].template get<char>();
     }
     outDoc.RetryCounter = CertificateUpdateResTypeJson["RetryCounter"].template get<int16_t>();
@@ -3426,7 +3426,7 @@ json getJson_NotificationType(const struct din_NotificationType& NotificationTyp
     outJson["FaultCode"] = NotificationTypeDoc.FaultCode;
     if (NotificationTypeDoc.FaultMsg_isUsed) {
         outJson["FaultMsg"]["charactersLen"] = NotificationTypeDoc.FaultMsg.charactersLen;
-        for (uint16_t i = 0; i < NotificationTypeDoc.FaultMsg.charactersLen; i++) {
+        for (uint16_t i = 0; i < NotificationTypeDoc.FaultMsg.charactersLen && i < din_FaultMsg_CHARACTER_SIZE; i++) {
             outJson["FaultMsg"]["characters"][i] = NotificationTypeDoc.FaultMsg.characters[i];
         }
     }
@@ -3442,7 +3442,7 @@ struct din_NotificationType getDoc_NotificationType(const json& NotificationType
     if (NotificationTypeJson.contains("FaultMsg")) {
         outDoc.FaultMsg_isUsed = 1;
         outDoc.FaultMsg.charactersLen = NotificationTypeJson["FaultMsg"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.FaultMsg.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.FaultMsg.charactersLen && i < din_FaultMsg_CHARACTER_SIZE; i++) {
             outDoc.FaultMsg.characters[i] = NotificationTypeJson["FaultMsg"]["characters"][i].template get<char>();
         }
     } else {
@@ -3457,7 +3457,7 @@ json getJson_SignatureType(const struct din_SignatureType& SignatureTypeDoc) {
 
     if (SignatureTypeDoc.Id_isUsed) {
         outJson["Id"]["charactersLen"] = SignatureTypeDoc.Id.charactersLen;
-        for (uint16_t i = 0; i < SignatureTypeDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < SignatureTypeDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outJson["Id"]["characters"][i] = SignatureTypeDoc.Id.characters[i];
         }
     }
@@ -3480,7 +3480,7 @@ struct din_SignatureType getDoc_SignatureType(const json& SignatureTypeJson) {
     if (SignatureTypeJson.contains("Id")) {
         outDoc.Id_isUsed = 1;
         outDoc.Id.charactersLen = SignatureTypeJson["Id"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.Id.charactersLen; i++) {
+        for (uint16_t i = 0; i < outDoc.Id.charactersLen && i < din_Id_CHARACTER_SIZE; i++) {
             outDoc.Id.characters[i] = SignatureTypeJson["Id"]["characters"][i].template get<char>();
         }
     } else {
@@ -3508,7 +3508,7 @@ json getJson_MessageHeaderType(const struct din_MessageHeaderType& MessageHeader
     json outJson;
 
     outJson["SessionID"]["bytesLen"] = MessageHeaderTypeDoc.SessionID.bytesLen;
-    for (uint16_t i = 0; i < MessageHeaderTypeDoc.SessionID.bytesLen; i++) {
+    for (uint16_t i = 0; i < MessageHeaderTypeDoc.SessionID.bytesLen && i < din_sessionIDType_BYTES_SIZE; i++) {
         outJson["SessionID"]["bytes"][i] = MessageHeaderTypeDoc.SessionID.bytes[i];
     }
     if (MessageHeaderTypeDoc.Notification_isUsed) {
@@ -3526,7 +3526,7 @@ struct din_MessageHeaderType getDoc_MessageHeaderType(const json& MessageHeaderT
     init_din_MessageHeaderType(&outDoc);
 
     outDoc.SessionID.bytesLen = MessageHeaderTypeJson["SessionID"]["bytesLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen; i++) {
+    for (uint16_t i = 0; i < outDoc.SessionID.bytesLen && i < din_sessionIDType_BYTES_SIZE; i++) {
         outDoc.SessionID.bytes[i] = MessageHeaderTypeJson["SessionID"]["bytes"][i].template get<uint8_t>();
     }
     if (MessageHeaderTypeJson.contains("Notification")) {
