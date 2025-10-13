@@ -149,13 +149,13 @@ struct din_TransformType getDoc_TransformType(const json& TransformTypeJson) {
     init_din_TransformType(&outDoc);
 
     outDoc.Algorithm.charactersLen = TransformTypeJson["Algorithm"]["charactersLen"].template get<uint16_t>();
-    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen & i < din_Algorithm_CHARACTER_SIZE; i++) {
+    for (uint16_t i = 0; i < outDoc.Algorithm.charactersLen && i < din_Algorithm_CHARACTER_SIZE; i++) {
         outDoc.Algorithm.characters[i] = TransformTypeJson["Algorithm"]["characters"][i].template get<char>();
     }
     if (TransformTypeJson.contains("ANY")) {
         outDoc.ANY_isUsed = 1;
         outDoc.ANY.bytesLen = TransformTypeJson["ANY"]["bytesLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.ANY.bytesLen & i < din_anyType_BYTES_SIZE; i++) {
+        for (uint16_t i = 0; i < outDoc.ANY.bytesLen && i < din_anyType_BYTES_SIZE; i++) {
             outDoc.ANY.bytes[i] = TransformTypeJson["ANY"]["bytes"][i].template get<uint8_t>();
         }
     } else {
@@ -164,7 +164,7 @@ struct din_TransformType getDoc_TransformType(const json& TransformTypeJson) {
     if (TransformTypeJson.contains("XPath")) {
         outDoc.XPath_isUsed = 1;
         outDoc.XPath.charactersLen = TransformTypeJson["XPath"]["charactersLen"].template get<uint16_t>();
-        for (uint16_t i = 0; i < outDoc.XPath.charactersLen & i < din_XPath_CHARACTER_SIZE; i++) {
+        for (uint16_t i = 0; i < outDoc.XPath.charactersLen && i < din_XPath_CHARACTER_SIZE; i++) {
             outDoc.XPath.characters[i] = TransformTypeJson["XPath"]["characters"][i].template get<char>();
         }
     } else {
