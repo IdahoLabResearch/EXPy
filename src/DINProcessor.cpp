@@ -24,7 +24,7 @@ using json = nlohmann::json;
 #include <fstream>
 using namespace std;
 
-// TODO: Check and enforce maximum sizes of arrays and strings (e.g., TransformType.Algorithm_CHARACTER_SIZE)
+
 json getJson_CostType(const struct din_CostType& CostTypeDoc) {
     json outJson;
 
