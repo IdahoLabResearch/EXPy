@@ -7,14 +7,6 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
 
-def _ordered(obj):
-    if isinstance(obj, dict):
-        return sorted((k, _ordered(v)) for k, v in obj.items())
-    if isinstance(obj, list):
-        return sorted(_ordered(x) for x in obj)
-    return obj
-
-
 _ENCODE_DECODE = {
     "document": ("encode", "decode"),
     "fragment": ("encode_fragment", "decode_fragment"),
@@ -38,7 +30,7 @@ def _roundtrip_worker(protocol_name, kind, payload_json, queue):
             queue.put(("fail", f"{encode_attr}() returned None"))
             return
         decoded = decode(exi)
-        if _ordered(decoded) != _ordered(payload):
+        if decoded != payload:
             queue.put(("fail", f"roundtrip mismatch: decoded={decoded!r}"))
             return
         queue.put(("ok", None))
