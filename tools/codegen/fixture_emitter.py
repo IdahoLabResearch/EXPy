@@ -16,6 +16,7 @@ coverage at whichever top-level root reaches them directly.
 
 from __future__ import annotations
 
+import itertools
 import re
 from typing import Any
 
@@ -49,7 +50,15 @@ def _is_numeric(c_type: str) -> bool:
 
 
 SeedOverrides = dict[tuple[str, str], Any]
-ChoiceManifest = dict[str, list[list[str]]]
+# Choice manifest: c_struct_name -> list of choice *groups* (one group per
+# independent xs:choice inside that struct). Each group is a list of
+# *branches*, and each branch is a list of field names that get `_isUsed=1`
+# together.
+ChoiceManifest = dict[str, list[list[list[str]]]]
+# Per-scenario selection: c_struct_name -> list of active branches (one per
+# choice group in manifest order). Each active branch is a list of field
+# names.
+ChoiceSelections = dict[str, list[list[str]]]
 
 
 def emit_document_scenarios(
@@ -129,9 +138,10 @@ def _emit_scenarios(
     spec = specs[type_name]
     choice_point = _find_topmost_choice_point(spec, specs=specs, choices=choices or {})
     if choice_point is not None:
-        cp_struct, branches = choice_point
-        for branch_fields in branches:
-            selections = {cp_struct: branch_fields}
+        cp_struct, groups = choice_point
+        for combination in itertools.product(*groups):
+            active_per_group = list(combination)
+            selections: ChoiceSelections = {cp_struct: active_per_group}
             body = emit_body(
                 spec,
                 variant="maximal",
@@ -143,7 +153,9 @@ def _emit_scenarios(
                 choices=choices,
                 choice_selections=selections,
             )
-            sid = f"{element_name}__choice_{'_'.join(branch_fields)}"
+            sid = f"{element_name}__choice_" + "_".join(
+                name for branch in active_per_group for name in branch
+            )
             yield sid, wrap(body)
         return
     for variant in ("minimal", "maximal"):
@@ -165,10 +177,13 @@ def _find_topmost_choice_point(
     specs: dict[str, TypeSpec],
     choices: ChoiceManifest,
     visited: set[str] | None = None,
-) -> tuple[str, list[list[str]]] | None:
+) -> tuple[str, list[list[list[str]]]] | None:
     """Return the first choice-bearing struct reachable from `spec` via DFS,
     or None. Stops descending once it hits a choice struct — nested choices
     inside that branch are handled by the per-branch default in `emit_body`.
+
+    Returns ``(c_struct_name, groups)`` where ``groups`` is the manifest
+    entry: a list of independent choice groups, each a list of branches.
     """
     if not choices:
         return None
@@ -203,21 +218,27 @@ def emit_body(
     v2gjson: Any = None,
     namespace_prefix: str = "",
     choices: ChoiceManifest | None = None,
-    choice_selections: dict[str, list[str]] | None = None,
+    choice_selections: ChoiceSelections | None = None,
 ) -> dict[str, Any]:
     """Emit a payload body (no Document/Fragment wrapping) for `spec`.
 
     If `spec.name` is in `choices`, only the fields belonging to the active
-    branch (from `choice_selections`, defaulting to branch 0) are emitted —
-    non-choice members of the same struct are still emitted normally.
+    branch of each choice group (from `choice_selections`, defaulting to
+    branch 0 of every group) are emitted — non-choice members of the same
+    struct are still emitted normally.
     """
     overrides = overrides or {}
     skip_choice_members: set[str] = set()
     if choices and spec.name in choices:
-        branches = choices[spec.name]
-        active = (choice_selections or {}).get(spec.name, branches[0])
-        all_choice_members = {name for branch in branches for name in branch}
-        skip_choice_members = all_choice_members - set(active)
+        groups = choices[spec.name]
+        active_per_group = (choice_selections or {}).get(spec.name)
+        if active_per_group is None:
+            active_per_group = [group[0] for group in groups]
+        all_choice_members = {
+            name for group in groups for branch in group for name in branch
+        }
+        active_members = {name for branch in active_per_group for name in branch}
+        skip_choice_members = all_choice_members - active_members
     body: dict[str, Any] = {}
     for field in spec.fields:
         if field.name in skip_choice_members:
@@ -250,7 +271,7 @@ def _seed_field(
     v2gjson: Any,
     namespace_prefix: str,
     choices: ChoiceManifest | None = None,
-    choice_selections: dict[str, list[str]] | None = None,
+    choice_selections: ChoiceSelections | None = None,
 ) -> Any:
     key = (spec_name, field.name)
     if key in overrides:

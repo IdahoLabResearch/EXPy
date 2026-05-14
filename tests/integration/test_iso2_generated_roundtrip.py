@@ -22,6 +22,7 @@ from codegen.fixture_emitter import (  # noqa: E402
     emit_document_scenarios,
     harvest_enum_names,
 )
+from codegen.iso2_choices import CHOICES as ISO2_CHOICES  # noqa: E402
 from codegen.parser import parse_header  # noqa: E402
 from conftest import assert_roundtrip  # noqa: E402
 
@@ -71,32 +72,16 @@ def _scenarios():
             overrides=ISO2_OVERRIDES,
             v2gjson=v2gjson_iso2,
             namespace_prefix="iso2_",
+            choices=ISO2_CHOICES,
         )
 
 
 _SCENARIOS = list(_scenarios())
 
-# Documents that contain an XSD-choice the generator cannot honor without
-# per-choice-branch support (deferred to #18). The naive minimal-with-no-branch
-# and maximal-with-all-branches scenarios both fail to round-trip cleanly:
-# minimal leaves uninitialized choice memory that the encoder still emits;
-# maximal sets multiple choice members and the encoder only keeps one.
-_CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    # ChargeParameter* — choice of {AC,DC,EV} ChargeParameter.
-    "ChargeParameterDiscoveryReq__minimal",
-    "ChargeParameterDiscoveryReq__maximal",
-    "ChargeParameterDiscoveryRes__minimal",
-    "ChargeParameterDiscoveryRes__maximal",
-    # PowerDeliveryReq.EVPowerDeliveryParameter — choice of {DC,EV}.
-    "PowerDeliveryReq__maximal",
-    # *Res types embedding EVSEStatusType — choice of {AC_EVSEStatus, DC_EVSEStatus, EVSEStatus}.
-    "MeteringReceiptRes__minimal",
-    "MeteringReceiptRes__maximal",
-    "PowerDeliveryRes__minimal",
-    "PowerDeliveryRes__maximal",
-    # ServiceDetailRes.ServiceParameterList.ParameterSet.Parameter — choice across value kinds.
-    "ServiceDetailRes__maximal",
-})
+# Documents whose XSD-choice tree is not yet covered by the manifest. Empty:
+# every choice-bearing Document type is in iso2_choices.CHOICES, driving
+# per-branch scenarios instead of min/max.
+_CHOICE_BEARING_SCENARIO_IDS: frozenset[str] = frozenset()
 
 
 def _param(scenario):
