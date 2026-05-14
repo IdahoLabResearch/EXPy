@@ -23,4 +23,11 @@ CHOICES: dict[str, list[list[str]]] = {
         ["RelativeTimeInterval"],
         ["TimeInterval"],
     ],
+    # TransformType — xs:choice of {ANY, XPath}. Algorithm attribute is
+    # required and outside the choice. Reached transitively from SignedInfo,
+    # Reference, RetrievalMethod, Signature (all Xmldsig + Fragment roots).
+    "iso2_TransformType": [
+        ["ANY"],
+        ["XPath"],
+    ],
 }

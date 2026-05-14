@@ -65,15 +65,10 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# Fragment roots that internally contain an XSD-choice not yet covered by the
-# manifest (still deferred to #18). The SalesTariff choice is in the manifest;
-# SignedInfo's inner TransformType choice is not yet — that lands in a later
-# slice of #18.
-_CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    # SignedInfo.Reference[].Transforms.Transform — TransformType is a choice
-    # of {ANY, XPath}; only the maximal variant sets both branches.
-    "SignedInfo__maximal",
-})
+# Fragment roots whose XSD-choice tree is not yet covered by the manifest.
+# Empty: SalesTariffEntryType and TransformType are both in the manifest, so
+# every Fragment root's choice tree is now driven by per-branch scenarios.
+_CHOICE_BEARING_SCENARIO_IDS: frozenset[str] = frozenset()
 
 
 def _param(scenario):
