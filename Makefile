@@ -18,6 +18,8 @@ DIN_GENERATED = src/generated/DIN_marshalers.generated.cpp
 DIN_HEADER = extern/libcbv2g/include/cbv2g/din/din_msgDefDatatypes.h
 SAP_GENERATED = src/generated/SAP_marshalers.generated.cpp
 SAP_HEADER = extern/libcbv2g/include/cbv2g/app_handshake/appHand_Datatypes.h
+ISO2_GENERATED = src/generated/ISO2_marshalers.generated.cpp
+ISO2_HEADER = extern/libcbv2g/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
 CODEGEN_PYTHONPATH = $(CURDIR)/tools
 
 ISO2_OBJS = $(ISO2_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
@@ -46,8 +48,13 @@ $(SAP_GENERATED): $(SAP_HEADER) $(wildcard tools/codegen/*.py)
 	mkdir -p $(dir $@)
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(SAP_HEADER) --out $@
 
+$(ISO2_GENERATED): $(ISO2_HEADER) $(wildcard tools/codegen/*.py)
+	mkdir -p $(dir $@)
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(ISO2_HEADER) --out $@
+
 $(BUILD_DIR)/DINProcessor.o: $(DIN_GENERATED)
 $(BUILD_DIR)/SupportedAppProtocolProcessor.o: $(SAP_GENERATED)
+$(BUILD_DIR)/ISO2Processor.o: $(ISO2_GENERATED)
 
 $(BUILD_DIR)/ISO2Processor: $(BUILD_DIR) $(ISO2_OBJS)
 	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS) -o $@

@@ -15,18 +15,29 @@ def _ordered(obj):
     return obj
 
 
-def _roundtrip_worker(protocol_name, payload_json, queue):
+_ENCODE_DECODE = {
+    "document": ("encode", "decode"),
+    "fragment": ("encode_fragment", "decode_fragment"),
+    "xmldsig": ("encode_xmldsig", "decode_xmldsig"),
+}
+
+
+def _roundtrip_worker(protocol_name, kind, payload_json, queue):
     # Runs in a child process so a native abort doesn't kill the test runner.
     try:
         from EXIProcessor import EXIProcessor, ProtocolEnum
 
         processor = EXIProcessor(ProtocolEnum[protocol_name])
+        encode_attr, decode_attr = _ENCODE_DECODE[kind]
+        encode = getattr(processor, encode_attr)
+        decode = getattr(processor, decode_attr)
+
         payload = json.loads(payload_json)
-        exi = processor.encode(payload)
+        exi = encode(payload)
         if exi is None:
-            queue.put(("fail", "encode() returned None"))
+            queue.put(("fail", f"{encode_attr}() returned None"))
             return
-        decoded = processor.decode(exi)
+        decoded = decode(exi)
         if _ordered(decoded) != _ordered(payload):
             queue.put(("fail", f"roundtrip mismatch: decoded={decoded!r}"))
             return
@@ -35,17 +46,20 @@ def _roundtrip_worker(protocol_name, payload_json, queue):
         queue.put(("fail", f"{type(e).__name__}: {e}"))
 
 
-def assert_roundtrip(protocol_name, payload):
+def assert_roundtrip(protocol_name, payload, kind="document"):
     """Encode/decode `payload` in a forked process; assert the roundtrip matches.
 
     Isolating in a child process prevents native aborts in libcbv2g from
     crashing the pytest runner — we surface them as ordinary test failures.
+
+    `kind` selects which Processor method pair to exercise: "document" (default),
+    "fragment", or "xmldsig".
     """
     ctx = mp.get_context("fork")
     queue = ctx.Queue()
     proc = ctx.Process(
         target=_roundtrip_worker,
-        args=(protocol_name, json.dumps(payload), queue),
+        args=(protocol_name, kind, json.dumps(payload), queue),
     )
     proc.start()
     proc.join()

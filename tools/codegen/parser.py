@@ -15,6 +15,7 @@ from typing import List, Optional
 #   "array"        — anon { struct din_T array[SIZE]; uint16_t arrayLen; }
 #   "scalar_array" — anon { <scalar> array[SIZE]; uint16_t arrayLen; }
 #   "chars_array"  — anon { struct { char characters[N]; uint16_t charactersLen; } array[]; uint16_t arrayLen; }
+#   "bytes_array"  — anon { struct { uint8_t bytes[N];     uint16_t bytesLen;     } array[]; uint16_t arrayLen; }
 #   "choice"       — an XSD-choice sub-struct inside an anonymous union; carries subfields.
 @dataclass
 class Field:
@@ -57,6 +58,10 @@ _SCALAR_ARRAY_INNER_RE = re.compile(
 )
 _CHARS_ARRAY_INNER_RE = re.compile(
     r"^\s*struct\s*\{\s*char\s+characters\[(?P<elem_size>\w+)\]\s*;\s*uint16_t\s+charactersLen\s*;\s*\}\s+array\[(?P<size>\w+)\]\s*;\s*uint16_t\s+arrayLen\s*;\s*$",
+    re.DOTALL,
+)
+_BYTES_ARRAY_INNER_RE = re.compile(
+    r"^\s*struct\s*\{\s*uint8_t\s+bytes\[(?P<elem_size>\w+)\]\s*;\s*uint16_t\s+bytesLen\s*;\s*\}\s+array\[(?P<size>\w+)\]\s*;\s*uint16_t\s+arrayLen\s*;\s*$",
     re.DOTALL,
 )
 
@@ -234,7 +239,8 @@ def _legacy_unused(union_body: str) -> List[Field]:
 
 
 def _classify_anon_struct(field_name: str, inner: str) -> Field:
-    # Check chars_array BEFORE characters — chars_array embeds a char-array decl.
+    # Check chars_array / bytes_array BEFORE characters / bytes — array forms
+    # embed the scalar pattern.
     chars_array_m = _CHARS_ARRAY_INNER_RE.match(inner)
     if chars_array_m:
         return Field(
@@ -242,6 +248,14 @@ def _classify_anon_struct(field_name: str, inner: str) -> Field:
             kind="chars_array",
             size_macro=chars_array_m["size"],
             elem_size_macro=chars_array_m["elem_size"],
+        )
+    bytes_array_m = _BYTES_ARRAY_INNER_RE.match(inner)
+    if bytes_array_m:
+        return Field(
+            name=field_name,
+            kind="bytes_array",
+            size_macro=bytes_array_m["size"],
+            elem_size_macro=bytes_array_m["elem_size"],
         )
     chars = _CHARACTERS_INNER_RE.match(inner)
     if chars:

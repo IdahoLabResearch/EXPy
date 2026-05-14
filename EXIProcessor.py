@@ -22,39 +22,83 @@ class EXIProcessor():
         soFilePath = os.path.abspath(__file__ + f"/../build/lib-{protocolString}Processor.so")
         self.lib = CDLL(soFilePath)
 
-        self.lib.decodeFromPythonBytes.argtypes = [POINTER(c_uint8), c_size_t]
-        self.lib.decodeFromPythonBytes.restype = c_char_p
+        self._bind_decoder("decodeFromPythonBytes")
+        self._bind_encoder("encodeFromPythonDict")
 
-        self.lib.encodeFromPythonDict.argtypes = [c_char_p]
-        self.lib.encodeFromPythonDict.restype = POINTER(encoded_data)
-        
         self.lib.free_encoded_data.argtypes = [POINTER(encoded_data)]
         self.lib.free_encoded_data.restype = None
 
-    def decode(self, exiBytes: bytes) -> dict:
+        # Fragment / XmldsigFragment entry points only exist on Processors whose
+        # underlying libcbv2g schema defines those root types (ISO-2 and the
+        # ISO-20 namespaces). On other Processors (SAP, DIN) the symbol is
+        # missing and the binder silently skips the wiring — the corresponding
+        # Python method then raises NotImplementedError.
+        self._bind_decoder("decode_fragment_FromPythonBytes")
+        self._bind_encoder("encode_fragment_FromPythonDict")
+        self._bind_decoder("decode_xmldsig_FromPythonBytes")
+        self._bind_encoder("encode_xmldsig_FromPythonDict")
+
+    def _bind_decoder(self, symbol: str) -> None:
+        try:
+            fn = getattr(self.lib, symbol)
+        except AttributeError:
+            return
+        fn.argtypes = [POINTER(c_uint8), c_size_t]
+        fn.restype = c_char_p
+
+    def _bind_encoder(self, symbol: str) -> None:
+        try:
+            fn = getattr(self.lib, symbol)
+        except AttributeError:
+            return
+        fn.argtypes = [c_char_p]
+        fn.restype = POINTER(encoded_data)
+
+    def _decode_with(self, symbol: str, exiBytes: bytes) -> dict:
+        try:
+            fn = getattr(self.lib, symbol)
+        except AttributeError:
+            raise NotImplementedError(
+                f"this Processor does not expose {symbol}"
+            )
         c_input_array = (c_uint8 * len(exiBytes))(*exiBytes)
         c_input_array_size = c_size_t(len(exiBytes))
         c_input_array_ptr = cast(c_input_array, POINTER(c_uint8))
+        res = fn(c_input_array_ptr, c_input_array_size)
+        return json.loads(res.decode('utf-8'))
 
-        res = self.lib.decodeFromPythonBytes(c_input_array_ptr, c_input_array_size)
-
-        jsonObj = json.loads(res.decode('utf-8'))
-
-        return jsonObj
-    
-    def encode(self, jsonObj: dict) -> bytes|None:
-        jsonObjStr = json.dumps(jsonObj)
-        c_input = c_char_p(jsonObjStr.encode('utf-8'))
-
-        result = self.lib.encodeFromPythonDict(c_input)
+    def _encode_with(self, symbol: str, jsonObj: dict) -> bytes | None:
+        try:
+            fn = getattr(self.lib, symbol)
+        except AttributeError:
+            raise NotImplementedError(
+                f"this Processor does not expose {symbol}"
+            )
+        c_input = c_char_p(json.dumps(jsonObj).encode('utf-8'))
+        result = fn(c_input)
         if not result:
             return None
-
-        # Copy the data before freeing
         encoded_bytes = bytes(result.contents.buffer[:result.contents.size])
         self.lib.free_encoded_data(result)
-        
         return encoded_bytes
+
+    def decode(self, exiBytes: bytes) -> dict:
+        return self._decode_with("decodeFromPythonBytes", exiBytes)
+
+    def encode(self, jsonObj: dict) -> bytes | None:
+        return self._encode_with("encodeFromPythonDict", jsonObj)
+
+    def decode_fragment(self, exiBytes: bytes) -> dict:
+        return self._decode_with("decode_fragment_FromPythonBytes", exiBytes)
+
+    def encode_fragment(self, jsonObj: dict) -> bytes | None:
+        return self._encode_with("encode_fragment_FromPythonDict", jsonObj)
+
+    def decode_xmldsig(self, exiBytes: bytes) -> dict:
+        return self._decode_with("decode_xmldsig_FromPythonBytes", exiBytes)
+
+    def encode_xmldsig(self, jsonObj: dict) -> bytes | None:
+        return self._encode_with("encode_xmldsig_FromPythonDict", jsonObj)
 
 class encoded_data(Structure):
     _fields_ = [

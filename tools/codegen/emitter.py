@@ -105,6 +105,16 @@ def _field_get_json_body(f: Field, json_prefix: str, doc_prefix: str, indent_lvl
             f"{ind}{INDENT}}}",
             f"{ind}}}",
         ]
+    if f.kind == "bytes_array":
+        return [
+            f'{ind}{fj}["arrayLen"] = {fd}.arrayLen;',
+            f"{ind}for (uint16_t i = 0; i < {fd}.arrayLen && i < {f.size_macro}; i++) {{",
+            f'{ind}{INDENT}{fj}["array"][i]["bytesLen"] = {fd}.array[i].bytesLen;',
+            f"{ind}{INDENT}for (uint16_t j = 0; j < {fd}.array[i].bytesLen && j < {f.elem_size_macro}; j++) {{",
+            f'{ind}{INDENT}{INDENT}{fj}["array"][i]["bytes"][j] = {fd}.array[i].bytes[j];',
+            f"{ind}{INDENT}}}",
+            f"{ind}}}",
+        ]
     if f.kind == "choice":
         out: list[str] = []
         for sub in f.subfields:
@@ -190,6 +200,16 @@ def _field_get_doc_body(f: Field, json_prefix: str, doc_prefix: str, indent_lvl:
             f'{ind}{INDENT}{fd}.array[i].charactersLen = {fj}["array"][i]["charactersLen"].template get<uint16_t>();',
             f"{ind}{INDENT}for (uint16_t j = 0; j < {fd}.array[i].charactersLen && j < {f.elem_size_macro}; j++) {{",
             f'{ind}{INDENT}{INDENT}{fd}.array[i].characters[j] = {fj}["array"][i]["characters"][j].template get<char>();',
+            f"{ind}{INDENT}}}",
+            f"{ind}}}",
+        ]
+    if f.kind == "bytes_array":
+        return [
+            f'{ind}{fd}.arrayLen = {fj}["arrayLen"].template get<uint16_t>();',
+            f"{ind}for (uint16_t i = 0; i < {fd}.arrayLen && i < {f.size_macro}; i++) {{",
+            f'{ind}{INDENT}{fd}.array[i].bytesLen = {fj}["array"][i]["bytesLen"].template get<uint16_t>();',
+            f"{ind}{INDENT}for (uint16_t j = 0; j < {fd}.array[i].bytesLen && j < {f.elem_size_macro}; j++) {{",
+            f'{ind}{INDENT}{INDENT}{fd}.array[i].bytes[j] = {fj}["array"][i]["bytes"][j].template get<uint8_t>();',
             f"{ind}{INDENT}}}",
             f"{ind}}}",
         ]
