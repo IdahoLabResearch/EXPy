@@ -29,7 +29,7 @@ A generated pair of functions (`getJson_<Type>` / `setDoc_<Type>`) that maps bet
 _Avoid_: Serializer, mapper, converter.
 
 **EVerest JSON shape**:
-The JSON conventions EXPy emits and accepts: byte fields as `{"bytes": [...], "bytesLen": N}`, optional sub-elements marked with `"isUsed": true`, root keyed by message type name. Inherited from `libcbv2g` conventions; consumers either match this shape or translate at their boundary.
+The JSON conventions EXPy emits and accepts: byte fields as `{"bytes": [...], "bytesLen": N}`, optional sub-elements signaled by JSON field presence (key omitted ↔ the C struct's `_isUsed` bit is 0), root keyed by message type name. Inherited from `libcbv2g` conventions; consumers either match this shape or translate at their boundary.
 _Avoid_: JSON format, schema, wire format.
 
 ## Relationships
