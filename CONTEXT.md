@@ -9,8 +9,8 @@ A per-namespace codec instance bound to one `libcbv2g` encoder/decoder pair, loa
 _Avoid_: Codec, encoder, decoder (those name the C functions Processor wraps, not the wrapper itself).
 
 **Namespace**:
-The dispatch key identifying which schema a message belongs to. EXPy supports eight: `HANDSHAKE`, `DIN`, `ISO2`, `ISO20_COMMON`, `ISO20_AC`, `ISO20_DC`, `ISO20_WPT`, `ISO20_ACDP`. One Namespace ↔ one **Processor**.
-_Avoid_: Protocol (DIN, ISO‑2, and ISO‑20 are protocols; "ISO‑20 AC" is not — it's a namespace within ISO‑20).
+The dispatch key identifying which schema a message belongs to. EXPy supports eight: `SAP`, `DIN`, `ISO2`, `ISO20_COMMON`, `ISO20_AC`, `ISO20_DC`, `ISO20_WPT`, `ISO20_ACDP`. One Namespace ↔ one **Processor**.
+_Avoid_: Protocol (DIN, ISO‑2, and ISO‑20 are protocols; "ISO‑20 AC" is not — it's a namespace within ISO‑20). Also avoid "HANDSHAKE", "AppHandshake", or "AppProtocol" for the first namespace — the canonical name is `SAP` (Supported App Protocol), matching the ISO 15118-2 message family and AcCCS's namespace string.
 
 **Document**:
 A full V2G message envelope (e.g., `iso2_exiDocument`), the standard unit produced and consumed in a charging session.
