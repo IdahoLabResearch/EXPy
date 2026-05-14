@@ -1,6 +1,7 @@
 {
     "supportedAppProtocolReq": {
         "AppProtocol": {
+            "arrayLen": 3,
             "array": [{
                 "ProtocolNamespace": {
                         "charactersLen" : 25,

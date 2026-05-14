@@ -9,7 +9,7 @@ import pytest
 
 from conftest import assert_roundtrip
 
-FIXTURES_DIR = Path(__file__).parent / "fixtures" / "AppHandshake"
+FIXTURES_DIR = Path(__file__).parent / "fixtures" / "SAP"
 
 
 @pytest.mark.parametrize(
@@ -17,6 +17,6 @@ FIXTURES_DIR = Path(__file__).parent / "fixtures" / "AppHandshake"
     sorted(FIXTURES_DIR.glob("*.json")),
     ids=lambda p: p.stem,
 )
-def test_app_handshake_roundtrip(fixture_path):
+def test_sap_roundtrip(fixture_path):
     payload = json.loads(fixture_path.read_text())
-    assert_roundtrip("HANDSHAKE", payload)
+    assert_roundtrip("SAP", payload)

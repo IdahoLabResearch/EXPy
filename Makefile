@@ -12,18 +12,20 @@ COMMON_OBJS = $(COMMON_SRCS:src/%.cpp=$(BUILD_DIR)/%.o)
 
 ISO2_SRCS = src/ISO2Processor.cpp
 DIN_SRCS = src/DINProcessor.cpp
-APP_SRCS = src/AppHandshakeProcessor.cpp
+SAP_SRCS = src/SupportedAppProtocolProcessor.cpp
 
 DIN_GENERATED = src/generated/DIN_marshalers.generated.cpp
 DIN_HEADER = extern/libcbv2g/include/cbv2g/din/din_msgDefDatatypes.h
+SAP_GENERATED = src/generated/SAP_marshalers.generated.cpp
+SAP_HEADER = extern/libcbv2g/include/cbv2g/app_handshake/appHand_Datatypes.h
 CODEGEN_PYTHONPATH = $(CURDIR)/tools
 
 ISO2_OBJS = $(ISO2_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 DIN_OBJS = $(DIN_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
-APP_OBJS = $(APP_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
+SAP_OBJS = $(SAP_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 
-EXEC = $(BUILD_DIR)/DINProcessor $(BUILD_DIR)/AppHandshakeProcessor $(BUILD_DIR)/ISO2Processor
-SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-AppHandshakeProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so
+EXEC = $(BUILD_DIR)/DINProcessor $(BUILD_DIR)/SupportedAppProtocolProcessor $(BUILD_DIR)/ISO2Processor
+SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so
 
 all: libcbv2g $(EXEC) $(SHARED)
 
@@ -40,7 +42,12 @@ $(DIN_GENERATED): $(DIN_HEADER) $(wildcard tools/codegen/*.py)
 	mkdir -p $(dir $@)
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(DIN_HEADER) --out $@
 
+$(SAP_GENERATED): $(SAP_HEADER) $(wildcard tools/codegen/*.py)
+	mkdir -p $(dir $@)
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(SAP_HEADER) --out $@
+
 $(BUILD_DIR)/DINProcessor.o: $(DIN_GENERATED)
+$(BUILD_DIR)/SupportedAppProtocolProcessor.o: $(SAP_GENERATED)
 
 $(BUILD_DIR)/ISO2Processor: $(BUILD_DIR) $(ISO2_OBJS)
 	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS) -o $@
@@ -54,11 +61,11 @@ $(BUILD_DIR)/DINProcessor: $(BUILD_DIR) $(DIN_OBJS)
 $(BUILD_DIR)/lib-DINProcessor.so: $(BUILD_DIR) $(DIN_OBJS)
 	$(CXX) $(SHARED_FLAGS) $(DIN_OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-$(BUILD_DIR)/AppHandshakeProcessor: $(BUILD_DIR) $(APP_OBJS)
-	$(CXX) $(CXXFLAGS) $(APP_OBJS) $(LDFLAGS) $(LIBS) -o $@
+$(BUILD_DIR)/SupportedAppProtocolProcessor: $(BUILD_DIR) $(SAP_OBJS)
+	$(CXX) $(CXXFLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS) -o $@
 
-$(BUILD_DIR)/lib-AppHandshakeProcessor.so: $(BUILD_DIR) $(APP_OBJS)
-	$(CXX) $(SHARED_FLAGS) $(APP_OBJS) $(LDFLAGS) $(LIBS) -o $@
+$(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so: $(BUILD_DIR) $(SAP_OBJS)
+	$(CXX) $(SHARED_FLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS) -o $@
 
 
 

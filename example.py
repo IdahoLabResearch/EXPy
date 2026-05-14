@@ -70,8 +70,8 @@ jsonStringSupportedAppProtocolRes = """
     }
 }"""
 
-# Create instance of AppHandshakeProcessor
-appHandshakeProcessor = EXIProcessor(ProtocolEnum.HANDSHAKE)
+# Create instance of SupportedAppProtocolProcessor
+appHandshakeProcessor = EXIProcessor(ProtocolEnum.SAP)
 
 # Decode the EXI bytes for supportedAppProtocolReq
 decodedJsonSupportedAppProtocolReq = appHandshakeProcessor.decode(exiBytesSupportedAppProtocolReq)

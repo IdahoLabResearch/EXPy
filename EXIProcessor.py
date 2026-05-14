@@ -10,7 +10,7 @@ from enum import Enum
 
 
 class ProtocolEnum(Enum):
-    HANDSHAKE = "AppHandshake"
+    SAP = "SupportedAppProtocol"
     DIN = "DIN"
     ISO2 = "ISO2"
     ISO20 = "ISO20"
