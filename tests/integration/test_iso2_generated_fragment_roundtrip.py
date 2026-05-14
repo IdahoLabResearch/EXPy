@@ -19,6 +19,7 @@ from codegen.fixture_emitter import (  # noqa: E402
     emit_fragment_scenarios,
     harvest_enum_names,
 )
+from codegen.iso2_choices import CHOICES as ISO2_CHOICES  # noqa: E402
 from codegen.parser import parse_header  # noqa: E402
 from conftest import assert_roundtrip  # noqa: E402
 
@@ -58,17 +59,17 @@ def _scenarios():
             overrides=ISO2_FRAGMENT_OVERRIDES,
             v2gjson=v2gjson_iso2,
             namespace_prefix="iso2_",
+            choices=ISO2_CHOICES,
         )
 
 
 _SCENARIOS = list(_scenarios())
 
-# Fragment roots that internally contain an XSD-choice the generator cannot
-# honor without per-choice-branch support (deferred to #18).
+# Fragment roots that internally contain an XSD-choice not yet covered by the
+# manifest (still deferred to #18). The SalesTariff choice is in the manifest;
+# SignedInfo's inner TransformType choice is not yet — that lands in a later
+# slice of #18.
 _CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    # SalesTariffEntryType — choice of {RelativeTimeInterval, TimeInterval}.
-    "SalesTariff__minimal",
-    "SalesTariff__maximal",
     # SignedInfo.Reference[].Transforms.Transform — TransformType is a choice
     # of {ANY, XPath}; only the maximal variant sets both branches.
     "SignedInfo__maximal",

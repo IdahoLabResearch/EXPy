@@ -4,7 +4,14 @@ Walks `TypeSpec` output from `parser.py` and emits JSON payloads matching the
 shape libcbv2g's Processor expects, per the matrix in ADR-0005:
 - "minimal": only required fields
 - "maximal": all optionals present
-- per-XSD-choice branch: one variant per choice union
+- per-XSD-choice branch: one variant per choice union (driven by a
+  hand-curated `choices` manifest — see `iso2_choices.py` / `din_choices.py`)
+
+XSD-choice handling: when a root's type tree contains a struct listed in the
+`choices` manifest, the generator replaces the root's min/max pair with one
+scenario per branch. For nested choices reached during emission, the
+generator defaults to branch 0 — those nested types get their own per-branch
+coverage at whichever top-level root reaches them directly.
 """
 
 from __future__ import annotations
@@ -42,6 +49,7 @@ def _is_numeric(c_type: str) -> bool:
 
 
 SeedOverrides = dict[tuple[str, str], Any]
+ChoiceManifest = dict[str, list[list[str]]]
 
 
 def emit_document_scenarios(
@@ -53,11 +61,14 @@ def emit_document_scenarios(
     overrides: SeedOverrides | None = None,
     v2gjson: Any = None,
     namespace_prefix: str = "",
+    choices: ChoiceManifest | None = None,
 ):
     """Yield ``(scenario_id, payload)`` for `type_name` wrapped as a Document.
 
     Payload shape: ``{"Body": {element_name: <body>}}``.
-    Scenario ids: ``{element_name}__minimal`` / ``{element_name}__maximal``.
+    Scenario ids: ``{element_name}__minimal`` / ``{element_name}__maximal``,
+    or ``{element_name}__choice_{branch_field}`` when a choice point is
+    reachable in `type_name`'s type tree via `choices`.
     """
     yield from _emit_scenarios(
         type_name,
@@ -67,6 +78,7 @@ def emit_document_scenarios(
         overrides=overrides,
         v2gjson=v2gjson,
         namespace_prefix=namespace_prefix,
+        choices=choices,
         wrap=lambda body: {"Body": {element_name: body}},
     )
 
@@ -80,6 +92,7 @@ def emit_fragment_scenarios(
     overrides: SeedOverrides | None = None,
     v2gjson: Any = None,
     namespace_prefix: str = "",
+    choices: ChoiceManifest | None = None,
 ):
     """Yield ``(scenario_id, payload)`` for `type_name` wrapped as a Fragment.
 
@@ -94,6 +107,7 @@ def emit_fragment_scenarios(
         overrides=overrides,
         v2gjson=v2gjson,
         namespace_prefix=namespace_prefix,
+        choices=choices,
         wrap=lambda body: {element_name: body},
     )
 
@@ -107,11 +121,31 @@ def _emit_scenarios(
     overrides: SeedOverrides | None,
     v2gjson: Any,
     namespace_prefix: str,
+    choices: ChoiceManifest | None,
     wrap,
 ):
     if type_name not in specs:
         raise GeneratorError(f"type {type_name!r} not present in specs")
     spec = specs[type_name]
+    choice_point = _find_topmost_choice_point(spec, specs=specs, choices=choices or {})
+    if choice_point is not None:
+        cp_struct, branches = choice_point
+        for branch_fields in branches:
+            selections = {cp_struct: branch_fields}
+            body = emit_body(
+                spec,
+                variant="maximal",
+                specs=specs,
+                enum_names=enum_names,
+                overrides=overrides,
+                v2gjson=v2gjson,
+                namespace_prefix=namespace_prefix,
+                choices=choices,
+                choice_selections=selections,
+            )
+            sid = f"{element_name}__choice_{'_'.join(branch_fields)}"
+            yield sid, wrap(body)
+        return
     for variant in ("minimal", "maximal"):
         body = emit_body(
             spec,
@@ -125,6 +159,40 @@ def _emit_scenarios(
         yield f"{element_name}__{variant}", wrap(body)
 
 
+def _find_topmost_choice_point(
+    spec: TypeSpec,
+    *,
+    specs: dict[str, TypeSpec],
+    choices: ChoiceManifest,
+    visited: set[str] | None = None,
+) -> tuple[str, list[list[str]]] | None:
+    """Return the first choice-bearing struct reachable from `spec` via DFS,
+    or None. Stops descending once it hits a choice struct — nested choices
+    inside that branch are handled by the per-branch default in `emit_body`.
+    """
+    if not choices:
+        return None
+    if visited is None:
+        visited = set()
+    if spec.name in visited:
+        return None
+    visited.add(spec.name)
+    if spec.name in choices:
+        return spec.name, choices[spec.name]
+    for field in spec.fields:
+        if field.kind not in ("struct", "array"):
+            continue
+        nested = specs.get(field.c_type)
+        if nested is None:
+            continue
+        found = _find_topmost_choice_point(
+            nested, specs=specs, choices=choices, visited=visited
+        )
+        if found is not None:
+            return found
+    return None
+
+
 def emit_body(
     spec: TypeSpec,
     *,
@@ -134,11 +202,26 @@ def emit_body(
     overrides: SeedOverrides | None = None,
     v2gjson: Any = None,
     namespace_prefix: str = "",
+    choices: ChoiceManifest | None = None,
+    choice_selections: dict[str, list[str]] | None = None,
 ) -> dict[str, Any]:
-    """Emit a payload body (no Document/Fragment wrapping) for `spec`."""
+    """Emit a payload body (no Document/Fragment wrapping) for `spec`.
+
+    If `spec.name` is in `choices`, only the fields belonging to the active
+    branch (from `choice_selections`, defaulting to branch 0) are emitted —
+    non-choice members of the same struct are still emitted normally.
+    """
     overrides = overrides or {}
+    skip_choice_members: set[str] = set()
+    if choices and spec.name in choices:
+        branches = choices[spec.name]
+        active = (choice_selections or {}).get(spec.name, branches[0])
+        all_choice_members = {name for branch in branches for name in branch}
+        skip_choice_members = all_choice_members - set(active)
     body: dict[str, Any] = {}
     for field in spec.fields:
+        if field.name in skip_choice_members:
+            continue
         if field.optional and variant == "minimal":
             continue
         body[field.name] = _seed_field(
@@ -150,6 +233,8 @@ def emit_body(
             overrides=overrides,
             v2gjson=v2gjson,
             namespace_prefix=namespace_prefix,
+            choices=choices,
+            choice_selections=choice_selections,
         )
     return body
 
@@ -164,6 +249,8 @@ def _seed_field(
     overrides: SeedOverrides,
     v2gjson: Any,
     namespace_prefix: str,
+    choices: ChoiceManifest | None = None,
+    choice_selections: dict[str, list[str]] | None = None,
 ) -> Any:
     key = (spec_name, field.name)
     if key in overrides:
@@ -201,6 +288,8 @@ def _seed_field(
             overrides=overrides,
             v2gjson=v2gjson,
             namespace_prefix=namespace_prefix,
+            choices=choices,
+            choice_selections=choice_selections,
         )
     if field.kind == "array":
         nested = specs.get(field.c_type)
@@ -216,6 +305,8 @@ def _seed_field(
             overrides=overrides,
             v2gjson=v2gjson,
             namespace_prefix=namespace_prefix,
+            choices=choices,
+            choice_selections=choice_selections,
         )
         return {"array": [element], "arrayLen": 1}
     if field.kind == "scalar_array":
@@ -248,6 +339,8 @@ def _seed_field(
                 overrides=overrides,
                 v2gjson=v2gjson,
                 namespace_prefix=namespace_prefix,
+                choices=choices,
+                choice_selections=choice_selections,
             )
         return out
     raise GeneratorError(
