@@ -15,6 +15,7 @@ from codegen.fixture_emitter import (
     GeneratorError,
     emit_body,
     emit_document_scenarios,
+    emit_fragment_scenarios,
     harvest_enum_names,
 )
 
@@ -363,6 +364,33 @@ def test_chars_array_kind_emits_one_characters_element():
             "arrayLen": 1,
         }
     }
+
+
+def test_emit_fragment_scenarios_wraps_in_element_only_no_body():
+    """Fragment payloads are `{element_name: body}` — no `Body` wrapper, unlike
+    Document scenarios. The encoder/decoder Fragment pair expects this shape.
+    """
+    header = """
+    struct iso2_AuthorizationReqType {
+        struct {
+            uint8_t bytes[iso2_genChallengeType_BYTES_SIZE];
+            uint16_t bytesLen;
+        } GenChallenge;
+    };
+    """
+    specs = {s.name: s for s in parse_header(header)}
+
+    scenarios = list(emit_fragment_scenarios(
+        "iso2_AuthorizationReqType",
+        element_name="AuthorizationReq",
+        specs=specs,
+        enum_names=set(),
+        overrides={("iso2_AuthorizationReqType", "GenChallenge"): {"bytes": [0] * 16, "bytesLen": 16}},
+    ))
+
+    expected = {"AuthorizationReq": {"GenChallenge": {"bytes": [0] * 16, "bytesLen": 16}}}
+    assert [sid for sid, _ in scenarios] == ["AuthorizationReq__minimal", "AuthorizationReq__maximal"]
+    assert [p for _, p in scenarios] == [expected, expected]
 
 
 def test_bytes_array_kind_emits_one_bytes_element():

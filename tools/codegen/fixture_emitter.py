@@ -59,6 +59,56 @@ def emit_document_scenarios(
     Payload shape: ``{"Body": {element_name: <body>}}``.
     Scenario ids: ``{element_name}__minimal`` / ``{element_name}__maximal``.
     """
+    yield from _emit_scenarios(
+        type_name,
+        element_name=element_name,
+        specs=specs,
+        enum_names=enum_names,
+        overrides=overrides,
+        v2gjson=v2gjson,
+        namespace_prefix=namespace_prefix,
+        wrap=lambda body: {"Body": {element_name: body}},
+    )
+
+
+def emit_fragment_scenarios(
+    type_name: str,
+    *,
+    element_name: str,
+    specs: dict[str, TypeSpec],
+    enum_names: set[str],
+    overrides: SeedOverrides | None = None,
+    v2gjson: Any = None,
+    namespace_prefix: str = "",
+):
+    """Yield ``(scenario_id, payload)`` for `type_name` wrapped as a Fragment.
+
+    Payload shape: ``{element_name: <body>}`` (no ``Body`` wrapper). The
+    Fragment encode/decode pair expects this single-element shape.
+    """
+    yield from _emit_scenarios(
+        type_name,
+        element_name=element_name,
+        specs=specs,
+        enum_names=enum_names,
+        overrides=overrides,
+        v2gjson=v2gjson,
+        namespace_prefix=namespace_prefix,
+        wrap=lambda body: {element_name: body},
+    )
+
+
+def _emit_scenarios(
+    type_name: str,
+    *,
+    element_name: str,
+    specs: dict[str, TypeSpec],
+    enum_names: set[str],
+    overrides: SeedOverrides | None,
+    v2gjson: Any,
+    namespace_prefix: str,
+    wrap,
+):
     if type_name not in specs:
         raise GeneratorError(f"type {type_name!r} not present in specs")
     spec = specs[type_name]
@@ -72,7 +122,7 @@ def emit_document_scenarios(
             v2gjson=v2gjson,
             namespace_prefix=namespace_prefix,
         )
-        yield f"{element_name}__{variant}", {"Body": {element_name: body}}
+        yield f"{element_name}__{variant}", wrap(body)
 
 
 def emit_body(
