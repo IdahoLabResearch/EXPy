@@ -80,7 +80,7 @@ def test_emits_minimal_body_with_per_kind_default_for_characters():
         enum_names=set(),
     )
 
-    assert body == {"EVSEID": {"characters": "x", "charactersLen": 1}}
+    assert body == {"EVSEID": {"characters": [120], "charactersLen": 1}}
 
 
 def test_emits_minimal_body_with_per_kind_default_for_numeric_scalars():
@@ -232,3 +232,160 @@ def test_actionable_error_when_requested_type_missing_from_specs():
             specs={},
             enum_names=set(),
         ))
+
+
+def test_exi_signed_t_struct_uses_builtin_shape():
+    """`exi_signed_t` is a libcbv2g builtin (from exi_basetypes.h), not a
+    namespace struct. Its JSON shape is fixed and the generator hard-codes it
+    rather than trying to recurse into a TypeSpec that doesn't exist.
+    """
+    header = """
+    struct iso2_X509IssuerSerialType {
+        exi_signed_t X509SerialNumber;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert body == {
+        "X509SerialNumber": {
+            "data": {"octets": [1], "octets_count": 1},
+            "is_negative": 0,
+        }
+    }
+
+
+def test_struct_kind_recurses_into_nested_typespec():
+    header = """
+    struct iso2_OuterType {
+        struct iso2_InnerType Inner;
+    };
+    struct iso2_InnerType {
+        uint32_t Count;
+    };
+    """
+    specs = {s.name: s for s in parse_header(header)}
+
+    body = emit_body(
+        specs["iso2_OuterType"],
+        variant="minimal",
+        specs=specs,
+        enum_names=set(),
+    )
+
+    assert body == {"Inner": {"Count": 1}}
+
+
+def test_empty_struct_recurses_to_empty_dict():
+    """libcbv2g emits a placeholder `int _unused` for empty complexTypes (e.g.,
+    iso2_SessionStopReqType); the parser strips it, so the spec has zero fields.
+    """
+    header = """
+    struct iso2_EmptyType {
+        int _unused;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert body == {}
+
+
+def test_array_kind_emits_one_element_list_and_arrayLen():
+    header = """
+    struct iso2_OuterType {
+        struct {
+            struct iso2_ProfileEntryType array[iso2_ProfileEntryType_24_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } ProfileEntry;
+    };
+    struct iso2_ProfileEntryType {
+        uint32_t Start;
+    };
+    """
+    specs = {s.name: s for s in parse_header(header)}
+
+    body = emit_body(
+        specs["iso2_OuterType"],
+        variant="minimal",
+        specs=specs,
+        enum_names=set(),
+    )
+
+    assert body == {"ProfileEntry": {"array": [{"Start": 1}], "arrayLen": 1}}
+
+
+def test_scalar_array_kind_emits_one_element_list_and_arrayLen():
+    header = """
+    struct iso2_OuterType {
+        struct {
+            uint8_t array[iso2_someListType_4_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } Values;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert body == {"Values": {"array": [1], "arrayLen": 1}}
+
+
+def test_chars_array_kind_emits_one_characters_element():
+    header = """
+    struct iso2_OuterType {
+        struct {
+            struct {
+                char characters[iso2_FieldName_CHARACTER_SIZE];
+                uint16_t charactersLen;
+            } array[iso2_FieldName_3_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } Names;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert body == {
+        "Names": {
+            "array": [{"characters": [120], "charactersLen": 1}],
+            "arrayLen": 1,
+        }
+    }
+
+
+def test_bytes_array_kind_emits_one_bytes_element():
+    header = """
+    struct iso2_OuterType {
+        struct {
+            struct {
+                uint8_t bytes[iso2_certType_BYTES_SIZE];
+                uint16_t bytesLen;
+            } array[iso2_certType_4_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } SubCerts;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert body == {
+        "SubCerts": {
+            "array": [{"bytes": [0], "bytesLen": 1}],
+            "arrayLen": 1,
+        }
+    }

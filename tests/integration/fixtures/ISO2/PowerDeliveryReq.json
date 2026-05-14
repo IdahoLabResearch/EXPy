@@ -1,8 +1,0 @@
-{
-    "Body": {
-        "PowerDeliveryReq": {
-            "ChargeProgress": 0,
-            "SAScheduleTupleID": 1
-        }
-    }
-}

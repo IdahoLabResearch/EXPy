@@ -32,6 +32,8 @@ class GeneratorError(Exception):
 _NUMERIC_C_TYPES = {
     "uint8_t", "uint16_t", "uint32_t", "uint64_t",
     "int8_t", "int16_t", "int32_t", "int64_t",
+    # Plain `int X;` in libcbv2g is the C representation of XSD `xs:boolean`.
+    "int",
 }
 
 
@@ -119,7 +121,7 @@ def _seed_field(
     if field.kind == "bytes":
         return {"bytes": [0], "bytesLen": 1}
     if field.kind == "characters":
-        return {"characters": "x", "charactersLen": 1}
+        return {"characters": [120], "charactersLen": 1}
     if field.kind == "scalar":
         if field.c_type in enum_names:
             return _resolve_enum_value(
@@ -127,6 +129,57 @@ def _seed_field(
             )
         if _is_numeric(field.c_type):
             return 1
+    if field.kind == "struct":
+        if field.c_type == "exi_signed_t":
+            # libcbv2g's EXI codec canonicalizes leading zeros, so `octets=[0]`
+            # encodes as value 0 and decodes back as empty (`octets_count=0`).
+            # Use 1 to survive the roundtrip.
+            return {
+                "data": {"octets": [1], "octets_count": 1},
+                "is_negative": 0,
+            }
+        nested = specs.get(field.c_type)
+        if nested is None:
+            raise GeneratorError(
+                f"struct field {spec_name}.{field.name} references unknown type {field.c_type!r}"
+            )
+        return emit_body(
+            nested,
+            variant=variant,
+            specs=specs,
+            enum_names=enum_names,
+            overrides=overrides,
+            v2gjson=v2gjson,
+            namespace_prefix=namespace_prefix,
+        )
+    if field.kind == "array":
+        nested = specs.get(field.c_type)
+        if nested is None:
+            raise GeneratorError(
+                f"array field {spec_name}.{field.name} references unknown type {field.c_type!r}"
+            )
+        element = emit_body(
+            nested,
+            variant=variant,
+            specs=specs,
+            enum_names=enum_names,
+            overrides=overrides,
+            v2gjson=v2gjson,
+            namespace_prefix=namespace_prefix,
+        )
+        return {"array": [element], "arrayLen": 1}
+    if field.kind == "scalar_array":
+        return {"array": [1], "arrayLen": 1}
+    if field.kind == "chars_array":
+        return {
+            "array": [{"characters": [120], "charactersLen": 1}],
+            "arrayLen": 1,
+        }
+    if field.kind == "bytes_array":
+        return {
+            "array": [{"bytes": [0], "bytesLen": 1}],
+            "arrayLen": 1,
+        }
     raise GeneratorError(
         f"no seed for {spec_name}.{field.name} (kind={field.kind})"
     )

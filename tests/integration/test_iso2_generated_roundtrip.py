@@ -6,6 +6,7 @@ table for length-constrained fields, and yields min/max scenarios per type.
 """
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -40,18 +41,28 @@ ISO2_OVERRIDES = {
     ("iso2_SessionSetupReqType", "EVCCID"): {"bytes": [0] * 6, "bytesLen": 6},
 }
 
-# MVP slice for #12: one type exercising the seed-override path
-# (SessionSetupReq, exact-length EVCCID) plus one exercising enum resolution
-# via V2Gjson (AuthorizationRes, two enum-typed scalars). Broader coverage
-# lands in #13.
-_DEMO_TYPES = [
-    ("iso2_SessionSetupReqType", "SessionSetupReq"),
-    ("iso2_AuthorizationResType", "AuthorizationRes"),
-]
+
+def _discover_body_members():
+    """Pull (struct-type, element-name) for each member of `iso2_BodyType`'s
+    inner union, in declaration order. `BodyElement` (the abstract base) is
+    excluded — it isn't a concrete Document.
+    """
+    body_spec = _SPECS["iso2_BodyType"]
+    out = []
+    for f in body_spec.fields:
+        if f.kind != "struct":
+            continue
+        if f.name == "BodyElement":
+            continue
+        out.append((f.c_type, f.name))
+    return out
+
+
+_DOCUMENT_TYPES = _discover_body_members()
 
 
 def _scenarios():
-    for type_name, element in _DEMO_TYPES:
+    for type_name, element in _DOCUMENT_TYPES:
         yield from emit_document_scenarios(
             type_name,
             element_name=element,
@@ -65,13 +76,49 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
+# Documents that contain an XSD-choice the generator cannot honor without
+# per-choice-branch support (deferred to #18). The naive minimal-with-no-branch
+# and maximal-with-all-branches scenarios both fail to round-trip cleanly:
+# minimal leaves uninitialized choice memory that the encoder still emits;
+# maximal sets multiple choice members and the encoder only keeps one.
+_CHOICE_BEARING_SCENARIO_IDS = frozenset({
+    # ChargeParameter* — choice of {AC,DC,EV} ChargeParameter.
+    "ChargeParameterDiscoveryReq__minimal",
+    "ChargeParameterDiscoveryReq__maximal",
+    "ChargeParameterDiscoveryRes__minimal",
+    "ChargeParameterDiscoveryRes__maximal",
+    # PowerDeliveryReq.EVPowerDeliveryParameter — choice of {DC,EV}.
+    "PowerDeliveryReq__maximal",
+    # *Res types embedding EVSEStatusType — choice of {AC_EVSEStatus, DC_EVSEStatus, EVSEStatus}.
+    "MeteringReceiptRes__minimal",
+    "MeteringReceiptRes__maximal",
+    "PowerDeliveryRes__minimal",
+    "PowerDeliveryRes__maximal",
+    # ServiceDetailRes.ServiceParameterList.ParameterSet.Parameter — choice across value kinds.
+    "ServiceDetailRes__maximal",
+})
+
+
+def _param(scenario):
+    sid = scenario[0]
+    if sid in _CHOICE_BEARING_SCENARIO_IDS:
+        return pytest.param(
+            scenario,
+            id=sid,
+            marks=pytest.mark.xfail(
+                reason="XSD-choice support deferred to #18",
+                strict=True,
+            ),
+        )
+    return pytest.param(scenario, id=sid)
+
 
 @pytest.fixture(scope="module")
 def header():
     return json.loads(HEADER_FIXTURE.read_text())
 
 
-@pytest.mark.parametrize("scenario", _SCENARIOS, ids=lambda s: s[0])
+@pytest.mark.parametrize("scenario", [_param(s) for s in _SCENARIOS])
 def test_iso2_generated_document_roundtrip(scenario, header):
     _scenario_id, payload = scenario
     payload = {**payload, **header}
