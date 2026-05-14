@@ -230,6 +230,26 @@ def _seed_field(
             "array": [{"bytes": [0], "bytesLen": 1}],
             "arrayLen": 1,
         }
+    if field.kind == "choice":
+        # XSD-choice substruct (e.g. PGPDataType.choice_1): recurse into the
+        # parser-captured `subfields` under this name. The roundtrip is only
+        # correct when exactly one choice branch is set, which the per-branch
+        # work in #18 covers; min/max here are expected to xfail.
+        out: dict[str, Any] = {}
+        for sub in field.subfields or ():
+            if sub.optional and variant == "minimal":
+                continue
+            out[sub.name] = _seed_field(
+                spec_name=f"{spec_name}.{field.name}",
+                field=sub,
+                variant=variant,
+                specs=specs,
+                enum_names=enum_names,
+                overrides=overrides,
+                v2gjson=v2gjson,
+                namespace_prefix=namespace_prefix,
+            )
+        return out
     raise GeneratorError(
         f"no seed for {spec_name}.{field.name} (kind={field.kind})"
     )

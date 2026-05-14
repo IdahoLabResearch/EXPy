@@ -393,6 +393,44 @@ def test_emit_fragment_scenarios_wraps_in_element_only_no_body():
     assert [p for _, p in scenarios] == [expected, expected]
 
 
+def test_choice_kind_emits_subfields_under_choice_name():
+    """`kind="choice"` (e.g. PGPDataType.choice_1) is an XSD-choice substruct.
+    V2Gjson consumes it as `{choice_N: {<subfields>}}` in the JSON payload, so
+    the generator recurses into the subfields under that name. The minimal
+    variant omits optional subfields; the maximal includes them.
+    """
+    header = """
+    struct iso2_PGPDataType {
+        union {
+            struct {
+                struct {
+                    uint8_t bytes[iso2_base64Binary_BYTES_SIZE];
+                    uint16_t bytesLen;
+                } PGPKeyID;
+                struct {
+                    uint8_t bytes[iso2_base64Binary_BYTES_SIZE];
+                    uint16_t bytesLen;
+                } PGPKeyPacket;
+                unsigned int PGPKeyPacket_isUsed:1;
+            } choice_1;
+            unsigned int choice_1_isUsed:1;
+        };
+    };
+    """
+    specs = {s.name: s for s in parse_header(header)}
+
+    minimal = emit_body(
+        specs["iso2_PGPDataType"], variant="maximal", specs=specs, enum_names=set()
+    )
+
+    assert minimal == {
+        "choice_1": {
+            "PGPKeyID": {"bytes": [0], "bytesLen": 1},
+            "PGPKeyPacket": {"bytes": [0], "bytesLen": 1},
+        }
+    }
+
+
 def test_bytes_array_kind_emits_one_bytes_element():
     header = """
     struct iso2_OuterType {

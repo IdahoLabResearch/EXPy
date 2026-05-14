@@ -54,7 +54,14 @@ def assert_roundtrip(protocol_name, payload, kind="document"):
         args=(protocol_name, kind, json.dumps(payload), queue),
     )
     proc.start()
-    proc.join()
+    proc.join(timeout=15)
+    if proc.is_alive():
+        proc.terminate()
+        proc.join(timeout=2)
+        if proc.is_alive():
+            proc.kill()
+            proc.join()
+        raise AssertionError("child timed out (encoder/decoder did not return)")
 
     if proc.exitcode != 0:
         if not queue.empty():
