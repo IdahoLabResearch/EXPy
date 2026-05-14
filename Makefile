@@ -14,6 +14,10 @@ ISO2_SRCS = src/ISO2Processor.cpp
 DIN_SRCS = src/DINProcessor.cpp
 APP_SRCS = src/AppHandshakeProcessor.cpp
 
+DIN_GENERATED = src/generated/DIN_marshalers.generated.cpp
+DIN_HEADER = extern/libcbv2g/include/cbv2g/din/din_msgDefDatatypes.h
+CODEGEN_PYTHONPATH = $(CURDIR)/tools
+
 ISO2_OBJS = $(ISO2_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 DIN_OBJS = $(DIN_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 APP_OBJS = $(APP_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
@@ -31,6 +35,12 @@ libcbv2g:
 
 $(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(SHARED_FLAGS) $(INCLUDES) -c $< -o $@
+
+$(DIN_GENERATED): $(DIN_HEADER) $(wildcard tools/codegen/*.py)
+	mkdir -p $(dir $@)
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(DIN_HEADER) --out $@
+
+$(BUILD_DIR)/DINProcessor.o: $(DIN_GENERATED)
 
 $(BUILD_DIR)/ISO2Processor: $(BUILD_DIR) $(ISO2_OBJS)
 	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS) -o $@
@@ -52,6 +62,18 @@ $(BUILD_DIR)/lib-AppHandshakeProcessor.so: $(BUILD_DIR) $(APP_OBJS)
 
 
 
+PYTEST ?= $(shell test -x .venv/bin/pytest && echo .venv/bin/pytest || echo pytest)
+
+test-unit:
+	$(PYTEST) tests/codegen
+
+test-integration: all
+	$(PYTEST) tests/integration
+
+test: test-unit test-integration
+
 clean:
 	rm -rf $(BUILD_DIR)
 	rm -rf ./extern/libcbv2g/build
+
+.PHONY: all libcbv2g clean test test-unit test-integration

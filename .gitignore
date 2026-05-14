@@ -2,6 +2,9 @@ build/
 old/
 __pycache__/
 .vscode/
+.venv/
+.pytest_cache/
+src/generated/
 src/*.o
 
 # Ignore testing script
