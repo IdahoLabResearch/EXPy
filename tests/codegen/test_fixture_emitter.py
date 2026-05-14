@@ -1,0 +1,234 @@
+"""Schema-driven fixture generator: emits min/max payloads from parsed TypeSpecs."""
+
+import sys
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
+
+import V2Gjson.iso2 as v2gjson_iso2
+
+from codegen.parser import parse_header
+import pytest
+
+from codegen.fixture_emitter import (
+    GeneratorError,
+    emit_body,
+    emit_document_scenarios,
+    harvest_enum_names,
+)
+
+
+def test_emits_minimal_body_with_seed_override_for_length_constrained_bytes():
+    header = """
+    struct iso2_SessionSetupReqType {
+        struct {
+            uint8_t bytes[iso2_evccIDType_BYTES_SIZE];
+            uint16_t bytesLen;
+        } EVCCID;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names=set(),
+        overrides={("iso2_SessionSetupReqType", "EVCCID"): {"bytes": [0] * 6, "bytesLen": 6}},
+    )
+
+    assert body == {"EVCCID": {"bytes": [0] * 6, "bytesLen": 6}}
+
+
+def test_emits_minimal_body_with_per_kind_default_for_bytes():
+    header = """
+    struct iso2_CertificateInstallationReqType {
+        struct {
+            uint8_t bytes[iso2_certificateType_BYTES_SIZE];
+            uint16_t bytesLen;
+        } OEMProvisioningCert;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names=set(),
+    )
+
+    assert body == {"OEMProvisioningCert": {"bytes": [0], "bytesLen": 1}}
+
+
+def test_emits_minimal_body_with_per_kind_default_for_characters():
+    header = """
+    struct iso2_SomeType {
+        struct {
+            char characters[iso2_EVSEID_CHARACTER_SIZE];
+            uint16_t charactersLen;
+        } EVSEID;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names=set(),
+    )
+
+    assert body == {"EVSEID": {"characters": "x", "charactersLen": 1}}
+
+
+def test_emits_minimal_body_with_per_kind_default_for_numeric_scalars():
+    header = """
+    struct iso2_SomeType {
+        uint32_t Count;
+        int64_t Timestamp;
+        uint8_t Flag;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names=set(),
+    )
+
+    assert body == {"Count": 1, "Timestamp": 1, "Flag": 1}
+
+
+def test_minimal_omits_optionals_maximal_includes_them():
+    header = """
+    struct iso2_SomeType {
+        uint32_t Required;
+        uint32_t Optional;
+        unsigned int Optional_isUsed:1;
+    };
+    """
+    [spec] = parse_header(header)
+
+    minimal = emit_body(
+        spec, variant="minimal", specs={spec.name: spec}, enum_names=set()
+    )
+    maximal = emit_body(
+        spec, variant="maximal", specs={spec.name: spec}, enum_names=set()
+    )
+
+    assert minimal == {"Required": 1}
+    assert maximal == {"Required": 1, "Optional": 1}
+
+
+def test_emits_enum_scalar_value_from_v2gjson_module():
+    header = """
+    struct iso2_SessionSetupResType {
+        iso2_responseCodeType ResponseCode;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names={"iso2_responseCodeType"},
+        v2gjson=v2gjson_iso2,
+        namespace_prefix="iso2_",
+    )
+
+    assert body == {"ResponseCode": v2gjson_iso2.responseCodeType.OK.value}
+
+
+def test_harvests_enum_typedef_names_from_header_text():
+    header = """
+    typedef enum {
+        iso2_costKindType_relativePricePercentage = 0,
+        iso2_costKindType_RenewableGenerationPercentage = 1
+    } iso2_costKindType;
+
+    typedef enum {
+        iso2_responseCodeType_OK = 0,
+        iso2_responseCodeType_FAILED = 4
+    } iso2_responseCodeType;
+    """
+
+    assert harvest_enum_names(header) == {"iso2_costKindType", "iso2_responseCodeType"}
+
+
+def test_emit_document_scenarios_wraps_in_body_and_yields_min_and_max():
+    header = """
+    struct iso2_SessionSetupReqType {
+        struct {
+            uint8_t bytes[iso2_evccIDType_BYTES_SIZE];
+            uint16_t bytesLen;
+        } EVCCID;
+    };
+    """
+    specs = {s.name: s for s in parse_header(header)}
+
+    scenarios = list(emit_document_scenarios(
+        "iso2_SessionSetupReqType",
+        element_name="SessionSetupReq",
+        specs=specs,
+        enum_names=set(),
+        overrides={("iso2_SessionSetupReqType", "EVCCID"): {"bytes": [0] * 6, "bytesLen": 6}},
+    ))
+
+    expected_body = {"Body": {"SessionSetupReq": {"EVCCID": {"bytes": [0] * 6, "bytesLen": 6}}}}
+    assert [sid for sid, _ in scenarios] == ["SessionSetupReq__minimal", "SessionSetupReq__maximal"]
+    assert [p for _, p in scenarios] == [expected_body, expected_body]
+
+
+def test_enum_lookup_falls_back_to_zero_when_v2gjson_class_missing():
+    """Per ADR-0005: drift between header enums and V2Gjson should not crash
+    the generator; encode failure surfaces the mismatch instead.
+    """
+    header = """
+    struct iso2_FooType {
+        iso2_neverDefinedEnumType Field;
+    };
+    """
+    [spec] = parse_header(header)
+
+    body = emit_body(
+        spec,
+        variant="minimal",
+        specs={spec.name: spec},
+        enum_names={"iso2_neverDefinedEnumType"},
+        v2gjson=v2gjson_iso2,
+        namespace_prefix="iso2_",
+    )
+
+    assert body == {"Field": 0}
+
+
+def test_actionable_error_when_v2gjson_module_not_supplied_for_enum_scalar():
+    header = """
+    struct iso2_FooType {
+        iso2_responseCodeType ResponseCode;
+    };
+    """
+    [spec] = parse_header(header)
+
+    with pytest.raises(GeneratorError, match="v2gjson"):
+        emit_body(
+            spec,
+            variant="minimal",
+            specs={spec.name: spec},
+            enum_names={"iso2_responseCodeType"},
+        )
+
+
+def test_actionable_error_when_requested_type_missing_from_specs():
+    with pytest.raises(GeneratorError, match="iso2_NoSuchType"):
+        list(emit_document_scenarios(
+            "iso2_NoSuchType",
+            element_name="NoSuchType",
+            specs={},
+            enum_names=set(),
+        ))
