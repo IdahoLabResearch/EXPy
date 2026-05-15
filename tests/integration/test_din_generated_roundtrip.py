@@ -16,6 +16,7 @@ sys.path.insert(0, str(REPO_ROOT / "tools"))
 
 import V2Gjson.din as v2gjson_din  # noqa: E402
 
+from codegen.din_choices import CHOICES as DIN_CHOICES  # noqa: E402
 from codegen.fixture_emitter import (  # noqa: E402
     emit_document_scenarios,
     harvest_enum_names,
@@ -64,29 +65,15 @@ def _scenarios():
             overrides=DIN_OVERRIDES,
             v2gjson=v2gjson_din,
             namespace_prefix="din_",
+            choices=DIN_CHOICES,
         )
 
 
 _SCENARIOS = list(_scenarios())
 
-# DIN Documents that contain an XSD-choice the generator cannot honor without
-# per-choice-branch support (deferred to #18). Same root cause as the ISO2
-# Document set: minimal leaves an uninitialised choice the encoder still emits,
-# maximal sets multiple branches and the encoder keeps only one.
-_CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    # ChargeParameter* — choice of {AC, DC, EV} ChargeParameter.
-    "ChargeParameterDiscoveryReq__minimal",
-    "ChargeParameterDiscoveryReq__maximal",
-    "ChargeParameterDiscoveryRes__minimal",
-    "ChargeParameterDiscoveryRes__maximal",
-    # PowerDeliveryReq.EVPowerDeliveryParameter — choice of {DC, EV}.
-    "PowerDeliveryReq__maximal",
-    # PowerDeliveryRes embeds EVSEStatusType — choice of {AC, DC} EVSEStatus.
-    "PowerDeliveryRes__minimal",
-    "PowerDeliveryRes__maximal",
-    # ServiceDetailRes.ServiceParameterList.ParameterSet.Parameter — value-kind choice.
-    "ServiceDetailRes__maximal",
-})
+# DIN Documents whose XSD-choice tree is not yet covered by the manifest.
+# Empty: every choice-bearing DIN Document type is in din_choices.CHOICES.
+_CHOICE_BEARING_SCENARIO_IDS: frozenset[str] = frozenset()
 
 
 def _param(scenario):
