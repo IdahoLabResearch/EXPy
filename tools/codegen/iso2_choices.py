@@ -99,4 +99,42 @@ CHOICES: dict[str, list[list[list[str]]]] = {
             ["stringValue"],
         ],
     ],
+    # Xmldsig: KeyInfoType — xs:choice across 8 key descriptor kinds. Id
+    # attribute is optional non-choice.
+    "iso2_KeyInfoType": [
+        [
+            ["KeyName"],
+            ["KeyValue"],
+            ["RetrievalMethod"],
+            ["X509Data"],
+            ["PGPData"],
+            ["SPKIData"],
+            ["MgmtData"],
+            ["ANY"],
+        ],
+    ],
+    # Xmldsig: KeyValueType — xs:choice of {DSAKeyValue, RSAKeyValue, ANY}.
+    "iso2_KeyValueType": [
+        [["DSAKeyValue"], ["RSAKeyValue"], ["ANY"]],
+    ],
+    # Xmldsig: X509DataType — xs:choice across X.509 data kinds. Empirical
+    # quirk noted in the xmldsig xfail: the encoder emits X509IssuerSerial
+    # by default even when nothing is marked _isUsed; the per-branch path
+    # avoids that by setting exactly one flag.
+    "iso2_X509DataType": [
+        [
+            ["X509IssuerSerial"],
+            ["X509SKI"],
+            ["X509SubjectName"],
+            ["X509Certificate"],
+            ["X509CRL"],
+            ["ANY"],
+        ],
+    ],
+    # NB: PGPDataType is intentionally omitted. The libcbv2g header places
+    # the `choice_N_isUsed` flags *inside* the same union as the choice_N
+    # substructs (lines ~804-840 of iso_2/iso2_msgDefDatatypes.h), so the
+    # encoder cannot distinguish the active branch and the decoder returns
+    # an empty PGPData. Filed as a separate libcbv2g limitation rather than
+    # an XSD-choice generator problem.
 }

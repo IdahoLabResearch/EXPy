@@ -19,6 +19,7 @@ from codegen.fixture_emitter import (  # noqa: E402
     emit_fragment_scenarios,
     harvest_enum_names,
 )
+from codegen.iso2_choices import CHOICES as ISO2_CHOICES  # noqa: E402
 from codegen.parser import parse_header  # noqa: E402
 from conftest import assert_roundtrip  # noqa: E402
 
@@ -51,47 +52,26 @@ def _scenarios():
             overrides=None,
             v2gjson=v2gjson_iso2,
             namespace_prefix="iso2_",
+            choices=ISO2_CHOICES,
         )
 
 
 _SCENARIOS = list(_scenarios())
 
-# Xmldsig roots that internally contain an XSD-choice the generator cannot honor
-# without per-choice-branch support (deferred to #18). Two flavors of choice
-# appear here:
-#   1. choice across optional members (KeyInfoType, KeyValueType, X509DataType):
-#      libcbv2g's encoder emits one branch even when none is marked _isUsed, so
-#      both minimal and maximal mis-roundtrip.
-#   2. choice_N substructs (PGPDataType) or nested types with choice
-#      (TransformType has choice {ANY, XPath}): maximal sets multiple branches
-#      and the encoder only keeps one.
+# Scenarios still left as strict-xfail. The remaining failures are an
+# upstream libcbv2g limitation around PGPData (its choice_N_isUsed flags
+# live inside the same union as the choice_N substructs, so the encoder
+# cannot disambiguate the active branch). Tracked separately from #18.
 _CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    # KeyInfoType — choice of {KeyName, KeyValue, RetrievalMethod, X509Data,
-    # PGPData, SPKIData, MgmtData, ANY}.
-    "KeyInfo__minimal",
-    "KeyInfo__maximal",
-    # KeyValueType — choice of {DSAKeyValue, RSAKeyValue, ANY}.
-    "KeyValue__minimal",
-    "KeyValue__maximal",
-    # PGPDataType — choice_1 vs choice_2 substructs.
+    "KeyInfo__choice_PGPData",
     "PGPData__maximal",
-    # TransformType — choice of {ANY, XPath}; only maximal sets both.
-    "Transform__maximal",
-    # TransformsType wraps Transform; same root cause.
-    "Transforms__maximal",
-    # ReferenceType.Transforms.Transform inherits the TransformType choice.
-    "Reference__maximal",
-    # RetrievalMethodType.Transforms.Transform — same.
-    "RetrievalMethod__maximal",
-    # SignedInfoType embeds Reference[].Transforms.Transform.
-    "SignedInfo__maximal",
-    # SignatureType embeds SignedInfo and KeyInfo.
-    "Signature__maximal",
-    # X509DataType — choice of {X509IssuerSerial, X509SKI, X509SubjectName,
-    # X509Certificate, X509CRL, ANY}. Encoder emits X509IssuerSerial by default.
-    "X509Data__minimal",
-    "X509Data__maximal",
 })
+
+
+def _xfail_reason(sid: str) -> str:
+    if "PGPData" in sid:
+        return "libcbv2g PGPData encoder limitation (choice_N_isUsed inside union)"
+    return "XSD-choice support deferred to #18"
 
 
 def _param(scenario):
@@ -100,10 +80,7 @@ def _param(scenario):
         return pytest.param(
             scenario,
             id=sid,
-            marks=pytest.mark.xfail(
-                reason="XSD-choice support deferred to #18",
-                strict=True,
-            ),
+            marks=pytest.mark.xfail(reason=_xfail_reason(sid), strict=True),
         )
     return pytest.param(scenario, id=sid)
 
