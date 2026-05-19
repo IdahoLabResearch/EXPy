@@ -10,7 +10,7 @@ DIN and ISO‑2 are currently ~4k LoC each of hand-written `getJson_*` / `setDoc
 
 ## Consequences
 
-- Existing `src/DINProcessor.cpp` and `src/ISO2Processor.cpp` Marshaler bodies are deleted and regenerated. The non-Marshaler parts (CLI entry, `encodeFromPythonDict` / `decodeFromPythonBytes`, `free_encoded_data`) are kept hand-written or templated separately.
+- Existing `src/DINProcessor.cpp` and `src/ISO2Processor.cpp` Marshaler bodies are deleted and regenerated. The non-Marshaler parts (CLI entry, `encodeFromPythonDict` / `decodeFromPythonBytes`, `free_encoded_data`) are kept hand-written or templated separately. (Update: the "templated separately" half of that consequence is realised by ADR-0011, which moves all eight Processor cpp/hpp pairs and the V2G_Message-wrap policy under `tools/codegen/processor_emitter.py`. The CLI `main()` is split into a single shared `tools/expy_cli.cpp` linked at each exec target rather than templated per-Namespace.)
 - The generator becomes a build dependency. It runs as a step in the `Makefile` before C++ compilation.
 - libcbv2g header changes (from upstream submodule bumps) propagate by re-running the generator — no per-type hand-edits to chase.
 - The DIN test suite is expected to pass once regenerated; "DIN testing not working" is no longer a separate task.
