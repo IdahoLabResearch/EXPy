@@ -33,7 +33,7 @@ _EXPECTED_NAMES = (
 # Namespaces whose Processor .so is not yet built. These remain xfail until the
 # corresponding implementation issue lands; they will fail strictly once the
 # .so exists, at which point the entry is removed.
-_PENDING: frozenset[str] = frozenset({"ISO20_ACDP"})
+_PENDING: frozenset[str] = frozenset()
 
 
 def test_protocol_enum_has_eight_namespaces():
