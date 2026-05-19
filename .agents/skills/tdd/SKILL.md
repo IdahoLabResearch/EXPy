@@ -110,6 +110,20 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 
 **Never refactor while RED.** Get to GREEN first.
 
+### 5. Wrap up: commit and close the issue
+
+When the user signals the work is done — "looks good", "ship it", "close the issue", "mark this resolved", or otherwise approves — **commit the changes and close the linked GitHub issue in the same step**. Do not wait for them to ask again.
+
+- [ ] Identify the issue number. If `/tdd` was invoked with a specific issue (e.g. "work on #9"), use that. If the agent picked from the open queue ("next open issue"), it must remember which number it picked and surface it before this step.
+- [ ] `git status` to confirm what actually changed. Stage only the files that belong to this issue — do not sweep in unrelated edits.
+- [ ] Commit with a message that references the issue and follows the project's log style (look at `git log --oneline -10` for the cadence). Include a `Closes #N` trailer so GitHub will auto-link.
+- [ ] If pre-commit hooks fail, fix the underlying issue and create a **new** commit. Do not `--amend` and do not `--no-verify`.
+- [ ] Close the issue via `gh issue close <N> --comment "<one-line summary of what landed and the commit SHA>"`. The comment matters — future-you reading the closed issue should see what shipped without having to dig.
+- [ ] Do **not** push without asking. Surface the commit SHA and ask "push to origin?" before doing it.
+- [ ] If the user has not explicitly approved (they only said "tests pass" or you decided GREEN was enough), **do not** commit or close. Ask: "Tests are green and I refactored — ready to commit and close #N?"
+
+This step is mandatory at the end of every `/tdd` cycle that began with a tracked issue. Skipping it leaves the issue queue out of sync with the code and forces the next `/tdd` session to re-discover state.
+
 ## Checklist Per Cycle
 
 ```
