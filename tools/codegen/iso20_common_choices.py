@@ -68,6 +68,36 @@ CHOICES: dict[str, list[list[list[str]]]] = {
     "iso20_AuthorizationReqType": [
         [["EIM_AReqAuthorizationMode"], ["PnC_AReqAuthorizationMode"]],
     ],
+    # Dynamic_SEResControlModeType / ChargingScheduleType — both carry the
+    # PriceScheduleType xs:choice (AbsolutePriceSchedule vs PriceLevelSchedule).
+    # Dynamic is reached from ScheduleExchangeRes's Dynamic branch directly;
+    # ChargingScheduleType is reached via the Scheduled branch through
+    # ScheduleTuple. Both default to branch 0 for the nested choice.
+    "iso20_Dynamic_SEResControlModeType": [
+        [["AbsolutePriceSchedule"], ["PriceLevelSchedule"]],
+    ],
+    "iso20_ChargingScheduleType": [
+        [["AbsolutePriceSchedule"], ["PriceLevelSchedule"]],
+    ],
+    # EVPowerProfileType — xs:choice between Dynamic/Scheduled EVPPT control
+    # modes. Reached from PowerDeliveryReq through EVPowerProfile.
+    "iso20_EVPowerProfileType": [
+        [["Dynamic_EVPPTControlMode"], ["Scheduled_EVPPTControlMode"]],
+    ],
+    # ParameterType — xs:choice across value kinds. Reached from
+    # ServiceDetailRes via ServiceParameterList → ParameterSet → Parameter;
+    # without this entry the nested choice defaults to "all branches active"
+    # and the encoder drops everything except the first.
+    "iso20_ParameterType": [
+        [
+            ["boolValue"],
+            ["byteValue"],
+            ["shortValue"],
+            ["intValue"],
+            ["rationalNumber"],
+            ["finiteString"],
+        ],
+    ],
     # SignaturePropertyType — the C struct flags ANY as `_isUsed`-optional,
     # but the XSD `xs:choice` underneath requires at least one element. With
     # only Target+attributes set, the encoder refuses to emit a property body.

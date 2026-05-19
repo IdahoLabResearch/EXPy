@@ -81,17 +81,11 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# Scenarios whose xs:choice tree is not yet covered by the manifest because
-# `_find_topmost_choice_point` only picks one choice per type tree — nested
-# choices below it default to "all branches active" and lose data on
-# encode. Tracked in follow-up #24.
+# The iso20 `PGPDataType` shares the union-aliased `choice_N_isUsed` layout
+# that #18 patched for ISO-2 (ADR-0007), but the iso20 grammar tables also
+# have independent structural bugs (gating logic, missing END transitions,
+# seq-2 emitter looping) that require a multi-file rewrite. Tracked in #25.
 _NESTED_CHOICE_XFAILS: frozenset[str] = frozenset({
-    "ServiceDetailRes__choice_ANY",
-    "ServiceDetailRes__choice_XPath",
-    "ScheduleExchangeRes__choice_Dynamic_SEResControlMode",
-    "ScheduleExchangeRes__choice_Scheduled_SEResControlMode",
-    "PowerDeliveryReq__choice_ANY",
-    "PowerDeliveryReq__choice_XPath",
     "KeyInfo__choice_PGPData",
     "PGPData__maximal",
 })
@@ -104,7 +98,7 @@ def _param(scenario):
             scenario,
             id=sid,
             marks=pytest.mark.xfail(
-                reason="nested-choice manifest gap deferred to #24",
+                reason="iso20 PGPData grammar rewrite deferred to #25",
                 strict=True,
             ),
         )
