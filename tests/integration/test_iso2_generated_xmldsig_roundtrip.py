@@ -59,30 +59,10 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# PGPDataType sequence-2 path remains broken upstream in libcbv2g even after
-# ADR-0007: the encoder at grammar 65's else-branch reads from
-# choice_1.PGPKeyPacket regardless of which substruct the caller populated,
-# and grammar transitions 65→67 collapse seq 2 into a seq-1-without-PGPKeyID
-# shape. Fixing this needs grammar rewrites in iso2_msgDefEncoder.c — tracked
-# in #22.
-_CHOICE_2_BROKEN = frozenset({"PGPData__choice_choice_2"})
 
-
-def _param(scenario):
-    sid = scenario[0]
-    if sid in _CHOICE_2_BROKEN:
-        return pytest.param(
-            scenario,
-            id=sid,
-            marks=pytest.mark.xfail(
-                reason="libcbv2g PGPData seq-2 grammar bug (#22)",
-                strict=True,
-            ),
-        )
-    return pytest.param(scenario, id=sid)
-
-
-@pytest.mark.parametrize("scenario", [_param(s) for s in _SCENARIOS])
+@pytest.mark.parametrize(
+    "scenario", [pytest.param(s, id=s[0]) for s in _SCENARIOS]
+)
 def test_iso2_generated_xmldsig_roundtrip(scenario):
     _scenario_id, payload = scenario
     assert_roundtrip("ISO2", payload, kind="xmldsig")
