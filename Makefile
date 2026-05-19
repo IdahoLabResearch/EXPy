@@ -52,7 +52,9 @@ libcbv2g:
 	done
 	cd ./extern/libcbv2g && cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && ninja -C build
 
-$(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)
+COMMON_HDRS = $(wildcard include/*.hpp)
+
+$(BUILD_DIR)/%.o: src/%.cpp $(COMMON_HDRS) | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(SHARED_FLAGS) $(INCLUDES) -c $< -o $@
 
 $(DIN_GENERATED): $(DIN_HEADER) $(wildcard tools/codegen/*.py)

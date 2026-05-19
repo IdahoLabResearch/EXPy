@@ -2,10 +2,9 @@
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
 */
 
-#include <cbv2g/common/exi_basetypes.h>
-
-#include <nlohmann/json.hpp>
-using json = nlohmann::json;
+// Include the shared header first so its JSON_ASSERT override is in effect
+// before nlohmann/json.hpp is pulled in. See include/common.hpp.
+#include <common.hpp>
 
 using namespace std;
 

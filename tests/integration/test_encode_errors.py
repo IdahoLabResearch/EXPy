@@ -1,13 +1,14 @@
-"""EncodeError contract: encode raises a typed exception on libcbv2g failure.
+"""EncodeError contract: encode raises a typed exception on libcbv2g failure
+*and* on malformed-JSON / marshaler-input errors.
 
-Pins the *strong* contract introduced by #20 — the weak rejection-envelope
-contract for malformed payloads (None | raise | abort) lives in
-``test_negative_inputs.py``.
+The first failure surface (libcbv2g rc) was wired up by #20. The second
+(json::parse, marshaler [] and template get<T>() on untrusted input)
+is wired up by #21 — both surfaces now raise ``EncodeError`` in the calling
+process so consumers don't have to isolate encode in a subprocess.
 
-The Processor uses a fixed 256-byte static buffer for the encoder bitstream;
-a valid payload that encodes to more than 256 bytes hits
-``EXI_ERROR__BITSTREAM_OVERFLOW`` from libcbv2g, which is the reachable RC
-path we pin here.
+Tests run in the parent process: the whole point of the hardening is that
+malformed input no longer aborts; if it does, the regression must surface as
+a pytest crash, not be hidden inside a subprocess.
 """
 
 import sys
@@ -50,4 +51,42 @@ def test_sap_encode_overflow_raises_encode_error():
         processor.encode(payload)
     msg = str(exc_info.value)
     assert "SAP" in msg
+    assert "exiDocument" in msg
+
+
+def test_iso2_encode_missing_required_field_raises_encode_error():
+    # V2G_Message with no Header — the marshaler's `["Header"]["SessionID"]`
+    # accessor would have aborted via nlohmann's const operator[] on a missing
+    # key before #21 landed. The hardening turns that abort into a typed
+    # EncodeError in the calling process.
+    processor = EXIProcessor(ProtocolEnum.ISO2)
+    with pytest.raises(EncodeError) as exc_info:
+        processor.encode({"V2G_Message": {}})
+    msg = str(exc_info.value)
+    assert "ISO2" in msg
+    assert "exiDocument" in msg
+
+
+def test_iso2_encode_invalid_json_payload_raises_encode_error():
+    # Python's `json.dumps` accepts `float('nan')` and emits the non-standard
+    # literal `NaN`, which nlohmann::json::parse then rejects with parse_error.
+    # The hardening converts that C++ exception into EncodeError; previously the
+    # exception would have unwound past the extern "C" boundary and aborted.
+    processor = EXIProcessor(ProtocolEnum.ISO2)
+    with pytest.raises(EncodeError) as exc_info:
+        processor.encode({"V2G_Message": float("nan")})
+    msg = str(exc_info.value)
+    assert "ISO2" in msg
+    assert "exiDocument" in msg
+
+
+def test_din_encode_wrong_typed_scalar_raises_encode_error():
+    # Header.SessionID expects a {"bytes": [...], "bytesLen": N} object; a bare
+    # string violates the typed accessor (`template get<uint16_t>()` on a string
+    # value would have aborted). Hardening turns it into EncodeError.
+    processor = EXIProcessor(ProtocolEnum.DIN)
+    with pytest.raises(EncodeError) as exc_info:
+        processor.encode({"Header": {"SessionID": "not-bytes"}})
+    msg = str(exc_info.value)
+    assert "DIN" in msg
     assert "exiDocument" in msg

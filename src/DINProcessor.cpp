@@ -43,52 +43,64 @@ extern "C" {
     };
 
     decoded_data* decodeFromPythonBytes(const uint8_t* data, size_t size) {
-        din_exiDocument outDoc;
-        exi_bitstream_t inEXI;
+        try {
+            din_exiDocument outDoc;
+            exi_bitstream_t inEXI;
 
-        exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
-        int rc = decode_din_exiDocument(&inEXI, &outDoc);
+            exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
+            int rc = decode_din_exiDocument(&inEXI, &outDoc);
 
-        decoded_data* result = new decoded_data{nullptr, rc};
-        if (rc != 0) {
+            decoded_data* result = new decoded_data{nullptr, rc};
+            if (rc != 0) {
+                return result;
+            }
+
+            // EVerest JSON shape elides the V2G_Message wrapper at the root.
+            json outJson = getJson_exiDocument(outDoc)["V2G_Message"];
+
+            static string jsonString;
+            jsonString = outJson.dump(4);
+
+            result->json = jsonString.c_str();
             return result;
+        } catch (...) {
+            return new decoded_data{nullptr, EXPY_ERROR__MARSHALER_INPUT};
         }
-
-        // EVerest JSON shape elides the V2G_Message wrapper at the root.
-        json outJson = getJson_exiDocument(outDoc)["V2G_Message"];
-
-        static string jsonString;
-        jsonString = outJson.dump(4);
-
-        result->json = jsonString.c_str();
-        return result;
     }
 
     encoded_data* encodeFromPythonDict(const char* inString) {
-        json inJson = json::parse(inString);
+        try {
+            json inJson = json::parse(inString);
 
-        // Callers pass Header/Body at the root; wrap to match generated marshaler.
-        json wrapped;
-        wrapped["V2G_Message"] = inJson;
+            // Callers pass Header/Body at the root; wrap to match generated marshaler.
+            json wrapped;
+            wrapped["V2G_Message"] = inJson;
 
-        din_exiDocument inDoc;
-        inDoc = getDoc_exiDocument(wrapped);
+            din_exiDocument inDoc;
+            inDoc = getDoc_exiDocument(wrapped);
 
-        uint8_t* stream = new uint8_t[256];
-        exi_bitstream_t outEXI;
-        size_t pos1 = 0;
+            uint8_t* stream = new uint8_t[256];
+            exi_bitstream_t outEXI;
+            size_t pos1 = 0;
 
-        exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
-        int rc = encode_din_exiDocument(&outEXI, &inDoc);
+            exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
+            int rc = encode_din_exiDocument(&outEXI, &inDoc);
 
-        encoded_data* result = new encoded_data;
-        result->status = rc;
-        result->size = exi_bitstream_get_length(&outEXI);
-        result->buffer = new uint8_t[result->size];
-        memcpy(result->buffer, stream, result->size);
+            encoded_data* result = new encoded_data;
+            result->status = rc;
+            result->size = exi_bitstream_get_length(&outEXI);
+            result->buffer = new uint8_t[result->size];
+            memcpy(result->buffer, stream, result->size);
 
-        delete[] stream;
-        return result;
+            delete[] stream;
+            return result;
+        } catch (...) {
+            encoded_data* result = new encoded_data;
+            result->status = EXPY_ERROR__MARSHALER_INPUT;
+            result->size = 0;
+            result->buffer = nullptr;
+            return result;
+        }
     }
 
     void free_encoded_data(encoded_data* data) {

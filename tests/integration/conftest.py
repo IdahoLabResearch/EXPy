@@ -15,7 +15,10 @@ _ENCODE_DECODE = {
 
 
 def _roundtrip_worker(protocol_name, kind, payload_json, queue):
-    # Runs in a child process so a native abort doesn't kill the test runner.
+    # Originally needed to contain native aborts; since #21 closed the marshaler
+    # abort surface, the parent process is also safe. Kept as belt-and-suspenders
+    # regression scaffolding — any future surface that bypasses the in-process
+    # guards will surface here as a non-zero exitcode instead of a crash.
     try:
         from EXIProcessor import EXIProcessor, ProtocolEnum
 
@@ -41,8 +44,10 @@ def _roundtrip_worker(protocol_name, kind, payload_json, queue):
 def assert_roundtrip(protocol_name, payload, kind="document"):
     """Encode/decode `payload` in a forked process; assert the roundtrip matches.
 
-    Isolating in a child process prevents native aborts in libcbv2g from
-    crashing the pytest runner — we surface them as ordinary test failures.
+    Since #21 the in-process encode/decode is abort-safe (see ADR-0006), so this
+    helper no longer guards against the runner crashing — it is retained as
+    regression scaffolding that turns any future native abort into a non-zero
+    exit code instead of a process kill.
 
     `kind` selects which Processor method pair to exercise: "document" (default),
     "fragment", or "xmldsig".

@@ -65,3 +65,24 @@ def test_iso2_decode_xmldsig_empty_bytes_raises_decode_error():
     msg = str(exc_info.value)
     assert "ISO2" in msg
     assert "xmldsigFragment" in msg
+
+
+@pytest.mark.parametrize("protocol_name", ["SAP", "DIN", "ISO2"])
+@pytest.mark.parametrize("seed", range(20))
+def test_decode_arbitrary_bytes_never_aborts(protocol_name, seed):
+    # Residual marshaler-abort coverage (#21). The libcbv2g rc path (#20) is
+    # already pinned above; this layer pins the *second* failure surface —
+    # any nlohmann assertion / parse / type error reached during decode must
+    # surface as DecodeError in the calling process, not abort the runner.
+    # We feed pseudo-random byte patterns of varying lengths; the assertion is
+    # structural ("dict or DecodeError"), since we have no specific input that
+    # is known to libcbv2g-accept but marshaler-reject.
+    import random
+    rng = random.Random(seed)
+    buf = bytes(rng.randint(0, 255) for _ in range(rng.randint(1, 64)))
+    processor = EXIProcessor(ProtocolEnum[protocol_name])
+    try:
+        result = processor.decode(buf)
+    except DecodeError:
+        return
+    assert isinstance(result, dict)

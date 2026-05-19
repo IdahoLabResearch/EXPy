@@ -17,11 +17,28 @@ class ProtocolEnum(Enum):
 
 
 class EncodeError(Exception):
-    """Raised when libcbv2g reports a non-zero return code from an encode call."""
+    """Raised on a non-zero encode status from the C++ entry point.
+
+    Two failure surfaces produce this: libcbv2g's encoder (e.g.
+    ``EXI_ERROR__BITSTREAM_OVERFLOW``) and the C++ JSON layer (``json::parse``,
+    marshaler accessors). See ADR-0006.
+    """
 
 
 class DecodeError(Exception):
-    """Raised when libcbv2g reports a non-zero return code from a decode call."""
+    """Raised on a non-zero decode status from the C++ entry point.
+
+    Two failure surfaces produce this: libcbv2g's decoder (e.g. malformed EXI
+    header) and the residual C++ JSON layer path on decode. See ADR-0006.
+    """
+
+
+# Matches `EXPY_ERROR__MARSHALER_INPUT` in include/common.hpp. Surfaced by the
+# C++ entry points whenever an nlohmann::json exception (parse failure, missing
+# key, wrong-typed accessor) is caught at the extern "C" boundary; distinct
+# from libcbv2g's own rc range (-1 .. -299) so callers and tests can tell the
+# two surfaces apart.
+_EXPY_ERROR_MARSHALER_INPUT = -1000
 
 
 # Maps the ctypes entry-point symbol to (namespace_tag, root_tag) for error
@@ -62,6 +79,11 @@ class EXIProcessor():
         self._bind_decoder("decode_xmldsig_FromPythonBytes")
         self._bind_encoder("encode_xmldsig_FromPythonDict")
 
+    def _format_error(self, root: str, status: int) -> str:
+        if status == _EXPY_ERROR_MARSHALER_INPUT:
+            return f"{self._namespace} {root}: invalid JSON input (rc={status})"
+        return f"{self._namespace} {root}: libcbv2g rc={status}"
+
     def _bind_decoder(self, symbol: str) -> None:
         try:
             fn = getattr(self.lib, symbol)
@@ -93,9 +115,7 @@ class EXIProcessor():
             status = res.contents.status
             if status != 0:
                 root = _ROOT_BY_SYMBOL[symbol]
-                raise DecodeError(
-                    f"{self._namespace} {root}: libcbv2g rc={status}"
-                )
+                raise DecodeError(self._format_error(root, status))
             return json.loads(res.contents.json.decode('utf-8'))
         finally:
             self.lib.free_decoded_data(res)
@@ -113,9 +133,7 @@ class EXIProcessor():
             status = result.contents.status
             if status != 0:
                 root = _ROOT_BY_SYMBOL[symbol]
-                raise EncodeError(
-                    f"{self._namespace} {root}: libcbv2g rc={status}"
-                )
+                raise EncodeError(self._format_error(root, status))
             return bytes(result.contents.buffer[:result.contents.size])
         finally:
             self.lib.free_encoded_data(result)

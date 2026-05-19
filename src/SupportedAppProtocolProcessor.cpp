@@ -43,47 +43,63 @@ extern "C" {
     };
 
     decoded_data* decodeFromPythonBytes(const uint8_t* data, size_t size) {
-        appHand_exiDocument outDoc;
-        exi_bitstream_t inEXI;
+        try {
+            appHand_exiDocument outDoc;
+            exi_bitstream_t inEXI;
 
-        exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
-        int rc = decode_appHand_exiDocument(&inEXI, &outDoc);
+            exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
+            int rc = decode_appHand_exiDocument(&inEXI, &outDoc);
 
-        decoded_data* result = new decoded_data{nullptr, rc};
-        if (rc != 0) {
+            decoded_data* result = new decoded_data{nullptr, rc};
+            if (rc != 0) {
+                return result;
+            }
+
+            json outJson = getJson_exiDocument(outDoc);
+
+            static string jsonString;
+            jsonString = outJson.dump(4);
+
+            result->json = jsonString.c_str();
             return result;
+        } catch (...) {
+            // Marshaler / nlohmann::json exception path. Surface as the C++ -side
+            // sentinel rc; Python raises DecodeError. Distinct from libcbv2g rc.
+            return new decoded_data{nullptr, EXPY_ERROR__MARSHALER_INPUT};
         }
-
-        json outJson = getJson_exiDocument(outDoc);
-
-        static string jsonString;
-        jsonString = outJson.dump(4);
-
-        result->json = jsonString.c_str();
-        return result;
     }
 
     encoded_data* encodeFromPythonDict(const char* inString) {
-        json inJson = json::parse(inString);
+        try {
+            json inJson = json::parse(inString);
 
-        appHand_exiDocument inDoc;
-        inDoc = getDoc_exiDocument(inJson);
+            appHand_exiDocument inDoc;
+            inDoc = getDoc_exiDocument(inJson);
 
-        uint8_t* stream = new uint8_t[256];
-        exi_bitstream_t outEXI;
-        size_t pos1 = 0;
+            uint8_t* stream = new uint8_t[256];
+            exi_bitstream_t outEXI;
+            size_t pos1 = 0;
 
-        exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
-        int rc = encode_appHand_exiDocument(&outEXI, &inDoc);
+            exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
+            int rc = encode_appHand_exiDocument(&outEXI, &inDoc);
 
-        encoded_data* result = new encoded_data;
-        result->status = rc;
-        result->size = exi_bitstream_get_length(&outEXI);
-        result->buffer = new uint8_t[result->size];
-        memcpy(result->buffer, stream, result->size);
+            encoded_data* result = new encoded_data;
+            result->status = rc;
+            result->size = exi_bitstream_get_length(&outEXI);
+            result->buffer = new uint8_t[result->size];
+            memcpy(result->buffer, stream, result->size);
 
-        delete[] stream;
-        return result;
+            delete[] stream;
+            return result;
+        } catch (...) {
+            // json::parse or marshaler-side accessor threw. Surface as sentinel
+            // rc so Python raises EncodeError instead of the runtime aborting.
+            encoded_data* result = new encoded_data;
+            result->status = EXPY_ERROR__MARSHALER_INPUT;
+            result->size = 0;
+            result->buffer = nullptr;
+            return result;
+        }
     }
 
     void free_encoded_data(encoded_data* data) {
