@@ -22,6 +22,7 @@ ISO2_SRCS = src/ISO2Processor.cpp
 DIN_SRCS = src/DINProcessor.cpp
 SAP_SRCS = src/SupportedAppProtocolProcessor.cpp
 ISO20_COMMON_SRCS = src/ISO20CommonProcessor.cpp
+ISO20_AC_SRCS = src/ISO20ACProcessor.cpp
 
 DIN_GENERATED = src/generated/DIN_marshalers.generated.cpp
 DIN_HEADER = extern/libcbv2g/include/cbv2g/din/din_msgDefDatatypes.h
@@ -31,15 +32,18 @@ ISO2_GENERATED = src/generated/ISO2_marshalers.generated.cpp
 ISO2_HEADER = extern/libcbv2g/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
 ISO20_COMMON_GENERATED = src/generated/ISO20Common_marshalers.generated.cpp
 ISO20_COMMON_HEADER = extern/libcbv2g/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h
+ISO20_AC_GENERATED = src/generated/ISO20AC_marshalers.generated.cpp
+ISO20_AC_HEADER = extern/libcbv2g/include/cbv2g/iso_20/iso20_AC_Datatypes.h
 CODEGEN_PYTHONPATH = $(CURDIR)/tools
 
 ISO2_OBJS = $(ISO2_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 DIN_OBJS = $(DIN_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 SAP_OBJS = $(SAP_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 ISO20_COMMON_OBJS = $(ISO20_COMMON_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
+ISO20_AC_OBJS = $(ISO20_AC_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 
 EXEC = $(BUILD_DIR)/DINProcessor $(BUILD_DIR)/SupportedAppProtocolProcessor $(BUILD_DIR)/ISO2Processor
-SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so $(BUILD_DIR)/lib-ISO20CommonProcessor.so
+SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so $(BUILD_DIR)/lib-ISO20CommonProcessor.so $(BUILD_DIR)/lib-ISO20ACProcessor.so
 
 all: libcbv2g $(EXEC) $(SHARED) $(GENERATED_V2GJSON)
 
@@ -85,17 +89,27 @@ $(ISO20_COMMON_GENERATED): $(ISO20_COMMON_HEADER) $(wildcard tools/codegen/*.py)
 	mkdir -p $(dir $@)
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(ISO20_COMMON_HEADER) --out $@
 
+$(ISO20_AC_GENERATED): $(ISO20_AC_HEADER) $(wildcard tools/codegen/*.py)
+	mkdir -p $(dir $@)
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(ISO20_AC_HEADER) --out $@
+
 V2Gjson/iso20_common.py: $(ISO20_COMMON_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_COMMON_HEADER) --out $@ --namespace-prefix iso20_ \
 	  --module-doc "Enum tables for the ISO 15118-20 Common Messages Namespace (consumed by tools/codegen/fixture_emitter)."
 
-GENERATED_V2GJSON = V2Gjson/iso20_common.py
+V2Gjson/iso20_ac.py: $(ISO20_AC_HEADER) tools/codegen/v2gjson_emitter.py
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
+	  --header $(ISO20_AC_HEADER) --out $@ --namespace-prefix iso20_ac_ \
+	  --module-doc "Enum tables for the ISO 15118-20 AC Namespace (consumed by tools/codegen/fixture_emitter)."
+
+GENERATED_V2GJSON = V2Gjson/iso20_common.py V2Gjson/iso20_ac.py
 
 $(BUILD_DIR)/DINProcessor.o: $(DIN_GENERATED)
 $(BUILD_DIR)/SupportedAppProtocolProcessor.o: $(SAP_GENERATED)
 $(BUILD_DIR)/ISO2Processor.o: $(ISO2_GENERATED)
 $(BUILD_DIR)/ISO20CommonProcessor.o: $(ISO20_COMMON_GENERATED) src/ISO20CommonProcessor.hpp
+$(BUILD_DIR)/ISO20ACProcessor.o: $(ISO20_AC_GENERATED) src/ISO20ACProcessor.hpp
 
 $(BUILD_DIR)/ISO2Processor: $(BUILD_DIR) $(ISO2_OBJS)
 	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS_ISO2) -o $@
@@ -118,6 +132,8 @@ $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so: $(BUILD_DIR) $(SAP_OBJS)
 $(BUILD_DIR)/lib-ISO20CommonProcessor.so: $(BUILD_DIR) $(ISO20_COMMON_OBJS)
 	$(CXX) $(SHARED_FLAGS) $(ISO20_COMMON_OBJS) $(LDFLAGS) $(LIBS_ISO20) -o $@
 
+$(BUILD_DIR)/lib-ISO20ACProcessor.so: $(BUILD_DIR) $(ISO20_AC_OBJS)
+	$(CXX) $(SHARED_FLAGS) $(ISO20_AC_OBJS) $(LDFLAGS) $(LIBS_ISO20) -o $@
 
 
 PYTEST ?= $(shell test -x .venv/bin/pytest && echo .venv/bin/pytest || echo pytest)
