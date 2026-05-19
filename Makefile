@@ -3,7 +3,15 @@ CXXFLAGS = -std=c++17 -Wall -g
 SHARED_FLAGS = -fPIC -shared
 INCLUDES = -I./extern/libcbv2g/include -I./extern/json/include -I./extern/cxxopts/include -I./include
 LDFLAGS = -L./extern/libcbv2g/build/lib/cbv2g
-LIBS = -lcbv2g_iso2 -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp
+# Per-Namespace link sets — ADR-0002 requires each Processor .so to link only
+# the libcbv2g codec(s) for its Namespace. libcbv2g does not package appHand
+# (the SAP codec) as a standalone library; it is duplicated into each protocol
+# library. SAP therefore borrows DIN's archive purely as the smallest carrier
+# of the appHand symbols.
+LIBS_ISO2 = -lcbv2g_iso2 -lcbv2g_exi_codec -lcbv2g_tp
+LIBS_DIN = -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp
+LIBS_SAP = -lcbv2g_din -lcbv2g_exi_codec -lcbv2g_tp
+LIBS_ISO20 = -lcbv2g_iso20 -lcbv2g_exi_codec -lcbv2g_tp
 
 BUILD_DIR = build
 
@@ -13,6 +21,7 @@ COMMON_OBJS = $(COMMON_SRCS:src/%.cpp=$(BUILD_DIR)/%.o)
 ISO2_SRCS = src/ISO2Processor.cpp
 DIN_SRCS = src/DINProcessor.cpp
 SAP_SRCS = src/SupportedAppProtocolProcessor.cpp
+ISO20_COMMON_SRCS = src/ISO20CommonProcessor.cpp
 
 DIN_GENERATED = src/generated/DIN_marshalers.generated.cpp
 DIN_HEADER = extern/libcbv2g/include/cbv2g/din/din_msgDefDatatypes.h
@@ -20,16 +29,19 @@ SAP_GENERATED = src/generated/SAP_marshalers.generated.cpp
 SAP_HEADER = extern/libcbv2g/include/cbv2g/app_handshake/appHand_Datatypes.h
 ISO2_GENERATED = src/generated/ISO2_marshalers.generated.cpp
 ISO2_HEADER = extern/libcbv2g/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
+ISO20_COMMON_GENERATED = src/generated/ISO20Common_marshalers.generated.cpp
+ISO20_COMMON_HEADER = extern/libcbv2g/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h
 CODEGEN_PYTHONPATH = $(CURDIR)/tools
 
 ISO2_OBJS = $(ISO2_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 DIN_OBJS = $(DIN_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 SAP_OBJS = $(SAP_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
+ISO20_COMMON_OBJS = $(ISO20_COMMON_SRCS:src/%.cpp=$(BUILD_DIR)/%.o) $(COMMON_OBJS)
 
 EXEC = $(BUILD_DIR)/DINProcessor $(BUILD_DIR)/SupportedAppProtocolProcessor $(BUILD_DIR)/ISO2Processor
-SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so
+SHARED = $(BUILD_DIR)/lib-DINProcessor.so $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so $(BUILD_DIR)/lib-ISO2Processor.so $(BUILD_DIR)/lib-ISO20CommonProcessor.so
 
-all: libcbv2g $(EXEC) $(SHARED)
+all: libcbv2g $(EXEC) $(SHARED) $(GENERATED_V2GJSON)
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
@@ -69,27 +81,42 @@ $(ISO2_GENERATED): $(ISO2_HEADER) $(wildcard tools/codegen/*.py)
 	mkdir -p $(dir $@)
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(ISO2_HEADER) --out $@
 
+$(ISO20_COMMON_GENERATED): $(ISO20_COMMON_HEADER) $(wildcard tools/codegen/*.py)
+	mkdir -p $(dir $@)
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen --header $(ISO20_COMMON_HEADER) --out $@
+
+V2Gjson/iso20_common.py: $(ISO20_COMMON_HEADER) tools/codegen/v2gjson_emitter.py
+	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
+	  --header $(ISO20_COMMON_HEADER) --out $@ --namespace-prefix iso20_ \
+	  --module-doc "Enum tables for the ISO 15118-20 Common Messages Namespace (consumed by tools/codegen/fixture_emitter)."
+
+GENERATED_V2GJSON = V2Gjson/iso20_common.py
+
 $(BUILD_DIR)/DINProcessor.o: $(DIN_GENERATED)
 $(BUILD_DIR)/SupportedAppProtocolProcessor.o: $(SAP_GENERATED)
 $(BUILD_DIR)/ISO2Processor.o: $(ISO2_GENERATED)
+$(BUILD_DIR)/ISO20CommonProcessor.o: $(ISO20_COMMON_GENERATED) src/ISO20CommonProcessor.hpp
 
 $(BUILD_DIR)/ISO2Processor: $(BUILD_DIR) $(ISO2_OBJS)
-	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS_ISO2) -o $@
 
 $(BUILD_DIR)/lib-ISO2Processor.so: $(BUILD_DIR) $(ISO2_OBJS)
-	$(CXX) $(SHARED_FLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(SHARED_FLAGS) $(ISO2_OBJS) $(LDFLAGS) $(LIBS_ISO2) -o $@
 
 $(BUILD_DIR)/DINProcessor: $(BUILD_DIR) $(DIN_OBJS)
-	$(CXX) $(CXXFLAGS) $(DIN_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(DIN_OBJS) $(LDFLAGS) $(LIBS_DIN) -o $@
 
 $(BUILD_DIR)/lib-DINProcessor.so: $(BUILD_DIR) $(DIN_OBJS)
-	$(CXX) $(SHARED_FLAGS) $(DIN_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(SHARED_FLAGS) $(DIN_OBJS) $(LDFLAGS) $(LIBS_DIN) -o $@
 
 $(BUILD_DIR)/SupportedAppProtocolProcessor: $(BUILD_DIR) $(SAP_OBJS)
-	$(CXX) $(CXXFLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(CXXFLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS_SAP) -o $@
 
 $(BUILD_DIR)/lib-SupportedAppProtocolProcessor.so: $(BUILD_DIR) $(SAP_OBJS)
-	$(CXX) $(SHARED_FLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS) -o $@
+	$(CXX) $(SHARED_FLAGS) $(SAP_OBJS) $(LDFLAGS) $(LIBS_SAP) -o $@
+
+$(BUILD_DIR)/lib-ISO20CommonProcessor.so: $(BUILD_DIR) $(ISO20_COMMON_OBJS)
+	$(CXX) $(SHARED_FLAGS) $(ISO20_COMMON_OBJS) $(LDFLAGS) $(LIBS_ISO20) -o $@
 
 
 
