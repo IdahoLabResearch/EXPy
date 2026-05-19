@@ -34,7 +34,22 @@ all: libcbv2g $(EXEC) $(SHARED)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+LIBCBV2G_PATCHES = $(sort $(wildcard patches/libcbv2g/*.patch))
+
+# Apply local patches against the pristine submodule before configuring cmake.
+# `git apply --check` is idempotent: if the patch is already applied, the
+# check fails and we skip the apply step, keeping the build re-runnable.
+# See ADR-0007 for what the patches do and why they live here instead of
+# being committed against the upstream submodule.
 libcbv2g:
+	for p in $(LIBCBV2G_PATCHES); do \
+	  if git -C ./extern/libcbv2g apply --check --reverse "../../$$p" >/dev/null 2>&1; then \
+	    echo "skip $$p (already applied)"; \
+	  else \
+	    git -C ./extern/libcbv2g apply "../../$$p"; \
+	    echo "applied $$p"; \
+	  fi; \
+	done
 	cd ./extern/libcbv2g && cmake -S . -B build -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=1 && ninja -C build
 
 $(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)

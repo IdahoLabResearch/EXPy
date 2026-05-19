@@ -131,10 +131,12 @@ CHOICES: dict[str, list[list[list[str]]]] = {
             ["ANY"],
         ],
     ],
-    # NB: PGPDataType is intentionally omitted. The libcbv2g header places
-    # the `choice_N_isUsed` flags *inside* the same union as the choice_N
-    # substructs (lines ~804-840 of iso_2/iso2_msgDefDatatypes.h), so the
-    # encoder cannot distinguish the active branch and the decoder returns
-    # an empty PGPData. Filed as a separate libcbv2g limitation rather than
-    # an XSD-choice generator problem.
+    # Xmldsig: PGPDataType — xs:choice of two sequences. The XSD allows either
+    # sequence 1 (PGPKeyID, optional PGPKeyPacket, optional ANY) or sequence 2
+    # (PGPKeyPacket, optional ANY). libcbv2g models these as `choice_1` and
+    # `choice_2` substructs gated by `choice_N_isUsed`. See ADR-0007 for the
+    # vendored-header patch that hoists those flags out of the union.
+    "iso2_PGPDataType": [
+        [["choice_1"], ["choice_2"]],
+    ],
 }

@@ -1,0 +1,52 @@
+diff --git a/include/cbv2g/iso_2/iso2_msgDefDatatypes.h b/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
+index 57c9d3b..c556ea2 100644
+--- a/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
++++ b/include/cbv2g/iso_2/iso2_msgDefDatatypes.h
+@@ -801,6 +801,10 @@ struct iso2_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0007): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso2_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -827,7 +831,6 @@ struct iso2_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -846,10 +849,11 @@ struct iso2_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}SPKIData; type={http://www.w3.org/2000/09/xmldsig#}SPKIDataType; base type=; content type=ELEMENT-ONLY;
+diff --git a/lib/cbv2g/iso_2/iso2_msgDefDecoder.c b/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
+index 0dc51e6..64abb31 100644
+--- a/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
++++ b/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
+@@ -3914,6 +3914,11 @@ static int decode_iso2_PGPDataType(exi_bitstream_t* stream, struct iso2_PGPDataT
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso2_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0007): mark sequence-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 66;
+                     }
+                     break;

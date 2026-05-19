@@ -1,7 +1,8 @@
 """Integration roundtrip over generator-produced ISO2 Xmldsig payloads.
 
 Enumerates the members of the `iso2_xmldsigFragment` union and roundtrips each at
-minimal + maximal. Per-XSD-choice-branch coverage is deferred to #18.
+minimal + maximal, with per-XSD-choice-branch coverage driven by the manifest
+in `tools/codegen/iso2_choices.py`.
 """
 
 import sys
@@ -58,29 +59,25 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# Scenarios still left as strict-xfail. The remaining failures are an
-# upstream libcbv2g limitation around PGPData (its choice_N_isUsed flags
-# live inside the same union as the choice_N substructs, so the encoder
-# cannot disambiguate the active branch). Tracked separately from #18.
-_CHOICE_BEARING_SCENARIO_IDS = frozenset({
-    "KeyInfo__choice_PGPData",
-    "PGPData__maximal",
-})
-
-
-def _xfail_reason(sid: str) -> str:
-    if "PGPData" in sid:
-        return "libcbv2g PGPData encoder limitation (choice_N_isUsed inside union)"
-    return "XSD-choice support deferred to #18"
+# PGPDataType sequence-2 path remains broken upstream in libcbv2g even after
+# ADR-0007: the encoder at grammar 65's else-branch reads from
+# choice_1.PGPKeyPacket regardless of which substruct the caller populated,
+# and grammar transitions 65→67 collapse seq 2 into a seq-1-without-PGPKeyID
+# shape. Fixing this needs grammar rewrites in iso2_msgDefEncoder.c (out of
+# scope for #19; tracked separately).
+_CHOICE_2_BROKEN = frozenset({"PGPData__choice_choice_2"})
 
 
 def _param(scenario):
     sid = scenario[0]
-    if sid in _CHOICE_BEARING_SCENARIO_IDS:
+    if sid in _CHOICE_2_BROKEN:
         return pytest.param(
             scenario,
             id=sid,
-            marks=pytest.mark.xfail(reason=_xfail_reason(sid), strict=True),
+            marks=pytest.mark.xfail(
+                reason="libcbv2g PGPData sequence-2 grammar bug (tracked separately)",
+                strict=True,
+            ),
         )
     return pytest.param(scenario, id=sid)
 
