@@ -63,8 +63,8 @@ _SCENARIOS = list(_scenarios())
 # ADR-0007: the encoder at grammar 65's else-branch reads from
 # choice_1.PGPKeyPacket regardless of which substruct the caller populated,
 # and grammar transitions 65→67 collapse seq 2 into a seq-1-without-PGPKeyID
-# shape. Fixing this needs grammar rewrites in iso2_msgDefEncoder.c (out of
-# scope for #19; tracked separately).
+# shape. Fixing this needs grammar rewrites in iso2_msgDefEncoder.c — tracked
+# in #22.
 _CHOICE_2_BROKEN = frozenset({"PGPData__choice_choice_2"})
 
 
@@ -75,7 +75,7 @@ def _param(scenario):
             scenario,
             id=sid,
             marks=pytest.mark.xfail(
-                reason="libcbv2g PGPData sequence-2 grammar bug (tracked separately)",
+                reason="libcbv2g PGPData seq-2 grammar bug (#22)",
                 strict=True,
             ),
         )

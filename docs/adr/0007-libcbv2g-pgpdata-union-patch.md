@@ -19,7 +19,7 @@ Each patched site carries an inline comment `EXPy patch (ADR-0007): …` so a gr
 
 ## Scope
 
-The patch lands the sequence-1 path of `PGPDataType`. The sequence-2 path remains broken upstream for a different reason — the encoder at grammar 65's else-branch reads from `choice_1.PGPKeyPacket` regardless of which substruct the caller populated, and grammar transitions 65→67 collapse sequence 2 into a sequence-1-without-PGPKeyID shape. Fixing that requires rewriting the libcbv2g grammar transitions, not just moving fields. The corresponding scenario `PGPData__choice_choice_2` is marked strict-`xfail` in `tests/integration/test_iso2_generated_xmldsig_roundtrip.py` with a reason pointing at this ADR, and a follow-up issue tracks the deeper grammar work.
+The patch lands the sequence-1 path of `PGPDataType`. The sequence-2 path remains broken upstream for a different reason — the encoder at grammar 65's else-branch reads from `choice_1.PGPKeyPacket` regardless of which substruct the caller populated, and grammar transitions 65→67 collapse sequence 2 into a sequence-1-without-PGPKeyID shape. Fixing that requires rewriting the libcbv2g grammar transitions, not just moving fields. The corresponding scenario `PGPData__choice_choice_2` is marked strict-`xfail` in `tests/integration/test_iso2_generated_xmldsig_roundtrip.py` and the deeper grammar work is tracked in #22.
 
 The patch is iso2-only. The DIN schema does not declare a PGPDataType, and the iso20 namespaces do not have the same union-aliased dispatch pattern.
 
