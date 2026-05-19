@@ -52,6 +52,10 @@ CHOICES: dict[str, list[list[list[str]]]] = {
             ["ANY"],
         ],
     ],
+    # Xmldsig: PGPDataType — see ADR-0010 for the iso20 grammar rewrite.
+    "iso20_wpt_PGPDataType": [
+        [["choice_1"], ["choice_2"]],
+    ],
     # SignaturePropertyType: C struct flags ANY as `_isUsed`-optional, but the
     # XSD `xs:choice` underneath requires at least one element.
     "iso20_wpt_SignaturePropertyType": [

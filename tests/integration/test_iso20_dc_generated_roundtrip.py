@@ -66,29 +66,9 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# Same iso20 PGPData grammar bugs that affect ISO20_COMMON apply here —
-# tracked in #25.
-_NESTED_CHOICE_XFAILS: frozenset[str] = frozenset({
-    "KeyInfo__choice_PGPData",
-    "PGPData__maximal",
-})
-
-
-def _param(scenario):
-    sid = scenario[0]
-    if sid in _NESTED_CHOICE_XFAILS:
-        return pytest.param(
-            scenario,
-            id=sid,
-            marks=pytest.mark.xfail(
-                reason="iso20 PGPData grammar rewrite deferred to #25",
-                strict=True,
-            ),
-        )
-    return pytest.param(scenario, id=sid)
-
-
-@pytest.mark.parametrize("scenario", [_param(s) for s in _SCENARIOS])
+@pytest.mark.parametrize(
+    "scenario", [pytest.param(s, id=s[0]) for s in _SCENARIOS]
+)
 def test_iso20_dc_generated_document_roundtrip(scenario):
     _scenario_id, payload = scenario
     assert_roundtrip("ISO20_DC", payload)

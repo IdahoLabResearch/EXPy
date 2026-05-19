@@ -81,31 +81,10 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# The iso20 `PGPDataType` shares the union-aliased `choice_N_isUsed` layout
-# that #18 patched for ISO-2 (ADR-0007), but the iso20 grammar tables also
-# have independent structural bugs (gating logic, missing END transitions,
-# seq-2 emitter looping) that require a multi-file rewrite. Tracked in #25.
-_NESTED_CHOICE_XFAILS: frozenset[str] = frozenset({
-    "KeyInfo__choice_PGPData",
-    "PGPData__maximal",
-})
 
-
-def _param(scenario):
-    sid = scenario[0]
-    if sid in _NESTED_CHOICE_XFAILS:
-        return pytest.param(
-            scenario,
-            id=sid,
-            marks=pytest.mark.xfail(
-                reason="iso20 PGPData grammar rewrite deferred to #25",
-                strict=True,
-            ),
-        )
-    return pytest.param(scenario, id=sid)
-
-
-@pytest.mark.parametrize("scenario", [_param(s) for s in _SCENARIOS])
+@pytest.mark.parametrize(
+    "scenario", [pytest.param(s, id=s[0]) for s in _SCENARIOS]
+)
 def test_iso20_common_generated_document_roundtrip(scenario):
     _scenario_id, payload = scenario
     assert_roundtrip("ISO20_COMMON", payload)

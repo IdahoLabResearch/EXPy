@@ -38,6 +38,15 @@ CHOICES: dict[str, list[list[list[str]]]] = {
             ["ANY"],
         ],
     ],
+    # Xmldsig: PGPDataType — xs:choice of two sequences. The XSD allows either
+    # sequence 1 (PGPKeyID, optional PGPKeyPacket, optional ANY) or sequence 2
+    # (PGPKeyPacket, optional ANY). libcbv2g models these as `choice_1` and
+    # `choice_2` substructs gated by `choice_N_isUsed`. See ADR-0010 for the
+    # vendored-header + grammar-rewrite patches that make both branches
+    # round-trip.
+    "iso20_PGPDataType": [
+        [["choice_1"], ["choice_2"]],
+    ],
     # ScheduleExchangeReq/Res — xs:choice of control-mode flavour
     # (Dynamic vs Scheduled). Both sides have the same shape.
     "iso20_ScheduleExchangeReqType": [

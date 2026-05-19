@@ -1,0 +1,1395 @@
+diff --git a/lib/cbv2g/iso_20/iso20_ACDP_Decoder.c b/lib/cbv2g/iso_20/iso20_ACDP_Decoder.c
+index 5cc451f..642b296 100644
+--- a/lib/cbv2g/iso_20/iso20_ACDP_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_ACDP_Decoder.c
+@@ -1999,17 +1999,29 @@ static int decode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, struct iso20_a
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso20_acdp_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0010): mark seq-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 36;
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=37
++                    // EXPy patch (ADR-0010): upstream wrote PGPKeyPacket-as-
++                    // first-element into choice_1.PGPKeyPacket and transitioned
++                    // to grammar 37 (the seq-1 after-PGPKeyPacket state). In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 39 (the seq-2
++                    // after-PGPKeyPacket state).
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=39
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso20_acdp_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso20_acdp_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 37;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 39;
+                     }
+                     break;
+                 default:
+@@ -2046,13 +2058,17 @@ static int decode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, struct iso20_a
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_acdp_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2084,13 +2100,17 @@ static int decode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, struct iso20_a
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_acdp_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2139,13 +2159,17 @@ static int decode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, struct iso20_a
+                     grammar_id = 3;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-2's last optional
++                    // particle; upstream looped back to grammar 38 (which
++                    // re-decodes another PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso20_acdp_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+diff --git a/lib/cbv2g/iso_20/iso20_ACDP_Encoder.c b/lib/cbv2g/iso_20/iso20_ACDP_Encoder.c
+index 9a804b0..e9a81ff 100644
+--- a/lib/cbv2g/iso_20/iso20_ACDP_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_ACDP_Encoder.c
+@@ -1948,26 +1948,32 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                     }
+                 }
+             }
+-            else
++            // EXPy patch (ADR-0010): upstream dispatched the seq-2 path off
++            // the implicit `else` of choice_1_isUsed, read from
++            // choice_1.PGPKeyPacket (wrong substruct), and transitioned to
++            // grammar 37 (the seq-1 after-PGPKeyPacket state). Gate explicitly
++            // on choice_2_isUsed, read from choice_2.PGPKeyPacket, and
++            // transition to grammar 39 (the seq-2 after-PGPKeyPacket state).
++            else if (PGPDataType->choice_2_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=37
++                    // Event: START (PGPKeyPacket, base64Binary); next=39
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso20_acdp_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_acdp_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 37;
++                                    grammar_id = 39;
+                                 }
+                             }
+                         }
+@@ -1977,7 +1983,12 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+             break;
+         case 36:
+             // Grammar: ID=36; read/write bits=3; START (PGPKeyPacket), START (ANY), END Element, START (ANY)
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): upstream gated PGPKeyPacket emission on
++            // choice_1_isUsed (always 1 in seq-1, so PGPKeyPacket was emitted
++            // even when absent) and used the same predicate twice for the ANY
++            // branch (dead code). Gate on the inner *_isUsed flags so the
++            // optional particles fire only when present.
++            if (PGPDataType->choice_1.PGPKeyPacket_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 0);
+                 if (error == EXI_ERROR__NO_ERROR)
+@@ -2008,12 +2019,16 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                 // No code for unsupported generic event: ANY (index=1)
+             //{
+             // ***** //
+-            else if (PGPDataType->choice_1_isUsed == 1u)
++            else if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-emits seq-2's PGPKeyPacket and loops). Terminate the
++                    // element here instead.
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2027,7 +2042,8 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2052,12 +2068,16 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_1.ANY_isUsed
++            // (upstream used choice_1_isUsed, which is always 1 in seq-1) and
++            // terminate the element after ANY (upstream transitioned to
++            // grammar 38 which re-emits seq-2's PGPKeyPacket and loops).
++            if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2071,7 +2091,8 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2090,30 +2111,13 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+             }
+             break;
+         case 38:
+-            // Grammar: ID=38; read/write bits=1; START (PGPKeyPacket)
+-            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-            if (error == EXI_ERROR__NO_ERROR)
+-            {
+-                // Event: START (base64Binary); next=39
+-                error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                if (error == EXI_ERROR__NO_ERROR)
+-                {
+-                    error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+-                    if (error == EXI_ERROR__NO_ERROR)
+-                    {
+-                        error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_acdp_base64Binary_BYTES_SIZE);
+-                        if (error == EXI_ERROR__NO_ERROR)
+-                        {
+-                            // encode END Element
+-                            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                            if (error == EXI_ERROR__NO_ERROR)
+-                            {
+-                                grammar_id = 39;
+-                            }
+-                        }
+-                    }
+-                }
+-            }
++            // EXPy patch (ADR-0010): grammar 38 is unreachable in the patched
++            // state machine — its original role (re-emit seq-2 PGPKeyPacket
++            // after the seq-1 ANY or seq-2 ANY) was the source of the
++            // infinite-loop and seq-mixing bugs. Leave the body intact to
++            // minimise structural churn against the upstream tree; if reached
++            // by accident, fail loudly rather than emit garbage.
++            error = EXI_ERROR__UNKNOWN_GRAMMAR_ID;
+             break;
+         case 39:
+             // Grammar: ID=39; read/write bits=2; START (ANY), END Element, START (ANY)
+@@ -2122,12 +2126,16 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_2.ANY_isUsed
++            // (upstream used choice_2_isUsed, which is always 1 in seq-2) and
++            // terminate the element after ANY (upstream looped back to grammar 38
++            // and re-emitted PGPKeyPacket forever).
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2141,7 +2149,8 @@ static int encode_iso20_acdp_PGPDataType(exi_bitstream_t* stream, const struct i
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+diff --git a/lib/cbv2g/iso_20/iso20_AC_Decoder.c b/lib/cbv2g/iso_20/iso20_AC_Decoder.c
+index 7566cb6..b113881 100644
+--- a/lib/cbv2g/iso_20/iso20_AC_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_AC_Decoder.c
+@@ -2014,17 +2014,29 @@ static int decode_iso20_ac_PGPDataType(exi_bitstream_t* stream, struct iso20_ac_
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso20_ac_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0010): mark seq-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 36;
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=37
++                    // EXPy patch (ADR-0010): upstream wrote PGPKeyPacket-as-
++                    // first-element into choice_1.PGPKeyPacket and transitioned
++                    // to grammar 37 (the seq-1 after-PGPKeyPacket state). In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 39 (the seq-2
++                    // after-PGPKeyPacket state).
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=39
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso20_ac_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso20_ac_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 37;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 39;
+                     }
+                     break;
+                 default:
+@@ -2061,13 +2073,17 @@ static int decode_iso20_ac_PGPDataType(exi_bitstream_t* stream, struct iso20_ac_
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_ac_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2099,13 +2115,17 @@ static int decode_iso20_ac_PGPDataType(exi_bitstream_t* stream, struct iso20_ac_
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_ac_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2154,13 +2174,17 @@ static int decode_iso20_ac_PGPDataType(exi_bitstream_t* stream, struct iso20_ac_
+                     grammar_id = 3;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-2's last optional
++                    // particle; upstream looped back to grammar 38 (which
++                    // re-decodes another PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso20_ac_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+diff --git a/lib/cbv2g/iso_20/iso20_AC_Encoder.c b/lib/cbv2g/iso_20/iso20_AC_Encoder.c
+index 416e172..07bfbae 100644
+--- a/lib/cbv2g/iso_20/iso20_AC_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_AC_Encoder.c
+@@ -1963,26 +1963,32 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                     }
+                 }
+             }
+-            else
++            // EXPy patch (ADR-0010): upstream dispatched the seq-2 path off
++            // the implicit `else` of choice_1_isUsed, read from
++            // choice_1.PGPKeyPacket (wrong substruct), and transitioned to
++            // grammar 37 (the seq-1 after-PGPKeyPacket state). Gate explicitly
++            // on choice_2_isUsed, read from choice_2.PGPKeyPacket, and
++            // transition to grammar 39 (the seq-2 after-PGPKeyPacket state).
++            else if (PGPDataType->choice_2_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=37
++                    // Event: START (PGPKeyPacket, base64Binary); next=39
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso20_ac_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_ac_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 37;
++                                    grammar_id = 39;
+                                 }
+                             }
+                         }
+@@ -1992,7 +1998,12 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+             break;
+         case 36:
+             // Grammar: ID=36; read/write bits=3; START (PGPKeyPacket), START (ANY), END Element, START (ANY)
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): upstream gated PGPKeyPacket emission on
++            // choice_1_isUsed (always 1 in seq-1, so PGPKeyPacket was emitted
++            // even when absent) and used the same predicate twice for the ANY
++            // branch (dead code). Gate on the inner *_isUsed flags so the
++            // optional particles fire only when present.
++            if (PGPDataType->choice_1.PGPKeyPacket_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 0);
+                 if (error == EXI_ERROR__NO_ERROR)
+@@ -2023,12 +2034,16 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=1)
+             //{
+             // ***** //
+-            else if (PGPDataType->choice_1_isUsed == 1u)
++            else if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-emits seq-2's PGPKeyPacket and loops). Terminate the
++                    // element here instead.
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2042,7 +2057,8 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2067,12 +2083,16 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_1.ANY_isUsed
++            // (upstream used choice_1_isUsed, which is always 1 in seq-1) and
++            // terminate the element after ANY (upstream transitioned to
++            // grammar 38 which re-emits seq-2's PGPKeyPacket and loops).
++            if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2086,7 +2106,8 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2105,30 +2126,13 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+             }
+             break;
+         case 38:
+-            // Grammar: ID=38; read/write bits=1; START (PGPKeyPacket)
+-            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-            if (error == EXI_ERROR__NO_ERROR)
+-            {
+-                // Event: START (base64Binary); next=39
+-                error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                if (error == EXI_ERROR__NO_ERROR)
+-                {
+-                    error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+-                    if (error == EXI_ERROR__NO_ERROR)
+-                    {
+-                        error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_ac_base64Binary_BYTES_SIZE);
+-                        if (error == EXI_ERROR__NO_ERROR)
+-                        {
+-                            // encode END Element
+-                            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                            if (error == EXI_ERROR__NO_ERROR)
+-                            {
+-                                grammar_id = 39;
+-                            }
+-                        }
+-                    }
+-                }
+-            }
++            // EXPy patch (ADR-0010): grammar 38 is unreachable in the patched
++            // state machine — its original role (re-emit seq-2 PGPKeyPacket
++            // after the seq-1 ANY or seq-2 ANY) was the source of the
++            // infinite-loop and seq-mixing bugs. Leave the body intact to
++            // minimise structural churn against the upstream tree; if reached
++            // by accident, fail loudly rather than emit garbage.
++            error = EXI_ERROR__UNKNOWN_GRAMMAR_ID;
+             break;
+         case 39:
+             // Grammar: ID=39; read/write bits=2; START (ANY), END Element, START (ANY)
+@@ -2137,12 +2141,16 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_2.ANY_isUsed
++            // (upstream used choice_2_isUsed, which is always 1 in seq-2) and
++            // terminate the element after ANY (upstream looped back to grammar 38
++            // and re-emitted PGPKeyPacket forever).
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2156,7 +2164,8 @@ static int encode_iso20_ac_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+diff --git a/lib/cbv2g/iso_20/iso20_CommonMessages_Decoder.c b/lib/cbv2g/iso_20/iso20_CommonMessages_Decoder.c
+index 515321b..ec3b972 100644
+--- a/lib/cbv2g/iso_20/iso20_CommonMessages_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_CommonMessages_Decoder.c
+@@ -2201,17 +2201,29 @@ static int decode_iso20_PGPDataType(exi_bitstream_t* stream, struct iso20_PGPDat
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso20_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0010): mark seq-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 38;
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=39
++                    // EXPy patch (ADR-0010): upstream wrote PGPKeyPacket-as-
++                    // first-element into choice_1.PGPKeyPacket and transitioned
++                    // to grammar 39 (the seq-1 after-PGPKeyPacket state). In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 41 (the seq-2
++                    // after-PGPKeyPacket state).
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=41
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso20_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso20_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 39;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 41;
+                     }
+                     break;
+                 default:
+@@ -2248,13 +2260,17 @@ static int decode_iso20_PGPDataType(exi_bitstream_t* stream, struct iso20_PGPDat
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=40
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 40 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 40;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2286,13 +2302,17 @@ static int decode_iso20_PGPDataType(exi_bitstream_t* stream, struct iso20_PGPDat
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=40
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 40 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 40;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2341,13 +2361,17 @@ static int decode_iso20_PGPDataType(exi_bitstream_t* stream, struct iso20_PGPDat
+                     grammar_id = 3;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=40
++                    // EXPy patch (ADR-0010): ANY is seq-2's last optional
++                    // particle; upstream looped back to grammar 40 (which
++                    // re-decodes another PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso20_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 40;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+diff --git a/lib/cbv2g/iso_20/iso20_CommonMessages_Encoder.c b/lib/cbv2g/iso_20/iso20_CommonMessages_Encoder.c
+index bc21abe..1c21322 100644
+--- a/lib/cbv2g/iso_20/iso20_CommonMessages_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_CommonMessages_Encoder.c
+@@ -2108,26 +2108,32 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                     }
+                 }
+             }
+-            else
++            // EXPy patch (ADR-0010): upstream dispatched the seq-2 path off
++            // the implicit `else` of choice_1_isUsed, read from
++            // choice_1.PGPKeyPacket (wrong substruct), and transitioned to
++            // grammar 39 (the seq-1 after-PGPKeyPacket state). Gate explicitly
++            // on choice_2_isUsed, read from choice_2.PGPKeyPacket, and
++            // transition to grammar 41 (the seq-2 after-PGPKeyPacket state).
++            else if (PGPDataType->choice_2_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=39
++                    // Event: START (PGPKeyPacket, base64Binary); next=41
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso20_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 39;
++                                    grammar_id = 41;
+                                 }
+                             }
+                         }
+@@ -2137,7 +2143,12 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+             break;
+         case 38:
+             // Grammar: ID=38; read/write bits=3; START (PGPKeyPacket), START (ANY), END Element, START (ANY)
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): upstream gated PGPKeyPacket emission on
++            // choice_1_isUsed (always 1 in seq-1, so PGPKeyPacket was emitted
++            // even when absent) and used the same predicate twice for the ANY
++            // branch (dead code). Gate on the inner *_isUsed flags so the
++            // optional particles fire only when present.
++            if (PGPDataType->choice_1.PGPKeyPacket_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 0);
+                 if (error == EXI_ERROR__NO_ERROR)
+@@ -2168,12 +2179,16 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                 // No code for unsupported generic event: ANY (index=1)
+             //{
+             // ***** //
+-            else if (PGPDataType->choice_1_isUsed == 1u)
++            else if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=40
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 40 (which
++                    // re-emits seq-2's PGPKeyPacket and loops). Terminate the
++                    // element here instead.
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2187,7 +2202,8 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 40;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2212,12 +2228,16 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_1.ANY_isUsed
++            // (upstream used choice_1_isUsed, which is always 1 in seq-1) and
++            // terminate the element after ANY (upstream transitioned to
++            // grammar 40 which re-emits seq-2's PGPKeyPacket and loops).
++            if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=40
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2231,7 +2251,8 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 40;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2250,30 +2271,13 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+             }
+             break;
+         case 40:
+-            // Grammar: ID=40; read/write bits=1; START (PGPKeyPacket)
+-            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-            if (error == EXI_ERROR__NO_ERROR)
+-            {
+-                // Event: START (base64Binary); next=41
+-                error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                if (error == EXI_ERROR__NO_ERROR)
+-                {
+-                    error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+-                    if (error == EXI_ERROR__NO_ERROR)
+-                    {
+-                        error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_base64Binary_BYTES_SIZE);
+-                        if (error == EXI_ERROR__NO_ERROR)
+-                        {
+-                            // encode END Element
+-                            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                            if (error == EXI_ERROR__NO_ERROR)
+-                            {
+-                                grammar_id = 41;
+-                            }
+-                        }
+-                    }
+-                }
+-            }
++            // EXPy patch (ADR-0010): grammar 40 is unreachable in the patched
++            // state machine — its original role (re-emit seq-2 PGPKeyPacket
++            // after the seq-1 ANY or seq-2 ANY) was the source of the
++            // infinite-loop and seq-mixing bugs. Leave the body intact to
++            // minimise structural churn against the upstream tree; if reached
++            // by accident, fail loudly rather than emit garbage.
++            error = EXI_ERROR__UNKNOWN_GRAMMAR_ID;
+             break;
+         case 41:
+             // Grammar: ID=41; read/write bits=2; START (ANY), END Element, START (ANY)
+@@ -2282,12 +2286,16 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_2.ANY_isUsed
++            // (upstream used choice_2_isUsed, which is always 1 in seq-2) and
++            // terminate the element after ANY (upstream looped back to grammar 40
++            // and re-emitted PGPKeyPacket forever).
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=40
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2301,7 +2309,8 @@ static int encode_iso20_PGPDataType(exi_bitstream_t* stream, const struct iso20_
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 40;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+diff --git a/lib/cbv2g/iso_20/iso20_DC_Decoder.c b/lib/cbv2g/iso_20/iso20_DC_Decoder.c
+index 477be1e..b512da3 100644
+--- a/lib/cbv2g/iso_20/iso20_DC_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_DC_Decoder.c
+@@ -2020,17 +2020,29 @@ static int decode_iso20_dc_PGPDataType(exi_bitstream_t* stream, struct iso20_dc_
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso20_dc_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0010): mark seq-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 36;
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=37
++                    // EXPy patch (ADR-0010): upstream wrote PGPKeyPacket-as-
++                    // first-element into choice_1.PGPKeyPacket and transitioned
++                    // to grammar 37 (the seq-1 after-PGPKeyPacket state). In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 39 (the seq-2
++                    // after-PGPKeyPacket state).
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=39
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso20_dc_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso20_dc_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 37;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 39;
+                     }
+                     break;
+                 default:
+@@ -2067,13 +2079,17 @@ static int decode_iso20_dc_PGPDataType(exi_bitstream_t* stream, struct iso20_dc_
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_dc_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2105,13 +2121,17 @@ static int decode_iso20_dc_PGPDataType(exi_bitstream_t* stream, struct iso20_dc_
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_dc_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2160,13 +2180,17 @@ static int decode_iso20_dc_PGPDataType(exi_bitstream_t* stream, struct iso20_dc_
+                     grammar_id = 3;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-2's last optional
++                    // particle; upstream looped back to grammar 38 (which
++                    // re-decodes another PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso20_dc_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 38;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+diff --git a/lib/cbv2g/iso_20/iso20_DC_Encoder.c b/lib/cbv2g/iso_20/iso20_DC_Encoder.c
+index 40b9ba5..f3d1cac 100644
+--- a/lib/cbv2g/iso_20/iso20_DC_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_DC_Encoder.c
+@@ -1969,26 +1969,32 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                     }
+                 }
+             }
+-            else
++            // EXPy patch (ADR-0010): upstream dispatched the seq-2 path off
++            // the implicit `else` of choice_1_isUsed, read from
++            // choice_1.PGPKeyPacket (wrong substruct), and transitioned to
++            // grammar 37 (the seq-1 after-PGPKeyPacket state). Gate explicitly
++            // on choice_2_isUsed, read from choice_2.PGPKeyPacket, and
++            // transition to grammar 39 (the seq-2 after-PGPKeyPacket state).
++            else if (PGPDataType->choice_2_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=37
++                    // Event: START (PGPKeyPacket, base64Binary); next=39
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso20_dc_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_dc_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 37;
++                                    grammar_id = 39;
+                                 }
+                             }
+                         }
+@@ -1998,7 +2004,12 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+             break;
+         case 36:
+             // Grammar: ID=36; read/write bits=3; START (PGPKeyPacket), START (ANY), END Element, START (ANY)
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): upstream gated PGPKeyPacket emission on
++            // choice_1_isUsed (always 1 in seq-1, so PGPKeyPacket was emitted
++            // even when absent) and used the same predicate twice for the ANY
++            // branch (dead code). Gate on the inner *_isUsed flags so the
++            // optional particles fire only when present.
++            if (PGPDataType->choice_1.PGPKeyPacket_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 0);
+                 if (error == EXI_ERROR__NO_ERROR)
+@@ -2029,12 +2040,16 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=1)
+             //{
+             // ***** //
+-            else if (PGPDataType->choice_1_isUsed == 1u)
++            else if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 38 (which
++                    // re-emits seq-2's PGPKeyPacket and loops). Terminate the
++                    // element here instead.
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2048,7 +2063,8 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2073,12 +2089,16 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_1.ANY_isUsed
++            // (upstream used choice_1_isUsed, which is always 1 in seq-1) and
++            // terminate the element after ANY (upstream transitioned to
++            // grammar 38 which re-emits seq-2's PGPKeyPacket and loops).
++            if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2092,7 +2112,8 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2111,30 +2132,13 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+             }
+             break;
+         case 38:
+-            // Grammar: ID=38; read/write bits=1; START (PGPKeyPacket)
+-            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-            if (error == EXI_ERROR__NO_ERROR)
+-            {
+-                // Event: START (base64Binary); next=39
+-                error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                if (error == EXI_ERROR__NO_ERROR)
+-                {
+-                    error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+-                    if (error == EXI_ERROR__NO_ERROR)
+-                    {
+-                        error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_dc_base64Binary_BYTES_SIZE);
+-                        if (error == EXI_ERROR__NO_ERROR)
+-                        {
+-                            // encode END Element
+-                            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                            if (error == EXI_ERROR__NO_ERROR)
+-                            {
+-                                grammar_id = 39;
+-                            }
+-                        }
+-                    }
+-                }
+-            }
++            // EXPy patch (ADR-0010): grammar 38 is unreachable in the patched
++            // state machine — its original role (re-emit seq-2 PGPKeyPacket
++            // after the seq-1 ANY or seq-2 ANY) was the source of the
++            // infinite-loop and seq-mixing bugs. Leave the body intact to
++            // minimise structural churn against the upstream tree; if reached
++            // by accident, fail loudly rather than emit garbage.
++            error = EXI_ERROR__UNKNOWN_GRAMMAR_ID;
+             break;
+         case 39:
+             // Grammar: ID=39; read/write bits=2; START (ANY), END Element, START (ANY)
+@@ -2143,12 +2147,16 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_2.ANY_isUsed
++            // (upstream used choice_2_isUsed, which is always 1 in seq-2) and
++            // terminate the element after ANY (upstream looped back to grammar 38
++            // and re-emitted PGPKeyPacket forever).
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=38
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2162,7 +2170,8 @@ static int encode_iso20_dc_PGPDataType(exi_bitstream_t* stream, const struct iso
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 38;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+diff --git a/lib/cbv2g/iso_20/iso20_WPT_Decoder.c b/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
+index fcb55ae..ec68090 100644
+--- a/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
+@@ -2234,17 +2234,29 @@ static int decode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, struct iso20_wp
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyID.bytesLen, &PGPDataType->choice_1.PGPKeyID.bytes[0], iso20_wpt_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
++                        // EXPy patch (ADR-0010): mark seq-1 active so the
++                        // marshaler can disambiguate. Without this the outer
++                        // choice flags remain zero and getJson_PGPDataType
++                        // returns an empty `{}`.
++                        PGPDataType->choice_1_isUsed = 1u;
+                         grammar_id = 41;
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=42
++                    // EXPy patch (ADR-0010): upstream wrote PGPKeyPacket-as-
++                    // first-element into choice_1.PGPKeyPacket and transitioned
++                    // to grammar 42 (the seq-1 after-PGPKeyPacket state). In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 44 (the seq-2
++                    // after-PGPKeyPacket state).
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=44
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso20_wpt_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso20_wpt_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 42;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 44;
+                     }
+                     break;
+                 default:
+@@ -2281,13 +2293,17 @@ static int decode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, struct iso20_wp
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=43
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 43 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_wpt_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 43;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2319,13 +2335,17 @@ static int decode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, struct iso20_wp
+                     grammar_id = 3;
+                     break;
+                 case 3:
+-                    // Event: START (ANY, anyType (base64Binary)); next=43
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 43 (which
++                    // re-decodes seq-2's PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.ANY.bytesLen, &PGPDataType->choice_1.ANY.bytes[0], iso20_wpt_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_1.ANY_isUsed = 1u;
+-                        grammar_id = 43;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+@@ -2374,13 +2394,17 @@ static int decode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, struct iso20_wp
+                     grammar_id = 3;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=43
++                    // EXPy patch (ADR-0010): ANY is seq-2's last optional
++                    // particle; upstream looped back to grammar 43 (which
++                    // re-decodes another PGPKeyPacket). Complete the element.
++                    // Event: START (ANY, anyType (base64Binary)); next=done
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso20_wpt_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 43;
++                        done = 1;
++                        grammar_id = 3;
+                     }
+                     break;
+                 default:
+diff --git a/lib/cbv2g/iso_20/iso20_WPT_Encoder.c b/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
+index 332b3e5..2ad3275 100644
+--- a/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
+@@ -2161,26 +2161,32 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                     }
+                 }
+             }
+-            else
++            // EXPy patch (ADR-0010): upstream dispatched the seq-2 path off
++            // the implicit `else` of choice_1_isUsed, read from
++            // choice_1.PGPKeyPacket (wrong substruct), and transitioned to
++            // grammar 42 (the seq-1 after-PGPKeyPacket state). Gate explicitly
++            // on choice_2_isUsed, read from choice_2.PGPKeyPacket, and
++            // transition to grammar 44 (the seq-2 after-PGPKeyPacket state).
++            else if (PGPDataType->choice_2_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=42
++                    // Event: START (PGPKeyPacket, base64Binary); next=44
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso20_wpt_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_wpt_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 42;
++                                    grammar_id = 44;
+                                 }
+                             }
+                         }
+@@ -2190,7 +2196,12 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+             break;
+         case 41:
+             // Grammar: ID=41; read/write bits=3; START (PGPKeyPacket), START (ANY), END Element, START (ANY)
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): upstream gated PGPKeyPacket emission on
++            // choice_1_isUsed (always 1 in seq-1, so PGPKeyPacket was emitted
++            // even when absent) and used the same predicate twice for the ANY
++            // branch (dead code). Gate on the inner *_isUsed flags so the
++            // optional particles fire only when present.
++            if (PGPDataType->choice_1.PGPKeyPacket_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 0);
+                 if (error == EXI_ERROR__NO_ERROR)
+@@ -2221,12 +2232,16 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                 // No code for unsupported generic event: ANY (index=1)
+             //{
+             // ***** //
+-            else if (PGPDataType->choice_1_isUsed == 1u)
++            else if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=43
++                    // EXPy patch (ADR-0010): ANY is seq-1's last optional
++                    // particle; upstream transitioned to grammar 43 (which
++                    // re-emits seq-2's PGPKeyPacket and loops). Terminate the
++                    // element here instead.
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2240,7 +2255,8 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 43;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2265,12 +2281,16 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_1_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_1.ANY_isUsed
++            // (upstream used choice_1_isUsed, which is always 1 in seq-1) and
++            // terminate the element after ANY (upstream transitioned to
++            // grammar 43 which re-emits seq-2's PGPKeyPacket and loops).
++            if (PGPDataType->choice_1.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 3, 3);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=43
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2284,7 +2304,8 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 43;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }
+@@ -2303,30 +2324,13 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+             }
+             break;
+         case 43:
+-            // Grammar: ID=43; read/write bits=1; START (PGPKeyPacket)
+-            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-            if (error == EXI_ERROR__NO_ERROR)
+-            {
+-                // Event: START (base64Binary); next=44
+-                error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                if (error == EXI_ERROR__NO_ERROR)
+-                {
+-                    error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+-                    if (error == EXI_ERROR__NO_ERROR)
+-                    {
+-                        error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso20_wpt_base64Binary_BYTES_SIZE);
+-                        if (error == EXI_ERROR__NO_ERROR)
+-                        {
+-                            // encode END Element
+-                            error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+-                            if (error == EXI_ERROR__NO_ERROR)
+-                            {
+-                                grammar_id = 44;
+-                            }
+-                        }
+-                    }
+-                }
+-            }
++            // EXPy patch (ADR-0010): grammar 43 is unreachable in the patched
++            // state machine — its original role (re-emit seq-2 PGPKeyPacket
++            // after the seq-1 ANY or seq-2 ANY) was the source of the
++            // infinite-loop and seq-mixing bugs. Leave the body intact to
++            // minimise structural churn against the upstream tree; if reached
++            // by accident, fail loudly rather than emit garbage.
++            error = EXI_ERROR__UNKNOWN_GRAMMAR_ID;
+             break;
+         case 44:
+             // Grammar: ID=44; read/write bits=2; START (ANY), END Element, START (ANY)
+@@ -2335,12 +2339,16 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0010): gate ANY emission on choice_2.ANY_isUsed
++            // (upstream used choice_2_isUsed, which is always 1 in seq-2) and
++            // terminate the element after ANY (upstream looped back to grammar 43
++            // and re-emitted PGPKeyPacket forever).
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=43
++                    // Event: START (ANY, base64Binary); next=done
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -2354,7 +2362,8 @@ static int encode_iso20_wpt_PGPDataType(exi_bitstream_t* stream, const struct is
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 43;
++                                    done = 1;
++                                    grammar_id = 3;
+                                 }
+                             }
+                         }

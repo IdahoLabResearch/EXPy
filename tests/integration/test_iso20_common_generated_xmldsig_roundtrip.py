@@ -59,30 +59,10 @@ def _scenarios():
 
 _SCENARIOS = list(_scenarios())
 
-# PGPDataType's explicit choice_1 / choice_2 substruct shape isn't covered by
-# the manifest format yet — same root cause as the Document sweep entries
-# for PGPData, tracked in #24.
-_NESTED_CHOICE_XFAILS: frozenset[str] = frozenset({
-    "KeyInfo__choice_PGPData",
-    "PGPData__maximal",
-})
 
-
-def _param(scenario):
-    sid = scenario[0]
-    if sid in _NESTED_CHOICE_XFAILS:
-        return pytest.param(
-            scenario,
-            id=sid,
-            marks=pytest.mark.xfail(
-                reason="PGPData choice_1/choice_2 handling deferred to #24",
-                strict=True,
-            ),
-        )
-    return pytest.param(scenario, id=sid)
-
-
-@pytest.mark.parametrize("scenario", [_param(s) for s in _SCENARIOS])
+@pytest.mark.parametrize(
+    "scenario", [pytest.param(s, id=s[0]) for s in _SCENARIOS]
+)
 def test_iso20_common_generated_xmldsig_roundtrip(scenario):
     _scenario_id, payload = scenario
     assert_roundtrip("ISO20_COMMON", payload, kind="xmldsig")
