@@ -74,18 +74,7 @@ _NESTED_CHOICE_XFAILS: frozenset[str] = frozenset({
     "PGPData__maximal",
 })
 
-# libcbv2g `WPT_LF_TransmitterDataType` grammar 82 (LOOP TxSpecData) has no
-# loop-exit transition — once a non-empty TxSpecData array is encoded, the
-# encoder returns EXI_ERROR__UNKNOWN_EVENT_CODE instead of advancing to
-# grammar 83 (TxPackageSpecData) / END Element. The XSD particle is
-# (2, 255) so every maximal scenario containing LF_SystemSetupData hits it.
-# Patch and ADR tracked in #26.
-_LOOP_GRAMMAR_XFAILS: frozenset[str] = frozenset({
-    "WPT_FinePositioningSetupReq__choice_ANY",
-    "WPT_FinePositioningSetupReq__choice_XPath",
-    "WPT_FinePositioningSetupRes__choice_ANY",
-    "WPT_FinePositioningSetupRes__choice_XPath",
-})
+_LOOP_GRAMMAR_XFAILS: frozenset[str] = frozenset()
 
 
 def _param(scenario):
