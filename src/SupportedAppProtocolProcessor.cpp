@@ -31,25 +31,37 @@ using namespace std;
 
 
 extern "C" {
-    const char* decodeFromPythonBytes(const uint8_t* data, size_t size) {
+    struct decoded_data {
+        const char* json;
+        int status;
+    };
+
+    struct encoded_data {
+        uint8_t* buffer;
+        size_t size;
+        int status;
+    };
+
+    decoded_data* decodeFromPythonBytes(const uint8_t* data, size_t size) {
         appHand_exiDocument outDoc;
         exi_bitstream_t inEXI;
 
         exi_bitstream_init(&inEXI, const_cast<uint8_t*>(data), size, 0, nullptr);
-        decode_appHand_exiDocument(&inEXI, &outDoc);
+        int rc = decode_appHand_exiDocument(&inEXI, &outDoc);
+
+        decoded_data* result = new decoded_data{nullptr, rc};
+        if (rc != 0) {
+            return result;
+        }
 
         json outJson = getJson_exiDocument(outDoc);
 
         static string jsonString;
         jsonString = outJson.dump(4);
 
-        return jsonString.c_str();
+        result->json = jsonString.c_str();
+        return result;
     }
-
-    struct encoded_data {
-        uint8_t* buffer;
-        size_t size;
-    };
 
     encoded_data* encodeFromPythonDict(const char* inString) {
         json inJson = json::parse(inString);
@@ -62,9 +74,10 @@ extern "C" {
         size_t pos1 = 0;
 
         exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
-        encode_appHand_exiDocument(&outEXI, &inDoc);
+        int rc = encode_appHand_exiDocument(&outEXI, &inDoc);
 
         encoded_data* result = new encoded_data;
+        result->status = rc;
         result->size = exi_bitstream_get_length(&outEXI);
         result->buffer = new uint8_t[result->size];
         memcpy(result->buffer, stream, result->size);
@@ -76,6 +89,14 @@ extern "C" {
     void free_encoded_data(encoded_data* data) {
         if (data) {
             delete[] data->buffer;
+            delete data;
+        }
+    }
+
+    void free_decoded_data(decoded_data* data) {
+        // The JSON payload itself lives in a function-static string; only the
+        // wrapper struct is heap-allocated.
+        if (data) {
             delete data;
         }
     }
@@ -205,7 +226,13 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        const char* jsonString = decodeFromPythonBytes(bytes.data(), bytes.size());
+        decoded_data* decoded = decodeFromPythonBytes(bytes.data(), bytes.size());
+        if (decoded->status != 0) {
+            std::cerr << "Error: libcbv2g decode failed (rc=" << decoded->status << ")." << std::endl;
+            free_decoded_data(decoded);
+            return 1;
+        }
+        const char* jsonString = decoded->json;
         if (result.count("output")) {
             ofstream outputFile(result["output"].as<std::string>());
             if (outputFile.is_open()) {
@@ -216,10 +243,12 @@ int main(int argc, char* argv[]) {
                     outputFile.close();
                 } catch (const json::parse_error& e) {
                     std::cerr << "Error: Failed to parse JSON output." << std::endl;
+                    free_decoded_data(decoded);
                     return 1;
                 }
             } else {
                 std::cerr << "Error: Could not open output file." << std::endl;
+                free_decoded_data(decoded);
                 return 1;
             }
         } else {
@@ -228,9 +257,11 @@ int main(int argc, char* argv[]) {
                 cout << j.dump(4) << endl;
             } catch (const json::parse_error& e) {
                 std::cerr << "Error: Failed to parse JSON output." << std::endl;
+                free_decoded_data(decoded);
                 return 1;
             }
         }
+        free_decoded_data(decoded);
     }
     return 0;
 }
