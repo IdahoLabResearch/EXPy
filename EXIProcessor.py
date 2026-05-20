@@ -8,6 +8,8 @@ import os
 
 from enum import Enum
 
+from _version import __version__
+
 
 class ProtocolEnum(Enum):
     SAP = "SupportedAppProtocol"
