@@ -1,23 +1,25 @@
-"""Emit `V2Gjson/<namespace>.py` enum tables from libcbv2g `*_Datatypes.h`.
+"""Emit `V2Gjson/<namespace>.py` modules from libcbv2g `*_Datatypes.h`.
 
-Per ADR-0001, V2Gjson currently mixes two roles: (1) `Enum` classes consumed
-by the fixture generator via `_resolve_enum_value` (it looks up the first
-enum value when seeding an enum-typed scalar), and (2) hand-written
-constructor helpers callers use to build JSON payloads. This emitter covers
-(1) only — the constructor helpers stay hand-written until a separate
-generator targets them.
+Output covers both surfaces consumers need:
 
-The parser is intentionally narrow: it recognises ``typedef enum { ... }
-NAME;`` blocks where each member is ``<NAME>_<MEMBER> = <int>`` and emits one
-Python ``Enum`` subclass per typedef, with the member names stripped of the
-type prefix. Anything that does not match (e.g. enums whose members lack the
-type prefix) raises rather than silently producing a wrong module.
+* ``Enum`` subclasses — one per ``typedef enum { ... } NAME;`` block. The
+  fixture generator's ``_resolve_enum_value`` looks these up via
+  ``c_type[len(prefix):]``, matching the hand-written V2Gjson convention.
+
+* Constructor functions — one per ``struct <prefix><Name> { ... }``. Each
+  builds the JSON dict shape libcbv2g's Processor accepts (per ADR-0012),
+  wrapping ``bytearray`` and ``str`` inputs into the
+  ``{"bytes"/"characters": [...], "...Len": N}`` envelope. The
+  ``<prefix>exiDocument`` struct is intentionally skipped — ADR-0012's flat
+  top-level Document shape makes that wrapper vestigial.
 """
 
 from __future__ import annotations
 
 import re
 from pathlib import Path
+
+from .parser import Field, TypeSpec, parse_header
 
 
 _TYPEDEF_ENUM_RE = re.compile(
@@ -47,10 +49,13 @@ def emit(header_text: str, *, namespace_prefix: str, module_doc: str) -> str:
         '"""',
         "",
         "from enum import Enum",
+        "from typing import Any",
         "",
         "",
     ]
+    enum_names: set[str] = set()
     for m in _TYPEDEF_ENUM_RE.finditer(header_text):
+        enum_names.add(m["name"])
         type_name = m["name"]
         try:
             members = _extract_members(m["body"], type_name)
@@ -75,7 +80,96 @@ def emit(header_text: str, *, namespace_prefix: str, module_doc: str) -> str:
                 chunks.append(f"    {member_name} = {value}")
         chunks.append("")
         chunks.append("")
+
+    for spec in parse_header(header_text):
+        ctor = _emit_constructor(
+            spec, namespace_prefix=namespace_prefix, enum_names=enum_names
+        )
+        if ctor is None:
+            continue
+        chunks.append(ctor)
+        chunks.append("")
+
     return "\n".join(chunks).rstrip() + "\n"
+
+
+def _emit_constructor(
+    spec: TypeSpec, *, namespace_prefix: str, enum_names: set[str]
+) -> str | None:
+    """Return constructor source text for `spec`, or None if it should be skipped.
+
+    The prefix-stripped function name preserves libcbv2g's verbatim casing
+    so that top-level element constructors stay lowercase
+    (`appHand_supportedAppProtocolReq` → `supportedAppProtocolReq`).
+    Per ADR-0012, the `exiDocument` wrapper struct is skipped — the flat
+    Document shape consumers build directly does not need it.
+    """
+    if namespace_prefix and spec.name.startswith(namespace_prefix):
+        fn_name = spec.name[len(namespace_prefix):]
+    else:
+        fn_name = spec.name
+    if fn_name == "exiDocument":
+        return None
+
+    required = [f for f in spec.fields if not f.optional]
+    optional = [f for f in spec.fields if f.optional]
+
+    pieces = [
+        f"{f.name}:{_param_type(f, namespace_prefix, enum_names)}"
+        for f in required
+    ]
+    if optional:
+        pieces.append("*")
+        pieces.extend(
+            f"{f.name}:{_param_type(f, namespace_prefix, enum_names)}|None=None"
+            for f in optional
+        )
+    sig = f"def {fn_name}({', '.join(pieces)})->dict[str, Any]:"
+
+    lines: list[str] = []
+    if required:
+        lines.append("    j:dict[str, Any] = {")
+        for i, f in enumerate(required):
+            comma = "," if i < len(required) - 1 else ""
+            lines.append(f'        "{f.name}": {_value_expr(f, enum_names)}{comma}')
+        lines.append("    }")
+    else:
+        lines.append("    j:dict[str, Any] = {}")
+    for f in optional:
+        lines.append(f"    if {f.name} is not None:")
+        lines.append(f'        j["{f.name}"] = {_value_expr(f, enum_names)}')
+    lines.append("    return j")
+    return "\n".join([sig, *lines])
+
+
+def _param_type(field: Field, namespace_prefix: str, enum_names: set[str]) -> str:
+    if field.kind == "bytes":
+        return "bytearray"
+    if field.kind == "characters":
+        return "str"
+    if field.kind == "scalar" and field.c_type in enum_names:
+        cls = field.c_type
+        if namespace_prefix and cls.startswith(namespace_prefix):
+            cls = cls[len(namespace_prefix):]
+        return cls
+    return "int"
+
+
+def _value_expr(field: Field, enum_names: set[str]) -> str:
+    """Python expression producing the JSON value for `field.name` at runtime."""
+    if field.kind == "bytes":
+        return (
+            f'{{"bytes": list({field.name}), '
+            f'"bytesLen": len({field.name})}}'
+        )
+    if field.kind == "characters":
+        return (
+            f'{{"characters": [ord(c) for c in {field.name}], '
+            f'"charactersLen": len({field.name})}}'
+        )
+    if field.kind == "scalar" and field.c_type in enum_names:
+        return f"{field.name}.value"
+    return field.name
 
 
 def _extract_members(body: str, type_name: str) -> list[tuple[str, int]]:
