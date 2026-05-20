@@ -53,10 +53,10 @@ def test_namespace_modules_are_codegen_output():
     """Per ADR-0012, every Namespace module is emitter output. The banner is
     stamped by `tools/codegen/v2gjson_emitter.py:emit()`.
 
-    `V2Gjson/common.py` is intentionally excluded — it is a shared helper for
-    the libcbv2g `exi_unsigned_t` / `exi_signed_t` types, not a Namespace.
-    Codegenning it requires parser/emitter extension for anonymous typedef
-    structs, tracked in a follow-up issue.
+    `V2Gjson/common.py` is also codegen output (per #34) but is excluded here
+    because it is a shared helper for the libcbv2g `exi_unsigned_t` /
+    `exi_signed_t` types, not a Namespace — this check scopes to Namespace
+    modules only.
     """
     package_dir = Path(REPO_ROOT) / "V2Gjson"
     expected_banner = (

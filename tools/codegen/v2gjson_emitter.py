@@ -81,9 +81,14 @@ def emit(header_text: str, *, namespace_prefix: str, module_doc: str) -> str:
         chunks.append("")
         chunks.append("")
 
-    for spec in parse_header(header_text):
+    specs = parse_header(header_text)
+    struct_names = {s.name for s in specs}
+    for spec in specs:
         ctor = _emit_constructor(
-            spec, namespace_prefix=namespace_prefix, enum_names=enum_names
+            spec,
+            namespace_prefix=namespace_prefix,
+            enum_names=enum_names,
+            struct_names=struct_names,
         )
         if ctor is None:
             continue
@@ -94,7 +99,11 @@ def emit(header_text: str, *, namespace_prefix: str, module_doc: str) -> str:
 
 
 def _emit_constructor(
-    spec: TypeSpec, *, namespace_prefix: str, enum_names: set[str]
+    spec: TypeSpec,
+    *,
+    namespace_prefix: str,
+    enum_names: set[str],
+    struct_names: set[str],
 ) -> str | None:
     """Return constructor source text for `spec`, or None if it should be skipped.
 
@@ -104,7 +113,11 @@ def _emit_constructor(
     Per ADR-0012, the `exiDocument` wrapper struct is skipped — the flat
     Document shape consumers build directly does not need it.
     """
-    if namespace_prefix and spec.name.startswith(namespace_prefix):
+    if spec.has_unparseable:
+        return None
+    if spec.typedef:
+        fn_name = spec.name
+    elif namespace_prefix and spec.name.startswith(namespace_prefix):
         fn_name = spec.name[len(namespace_prefix):]
     else:
         fn_name = spec.name
@@ -115,13 +128,13 @@ def _emit_constructor(
     optional = [f for f in spec.fields if f.optional]
 
     pieces = [
-        f"{f.name}:{_param_type(f, namespace_prefix, enum_names)}"
+        f"{f.name}:{_param_type(f, namespace_prefix, enum_names, struct_names)}"
         for f in required
     ]
     if optional:
         pieces.append("*")
         pieces.extend(
-            f"{f.name}:{_param_type(f, namespace_prefix, enum_names)}|None=None"
+            f"{f.name}:{_param_type(f, namespace_prefix, enum_names, struct_names)}|None=None"
             for f in optional
         )
     sig = f"def {fn_name}({', '.join(pieces)})->dict[str, Any]:"
@@ -142,11 +155,20 @@ def _emit_constructor(
     return "\n".join([sig, *lines])
 
 
-def _param_type(field: Field, namespace_prefix: str, enum_names: set[str]) -> str:
+def _param_type(
+    field: Field,
+    namespace_prefix: str,
+    enum_names: set[str],
+    struct_names: set[str],
+) -> str:
     if field.kind == "bytes":
+        return "bytearray"
+    if field.kind == "raw_bytes":
         return "bytearray"
     if field.kind == "characters":
         return "str"
+    if field.kind == "scalar" and field.c_type in struct_names:
+        return "dict[str, Any]"
     if field.kind == "scalar" and field.c_type in enum_names:
         cls = field.c_type
         if namespace_prefix and cls.startswith(namespace_prefix):
@@ -175,6 +197,8 @@ def _value_expr(field: Field, enum_names: set[str]) -> str:
             f'{{"bytes": list({field.name}), '
             f'"bytesLen": len({field.name})}}'
         )
+    if field.kind == "raw_bytes":
+        return f"list({field.name})"
     if field.kind == "characters":
         return (
             f'{{"characters": [ord(c) for c in {field.name}], '

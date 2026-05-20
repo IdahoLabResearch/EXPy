@@ -399,6 +399,105 @@ def test_scalar_array_of_plain_int_emits_list_verbatim():
     }
 
 
+def test_typedef_struct_with_pointer_field_is_skipped():
+    """`exi_binary_t` declares a `uint8_t* octets;` pointer field. The parser
+    can't model pointers — and crucially, the consumer-facing
+    `V2Gjson/common.py` never exposed a constructor for it. The emitter
+    must omit the constructor entirely rather than emit a half-broken one
+    that silently drops the pointer field.
+    """
+    header = """
+        typedef struct {
+            size_t octets_size;
+            uint8_t* octets;
+            size_t octets_count;
+        } exi_binary_t;
+        typedef struct {
+            uint32_t x;
+        } exi_other_t;
+    """
+    src = emit(header, namespace_prefix="exi_", module_doc="x")
+    assert "def exi_binary_t(" not in src
+    assert "def exi_other_t(" in src
+
+
+def test_typedef_struct_constructor_keeps_namespace_prefix():
+    """For libcbv2g's shared helper types (`exi_unsigned_t`, `exi_signed_t`),
+    the typedef name *is* the canonical Python public symbol. Unlike
+    XSD-derived struct names (`iso2_BodyType` → `BodyType`), the prefix
+    here is part of the type's identity — consumers do
+    ``from V2Gjson.common import exi_unsigned_t``. So the emitter must NOT
+    strip the namespace prefix from constructor names for typedef-struct
+    specs.
+    """
+    header = """
+        typedef struct {
+            uint32_t x;
+        } exi_unsigned_t;
+        typedef struct exi_signed_t {
+            uint8_t y : 1;
+        } exi_signed_t;
+    """
+    src = emit(header, namespace_prefix="exi_", module_doc="x")
+    assert "def exi_unsigned_t(" in src
+    assert "def exi_signed_t(" in src
+    assert "def unsigned_t(" not in src
+    assert "def signed_t(" not in src
+
+
+def test_anonymous_typedef_struct_emits_constructor():
+    """`exi_basetypes.h` declares ``exi_unsigned_t`` via the anonymous form
+    ``typedef struct { uint8_t octets[N]; size_t octets_count; } exi_unsigned_t;``.
+    The emitter must produce a constructor whose ``octets`` parameter is a
+    ``bytearray`` and whose dict carries ``list(octets)`` plus a verbatim
+    ``octets_count`` — matching the hand-written ``V2Gjson/common.py`` shape
+    that consumers already pass into the Processor.
+    """
+    header = """
+        typedef struct {
+            uint8_t octets[EXI_BASETYPES_MAX_OCTETS_SUPPORTED];
+            size_t octets_count;
+        } exi_unsigned_t;
+    """
+    src = emit(header, namespace_prefix="exi_", module_doc="x")
+    assert "def exi_unsigned_t(octets:bytearray, octets_count:int)" in src
+    ns = _exec(src)
+    ctor = ns["exi_unsigned_t"]
+    assert ctor(bytearray(b"AB"), 2) == {  # type: ignore[operator]
+        "octets": [65, 66],
+        "octets_count": 2,
+    }
+
+
+def test_exi_signed_t_passes_nested_exi_unsigned_t_dict_through():
+    """`exi_signed_t` nests an `exi_unsigned_t data;` field plus a
+    `uint8_t is_negative : 1;` bitfield. The marshaler on the C++ side
+    re-parses `data` as a nested dict — so the constructor must accept a
+    ``dict[str, Any]`` for `data` and emit it through verbatim, *not* call
+    ``.value`` or wrap it in an envelope.
+    """
+    header = """
+        typedef struct {
+            uint8_t octets[N];
+            size_t octets_count;
+        } exi_unsigned_t;
+        typedef struct exi_signed_t {
+            exi_unsigned_t data;
+            uint8_t is_negative : 1;
+        } exi_signed_t;
+    """
+    src = emit(header, namespace_prefix="exi_", module_doc="x")
+    assert "def exi_signed_t(data:dict[str, Any], is_negative:int)" in src
+    ns = _exec(src)
+    unsigned_t = ns["exi_unsigned_t"]
+    signed_t = ns["exi_signed_t"]
+    data_dict = unsigned_t(bytearray(b"A"), 1)  # type: ignore[operator]
+    assert signed_t(data_dict, 1) == {  # type: ignore[operator]
+        "data": {"octets": [65], "octets_count": 1},
+        "is_negative": 1,
+    }
+
+
 def test_struct_array_field_wraps_into_arrayLen_envelope():
     """An anon ``{ struct ns_Entry array[N]; uint16_t arrayLen; } Field;``
     member accepts a ``list[dict]`` and emits the EVerest array shape:
