@@ -5,6 +5,6 @@
 from _version import __version__
 
 from .common import *
-from .apphand import *
+from .sap import *
 from .din import *
 from .iso2 import *
