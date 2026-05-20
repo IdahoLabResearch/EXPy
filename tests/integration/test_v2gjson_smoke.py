@@ -1,15 +1,16 @@
-"""Smoke tests for the V2Gjson public surface (ADR-0012).
+"""Package-level surface contracts for V2Gjson (ADR-0012).
 
-Pins two things at the package boundary:
+Pins four invariants at the package boundary:
 
-1. `V2Gjson.__init__.py` imports submodules by name; wildcard re-exports that
+1. ``V2Gjson.__init__.py`` imports submodules by name; wildcard re-exports that
    silently collide across Namespaces (every Namespace defines
-   `MessageHeaderType`, `BodyType`, `V2G_Message`) must not leak through the
+   ``MessageHeaderType``, ``BodyType``, ``V2G_Message``) must not leak through the
    package surface.
+2. The single canonical ``__version__`` is re-exported at the package level.
+3. Every Namespace module is codegen output (banner present).
+4. ``example.py`` runs end-to-end with module-as-namespace imports.
 
-2. A V2Gjson-built ISO-2 message round-trips through its sibling Processor.
-   Full 8-Namespace coverage lands in #33; this smoke check pins the contract
-   that the codegen migration in #32 must preserve.
+Per-Namespace roundtrips live in ``test_v2gjson_roundtrip.py``.
 """
 
 from __future__ import annotations
@@ -19,8 +20,6 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
-
-from conftest import assert_roundtrip  # noqa: E402
 
 
 def test_v2gjson_init_does_not_leak_namespace_symbols():
@@ -80,42 +79,6 @@ def test_namespace_modules_are_codegen_output():
         )
 
 
-def test_din_message_header_roundtrips_via_module_namespace():
-    """DIN smoke: matches the ISO-2 smoke check, on DIN. Catches drift if the
-    DIN codegen output diverges from what its sibling Processor accepts.
-    """
-    from V2Gjson import din
-
-    header = din.MessageHeaderType(SessionID=bytearray(b"DECAFBAD"))
-    # DIN's SessionStopReq is typed `SessionStopType` upstream (not
-    # `SessionStopReqType` like ISO-2). The codegen constructor name tracks
-    # the libcbv2g struct name verbatim.
-    body = din.BodyType(SessionStopReq=din.SessionStopType())
-    payload = {"Header": header, "Body": body}
-    assert_roundtrip("DIN", payload)
-
-
-def test_sap_request_roundtrips_via_module_namespace():
-    """SAP smoke: build a minimal `supportedAppProtocolReq` via V2Gjson
-    constructors. The codegen-emitted ``supportedAppProtocolReq`` takes a
-    pre-wrapped ``list[dict]`` and wraps it into the ``{"arrayLen", "array"}``
-    envelope the marshaler reads.
-    """
-    from V2Gjson import sap
-
-    protocols = [
-        sap.AppProtocolType(
-            ProtocolNamespace="urn:din:70121:2012:MsgDef",
-            VersionNumberMajor=2,
-            VersionNumberMinor=0,
-            SchemaID=1,
-            Priority=1,
-        ),
-    ]
-    payload = {"supportedAppProtocolReq": sap.supportedAppProtocolReq(AppProtocol=protocols)}
-    assert_roundtrip("SAP", payload)
-
-
 def test_example_py_runs_with_module_as_namespace_pattern():
     """`example.py` is the publicly-readable demonstration of the v1.0 API
     surface. It must:
@@ -164,20 +127,3 @@ def test_example_py_runs_with_module_as_namespace_pattern():
     )
 
 
-def test_iso2_message_header_roundtrips_via_module_namespace():
-    """The headline ADR-0012 smoke check: a Header built with V2Gjson
-    constructors round-trips through `EXIProcessor(ProtocolEnum.ISO2)`.
-
-    Uses `from V2Gjson import iso2; iso2.MessageHeaderType(...)` — the
-    module-as-namespace pattern — not wildcard imports.
-    """
-    from V2Gjson import iso2
-
-    header = iso2.MessageHeaderType(SessionID=bytearray(b"DECAFBAD"))
-    body = iso2.BodyType(
-        SessionStopReq=iso2.SessionStopReqType(
-            ChargingSession=iso2.chargingSessionType.Terminate
-        )
-    )
-    payload = {"Header": header, "Body": body}
-    assert_roundtrip("ISO2", payload)
