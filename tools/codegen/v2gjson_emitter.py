@@ -152,6 +152,19 @@ def _param_type(field: Field, namespace_prefix: str, enum_names: set[str]) -> st
         if namespace_prefix and cls.startswith(namespace_prefix):
             cls = cls[len(namespace_prefix):]
         return cls
+    if field.kind == "array":
+        return "list[dict[str, Any]]"
+    if field.kind == "scalar_array":
+        if field.c_type in enum_names:
+            cls = field.c_type
+            if namespace_prefix and cls.startswith(namespace_prefix):
+                cls = cls[len(namespace_prefix):]
+            return f"list[{cls}]"
+        return "list[int]"
+    if field.kind == "bytes_array":
+        return "list[bytearray]"
+    if field.kind == "chars_array":
+        return "list[str]"
     return "int"
 
 
@@ -169,6 +182,33 @@ def _value_expr(field: Field, enum_names: set[str]) -> str:
         )
     if field.kind == "scalar" and field.c_type in enum_names:
         return f"{field.name}.value"
+    if field.kind == "array":
+        return (
+            f'{{"arrayLen": len({field.name}), '
+            f'"array": {field.name}}}'
+        )
+    if field.kind == "scalar_array":
+        if field.c_type in enum_names:
+            return (
+                f'{{"arrayLen": len({field.name}), '
+                f'"array": [_v.value for _v in {field.name}]}}'
+            )
+        return (
+            f'{{"arrayLen": len({field.name}), '
+            f'"array": list({field.name})}}'
+        )
+    if field.kind == "bytes_array":
+        return (
+            f'{{"arrayLen": len({field.name}), '
+            f'"array": [{{"bytes": list(_b), "bytesLen": len(_b)}} '
+            f'for _b in {field.name}]}}'
+        )
+    if field.kind == "chars_array":
+        return (
+            f'{{"arrayLen": len({field.name}), '
+            f'"array": [{{"characters": [ord(_c) for _c in _s], '
+            f'"charactersLen": len(_s)}} for _s in {field.name}]}}'
+        )
     return field.name
 
 

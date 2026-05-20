@@ -1,107 +1,83 @@
 """
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
+
+    Demonstration of the v1.0 public API surface (ADR-0012):
+      - `EXIProcessor` for encode/decode per Namespace.
+      - `V2Gjson` builder modules — one per Namespace — for constructing
+        EVerest-shape JSON payloads using typed constructors and enums.
+
+    Each Namespace lives at `V2Gjson.<lowercased ProtocolEnum name>` and is
+    imported as a module (`from V2Gjson import din`). Wildcard imports are
+    avoided because every Namespace defines `MessageHeaderType`, `BodyType`,
+    `V2G_Message`, etc., which silently collide on import order.
 """
 
-from EXIProcessor import *
 import json
 
-# EXI string for PreChargeRequest
-exiStringPrechargeReq = b'809a021050908c0c0c0c0c51514002808142807c0c0c0000'
-exiBytesPrechargeReq = bytes.fromhex(exiStringPrechargeReq.decode('utf-8'))
+from EXIProcessor import EXIProcessor, ProtocolEnum
+from V2Gjson import din, iso20_common, sap
 
-# Json string for SessionSetupRes
-jsonStringSessionSetupRes = """
-{
-    "Body": {
-        "SessionSetupRes": {
-            "EVSEID": {
-                "bytes": [
-                    0
-                ],
-                "bytesLen": 1
-            },
-            "ResponseCode": 0,
-            "isUsed": true
-        }
-    },
-    "Header": {
-        "SessionID": {
-            "bytes": [
-                65,
-                66,
-                66,
-                48,
-                48,
-                48,
-                48,
-                49
-            ],
-            "bytesLen": 8
-        }
-    }
-}"""
 
-# Create instance of EXIProcessor
+# ---------------------------------------------------------------------------
+# DIN: decode a real PreChargeReq, then build + encode a CableCheckReq using
+# V2Gjson.din constructors.
+# ---------------------------------------------------------------------------
+
 dinProcessor = EXIProcessor(ProtocolEnum.DIN)
 
-# Decode the EXI bytes
+exiBytesPrechargeReq = bytes.fromhex("809a021050908c0c0c0c0c51514002808142807c0c0c0000")
 decodedJson = dinProcessor.decode(exiBytesPrechargeReq)
-print("Decoded result for PreChargeRequest:\n", json.dumps(decodedJson, indent=4))
+print("Decoded DIN PreChargeReq:\n", json.dumps(decodedJson, indent=4))
 
-# Encode the json string
-encodedEXIResult = dinProcessor.encode(json.loads(jsonStringSessionSetupRes))
-if encodedEXIResult is not None:
-    print("Encoded EXI for SessionSetupRes:", encodedEXIResult.hex())
-else:
-    print("Encoding failed, result is None")
-print("\n\n")
+dinHeader = din.MessageHeaderType(SessionID=bytearray(b"DECAFBAD"))
+dinStatus = din.DC_EVStatusType(
+    EVReady=1, EVErrorCode=din.DC_EVErrorCodeType.NO_ERROR, EVRESSSOC=85
+)
+dinBody = din.BodyType(CableCheckReq=din.CableCheckReqType(DC_EVStatus=dinStatus))
+dinMessage = din.V2G_Message(Header=dinHeader, Body=dinBody)
+print("\nBuilt DIN CableCheckReq via V2Gjson:\n", json.dumps(dinMessage, indent=4))
+
+encodedDin = dinProcessor.encode(dinMessage)
+print("Encoded DIN CableCheckReq EXI:", encodedDin.hex() if encodedDin else "FAILED")
 
 
-# EXI string for supportedAppProtocolReq
-exiStringSupportedAppProtocolReq = b'8000dbab9371d3234b71d1b981899189d191818991d26b9b3a232b30020000040401b75726e3a7465736c613a64696e3a323031383a4d736744656600001c0100080'
-exiBytesSupportedAppProtocolReq = bytes.fromhex(exiStringSupportedAppProtocolReq.decode('utf-8'))
+# ---------------------------------------------------------------------------
+# SAP: decode a supportedAppProtocolReq, then build + encode a Res payload.
+# ---------------------------------------------------------------------------
 
-# Json string for supportedAppProtocolRes
-jsonStringSupportedAppProtocolRes = """
-{
-    "supportedAppProtocolRes": {
-        "ResponseCode": 0,
-        "SchemaID": 1
-    }
-}"""
+sapProcessor = EXIProcessor(ProtocolEnum.SAP)
 
-# Create instance of SupportedAppProtocolProcessor
-appHandshakeProcessor = EXIProcessor(ProtocolEnum.SAP)
+exiBytesSAP = bytes.fromhex(
+    "8000dbab9371d3234b71d1b981899189d191818991d26b9b3a232b30020000040401"
+    "b75726e3a7465736c613a64696e3a323031383a4d736744656600001c0100080"
+)
+decodedSAP = sapProcessor.decode(exiBytesSAP)
+print("\nDecoded SAP supportedAppProtocolReq:\n", json.dumps(decodedSAP, indent=4))
 
-# Decode the EXI bytes for supportedAppProtocolReq
-decodedJsonSupportedAppProtocolReq = appHandshakeProcessor.decode(exiBytesSupportedAppProtocolReq)
-print("Decoded result for supportedAppProtocolReq:\n", json.dumps(decodedJsonSupportedAppProtocolReq, indent=4))
+sapResMessage = {
+    "supportedAppProtocolRes": sap.supportedAppProtocolRes(
+        ResponseCode=sap.responseCodeType.OK_SuccessfulNegotiation,
+        SchemaID=1,
+    )
+}
+encodedSAP = sapProcessor.encode(sapResMessage)
+print("Encoded SAP supportedAppProtocolRes EXI:", encodedSAP.hex() if encodedSAP else "FAILED")
 
-# Encode the json string for supportedAppProtocolRes
-encodedEXIResultSupportedAppProtocolRes = appHandshakeProcessor.encode(json.loads(jsonStringSupportedAppProtocolRes))
-if encodedEXIResultSupportedAppProtocolRes is not None:
-    print("Encoded EXI for supportedAppProtocolRes:", encodedEXIResultSupportedAppProtocolRes.hex())
-else:
-    print("Encoding failed, result is None")
 
-# Using functions from V2Gjson package to create json payloads
-from V2Gjson.din import *
+# ---------------------------------------------------------------------------
+# ISO 15118-20 Common: build a SessionSetupReq via V2Gjson.iso20_common.
+# ISO-20 messages live at the top level (no V2G_Message envelope) — each
+# is wrapped in a Body union, the same shape `EXIProcessor.encode` accepts.
+# ---------------------------------------------------------------------------
 
-Header = MessageHeaderType(SessionID=bytearray(b'DECAFBAD'))
-
-DC_EVStatus = DC_EVStatusType(EVReady=True, EVErrorCode=DC_EVErrorCodeType.NO_ERROR, EVRESSSOC=85)
-CableCheckReq = CableCheckReqType(DC_EVStatus=DC_EVStatus)
-
-Body = BodyType(CableCheckReq=CableCheckReq)
-
-V2Gpkt = V2G_Message(Header=Header, Body=Body)
-
-print("\n\nCreated V2G_Message using V2Gjson package:")
-print(json.dumps(V2Gpkt, indent=4))
-
-# Encode the created V2G_Message
-encodedEXIResultV2GMessage = dinProcessor.encode(V2Gpkt)
-if encodedEXIResultV2GMessage is not None:
-    print("Encoded EXI for created V2G_Message:", encodedEXIResultV2GMessage.hex())
-else:
-    print("Encoding failed, result is None")
+iso20Header = iso20_common.MessageHeaderType(
+    SessionID=bytearray(b"DECAFBAD"), TimeStamp=1700000000
+)
+iso20SessionSetup = iso20_common.SessionSetupReqType(
+    Header=iso20Header, EVCCID="EVCC-001"
+)
+iso20Message = {"Body": {"SessionSetupReq": iso20SessionSetup}}
+print(
+    "\nBuilt ISO-20 Common SessionSetupReq via V2Gjson:\n",
+    json.dumps(iso20Message, indent=4),
+)

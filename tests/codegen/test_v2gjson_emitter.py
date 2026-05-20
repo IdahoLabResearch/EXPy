@@ -286,3 +286,138 @@ def test_first_enum_value_resolves_correctly():
     cls = ns["responseCodeType"]
     first = next(iter(cls))  # type: ignore[call-overload]
     assert first.value == 0
+
+
+def test_bytes_array_wraps_each_element_into_bytes_envelope():
+    """``{ struct { uint8_t bytes[N]; uint16_t bytesLen; } array[M]; uint16_t arrayLen; }``
+    — the wire shape is a list of byte-envelope dicts. Constructor takes
+    ``list[bytearray]`` and emits each element as ``{"bytes": [...], "bytesLen": N}``,
+    matching the hand-written ``X509DataType.SubCertificates`` shape.
+    """
+    header = """
+    struct ns_SubCertificatesType {
+        struct {
+            struct {
+                uint8_t bytes[ns_Certificate_BYTES_SIZE];
+                uint16_t bytesLen;
+            } array[ns_Certificate_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } Certificate;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    ns = _exec(src)
+    ctor = ns["SubCertificatesType"]
+    certs = [bytearray(b"AB"), bytearray(b"X")]
+    assert ctor(certs) == {  # type: ignore[operator]
+        "Certificate": {
+            "arrayLen": 2,
+            "array": [
+                {"bytes": [65, 66], "bytesLen": 2},
+                {"bytes": [88], "bytesLen": 1},
+            ],
+        }
+    }
+
+
+def test_chars_array_wraps_each_element_into_characters_envelope():
+    """``{ struct { char characters[N]; uint16_t charactersLen; } array[M]; uint16_t arrayLen; }``
+    — list of character-envelope dicts. Constructor takes ``list[str]`` and
+    emits ``{"characters": [ord(c)...], "charactersLen": N}`` per element.
+    Matches DIN's ``ListOfRootCertificateIDsType.RootCertificateID``.
+    """
+    header = """
+    struct ns_ListOfRootCertificateIDsType {
+        struct {
+            struct {
+                char characters[ns_RootCertificateID_CHARACTER_SIZE];
+                uint16_t charactersLen;
+            } array[ns_RootCertificateID_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } RootCertificateID;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    ns = _exec(src)
+    ctor = ns["ListOfRootCertificateIDsType"]
+    got = ctor(["AB", "X"])  # type: ignore[operator]
+    assert got == {
+        "RootCertificateID": {
+            "arrayLen": 2,
+            "array": [
+                {"characters": [65, 66], "charactersLen": 2},
+                {"characters": [88], "charactersLen": 1},
+            ],
+        }
+    }
+
+
+def test_scalar_array_of_enum_emits_value_unwrapping():
+    """``{ <enumType> array[N]; uint16_t arrayLen; }`` — the wire shape carries
+    raw ints, so the constructor takes a ``list[<EnumClass>]`` and emits
+    ``{"arrayLen": len(x), "array": [v.value for v in x]}``. This matches the
+    hand-written ``DIN_PaymentOptionsType`` shape exactly.
+    """
+    header = """
+    typedef enum {
+        ns_paymentOptionType_Contract = 0,
+        ns_paymentOptionType_External = 1
+    } ns_paymentOptionType;
+    struct ns_PaymentOptionsType {
+        struct {
+            ns_paymentOptionType array[ns_PaymentOption_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } PaymentOption;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    ns = _exec(src)
+    ctor = ns["PaymentOptionsType"]
+    Enum = ns["paymentOptionType"]
+    got = ctor([Enum.Contract, Enum.External])  # type: ignore[operator]
+    assert got == {"PaymentOption": {"arrayLen": 2, "array": [0, 1]}}
+
+
+def test_scalar_array_of_plain_int_emits_list_verbatim():
+    """``{ uint8_t array[N]; uint16_t arrayLen; }`` — non-enum scalar array.
+    Constructor takes a ``list[int]`` and emits the raw ints inside the
+    arrayLen envelope.
+    """
+    header = """
+    struct ns_Bag {
+        struct {
+            uint8_t array[ns_Items_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } Items;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    ns = _exec(src)
+    ctor = ns["Bag"]
+    assert ctor([3, 5, 7]) == {  # type: ignore[operator]
+        "Items": {"arrayLen": 3, "array": [3, 5, 7]}
+    }
+
+
+def test_struct_array_field_wraps_into_arrayLen_envelope():
+    """An anon ``{ struct ns_Entry array[N]; uint16_t arrayLen; } Field;``
+    member accepts a ``list[dict]`` and emits the EVerest array shape:
+    ``{"arrayLen": len(x), "array": x}`` — matching what the marshaler reads.
+    The hand-written V2Gjson constructors wrapped lists this way; the codegen
+    output must do the same so the public API stays callable for list fields.
+    """
+    header = """
+    struct ns_Container {
+        struct {
+            struct ns_Entry array[ns_Entry_ARRAY_SIZE];
+            uint16_t arrayLen;
+        } Entries;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    ns = _exec(src)
+    ctor = ns["Container"]
+    entries = [{"k": 1}, {"k": 2}]
+    assert ctor(entries) == {  # type: ignore[operator]
+        "Entries": {"arrayLen": 2, "array": entries}
+    }
