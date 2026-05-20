@@ -1,5 +1,7 @@
 # Public API Surface: EXIProcessor and EVerest JSON Shape Only
 
+**Status: superseded by [ADR-0012](./0012-public-api-surface-cli.md). The Python surface defined here is retained; the CLI was added as a second public surface in 0012.**
+
 EXPy's public, stable surface is `EXIProcessor`, `ProtocolEnum`, the six encode/decode methods on a Processor (Document, Fragment, XmldsigFragment — each with encode and decode), and the EVerest JSON shape produced and consumed by those methods. Everything under `V2Gjson/` (enum classes like `costKindType`, `paymentOptionType`, helper modules) is **internal** and may change without notice. Consumers that want typed enums should generate their own from `libcbv2g` headers, or accept the enum values as raw integers per the EVerest JSON shape.
 
 ## Considered Options
