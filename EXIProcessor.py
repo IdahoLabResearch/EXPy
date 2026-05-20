@@ -8,12 +8,18 @@ import os
 
 from enum import Enum
 
+from _version import __version__
+
 
 class ProtocolEnum(Enum):
     SAP = "SupportedAppProtocol"
     DIN = "DIN"
     ISO2 = "ISO2"
-    ISO20 = "ISO20"
+    ISO20_COMMON = "ISO20Common"
+    ISO20_AC = "ISO20AC"
+    ISO20_DC = "ISO20DC"
+    ISO20_WPT = "ISO20WPT"
+    ISO20_ACDP = "ISO20ACDP"
 
 
 class EncodeError(Exception):

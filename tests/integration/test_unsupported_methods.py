@@ -27,7 +27,7 @@ def _call_in_child(protocol_name, method_name, queue):
         queue.put(("setup_error", f"{type(e).__name__}: {e}"))
 
 
-@pytest.mark.parametrize("protocol_name", ["SAP", "DIN"])
+@pytest.mark.parametrize("protocol_name", ["SAP", "DIN", "ISO20_WPT", "ISO20_ACDP"])
 @pytest.mark.parametrize(
     "method_name",
     ["encode_fragment", "decode_fragment", "encode_xmldsig", "decode_xmldsig"],

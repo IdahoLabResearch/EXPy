@@ -32,12 +32,17 @@ _Avoid_: Serializer, mapper, converter.
 The JSON conventions EXPy emits and accepts: byte fields as `{"bytes": [...], "bytesLen": N}`, optional sub-elements signaled by JSON field presence (key omitted ↔ the C struct's `_isUsed` bit is 0), root keyed by message type name. Inherited from `libcbv2g` conventions; consumers either match this shape or translate at their boundary.
 _Avoid_: JSON format, schema, wire format.
 
+**V2Gjson builder**:
+A Python package shipping one module per **Namespace** (`V2Gjson.din`, `V2Gjson.iso2`, `V2Gjson.sap`, `V2Gjson.iso20_common`, `V2Gjson.iso20_ac`, `V2Gjson.iso20_dc`, `V2Gjson.iso20_wpt`, `V2Gjson.iso20_acdp`). Each module exposes typed enum classes and constructor functions whose names mirror the `libcbv2g` identifiers (namespace prefix stripped). Constructors emit dicts in the **EVerest JSON shape**, ready to pass to a **Processor**'s `encode`. Public API surface alongside `EXIProcessor`.
+_Avoid_: V2G builder, JSON helper, payload factory.
+
 ## Relationships
 
-- One **Namespace** maps to exactly one **Processor**.
+- One **Namespace** maps to exactly one **Processor** and exactly one **V2Gjson builder** module.
 - A **Processor** exposes encode/decode for **Documents**, **Fragments**, and (where the underlying schema defines it) **XmldsigFragments**.
 - A **Processor** is composed of many **Marshalers** — one per C struct type in its `libcbv2g` schema.
 - All Processors emit and accept the **EVerest JSON shape**.
+- A **V2Gjson builder** module produces dicts in the **EVerest JSON shape** that match what its sibling **Processor**'s `encode` consumes.
 
 ## Example dialogue
 
