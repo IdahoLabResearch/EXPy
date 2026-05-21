@@ -6,7 +6,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-import V2Gjson.iso2 as v2gjson_iso2
+import expy.v2gjson.iso2 as v2gjson_iso2
 
 from codegen.parser import parse_header
 import pytest

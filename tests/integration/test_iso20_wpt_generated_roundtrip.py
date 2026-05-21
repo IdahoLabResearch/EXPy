@@ -15,7 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-import V2Gjson.iso20_wpt as v2gjson_iso20_wpt  # noqa: E402
+import expy.v2gjson.iso20_wpt as v2gjson_iso20_wpt  # noqa: E402
 
 from codegen.fixture_emitter import (  # noqa: E402
     emit_fragment_scenarios,

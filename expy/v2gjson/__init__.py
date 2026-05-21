@@ -2,7 +2,7 @@
     Copyright 2025, Battelle Energy Alliance, LLC All Rights Reserved
 """
 
-from _version import __version__
+from .._version import __version__
 
 from . import (
     common,

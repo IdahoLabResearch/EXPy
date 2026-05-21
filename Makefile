@@ -272,52 +272,52 @@ $(ISO20_ACDP_PROC_CPP) $(ISO20_ACDP_PROC_HPP) &: $(ISO20_ACDP_HEADER) $(wildcard
 
 EXI_BASETYPES_HEADER = extern/libcbv2g/include/cbv2g/common/exi_basetypes.h
 
-V2Gjson/common.py: $(EXI_BASETYPES_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/common.py: $(EXI_BASETYPES_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(EXI_BASETYPES_HEADER) --out $@ --namespace-prefix exi_ \
 	  --module-doc "Constructors for the libcbv2g exi_basetypes shared helper types."
 
-V2Gjson/sap.py: $(SAP_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/sap.py: $(SAP_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(SAP_HEADER) --out $@ --namespace-prefix appHand_ \
 	  --module-doc "Constructors and enum tables for the SAP (Supported App Protocol) Namespace."
 
-V2Gjson/din.py: $(DIN_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/din.py: $(DIN_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(DIN_HEADER) --out $@ --namespace-prefix din_ \
 	  --module-doc "Constructors and enum tables for the DIN 70121 Namespace."
 
-V2Gjson/iso2.py: $(ISO2_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso2.py: $(ISO2_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO2_HEADER) --out $@ --namespace-prefix iso2_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-2 Namespace."
 
-V2Gjson/iso20_common.py: $(ISO20_COMMON_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso20_common.py: $(ISO20_COMMON_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_COMMON_HEADER) --out $@ --namespace-prefix iso20_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-20 Common Messages Namespace."
 
-V2Gjson/iso20_ac.py: $(ISO20_AC_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso20_ac.py: $(ISO20_AC_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_AC_HEADER) --out $@ --namespace-prefix iso20_ac_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-20 AC Namespace."
 
-V2Gjson/iso20_dc.py: $(ISO20_DC_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso20_dc.py: $(ISO20_DC_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_DC_HEADER) --out $@ --namespace-prefix iso20_dc_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-20 DC Namespace."
 
-V2Gjson/iso20_wpt.py: $(ISO20_WPT_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso20_wpt.py: $(ISO20_WPT_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_WPT_HEADER) --out $@ --namespace-prefix iso20_wpt_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-20 WPT Namespace."
 
-V2Gjson/iso20_acdp.py: $(ISO20_ACDP_HEADER) tools/codegen/v2gjson_emitter.py
+expy/v2gjson/iso20_acdp.py: $(ISO20_ACDP_HEADER) tools/codegen/v2gjson_emitter.py
 	PYTHONPATH=$(CODEGEN_PYTHONPATH) python3 -m codegen.v2gjson_emitter \
 	  --header $(ISO20_ACDP_HEADER) --out $@ --namespace-prefix iso20_acdp_ \
 	  --module-doc "Constructors and enum tables for the ISO 15118-20 ACDP Namespace."
 
-GENERATED_V2GJSON = V2Gjson/common.py V2Gjson/sap.py V2Gjson/din.py V2Gjson/iso2.py V2Gjson/iso20_common.py V2Gjson/iso20_ac.py V2Gjson/iso20_dc.py V2Gjson/iso20_wpt.py V2Gjson/iso20_acdp.py
+GENERATED_V2GJSON = expy/v2gjson/common.py expy/v2gjson/sap.py expy/v2gjson/din.py expy/v2gjson/iso2.py expy/v2gjson/iso20_common.py expy/v2gjson/iso20_ac.py expy/v2gjson/iso20_dc.py expy/v2gjson/iso20_wpt.py expy/v2gjson/iso20_acdp.py
 
 $(BUILD_DIR)/DINProcessor.generated.o: $(DIN_GENERATED) $(DIN_PROC_CPP) $(DIN_PROC_HPP)
 $(BUILD_DIR)/SupportedAppProtocolProcessor.generated.o: $(SAP_GENERATED) $(SAP_PROC_CPP) $(SAP_PROC_HPP)

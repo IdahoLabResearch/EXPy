@@ -379,7 +379,7 @@ def _resolve_enum_value(c_type: str, *, v2gjson: Any, namespace_prefix: str) -> 
     if v2gjson is None:
         raise GeneratorError(
             f"enum-typed scalar of type {c_type} needs a v2gjson module — pass "
-            "v2gjson=<V2Gjson.{namespace}> to emit_body()"
+            "v2gjson=<expy.v2gjson.{namespace}> to emit_body()"
         )
     short = c_type
     if namespace_prefix and short.startswith(namespace_prefix):

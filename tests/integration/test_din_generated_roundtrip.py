@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-import V2Gjson.din as v2gjson_din  # noqa: E402
+import expy.v2gjson.din as v2gjson_din  # noqa: E402
 
 from codegen.din_choices import CHOICES as DIN_CHOICES  # noqa: E402
 from codegen.fixture_emitter import (  # noqa: E402

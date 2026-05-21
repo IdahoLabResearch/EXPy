@@ -6,16 +6,16 @@
       - `V2Gjson` builder modules — one per Namespace — for constructing
         EVerest-shape JSON payloads using typed constructors and enums.
 
-    Each Namespace lives at `V2Gjson.<lowercased Namespace name>` and is
-    imported as a module (`from V2Gjson import din`). Wildcard imports are
-    avoided because every Namespace defines `MessageHeaderType`, `BodyType`,
-    `V2G_Message`, etc., which silently collide on import order.
+    Each Namespace lives at `expy.v2gjson.<lowercased Namespace name>` and is
+    imported as a module (`from expy.v2gjson import din`). Wildcard imports
+    are avoided because every Namespace defines `MessageHeaderType`,
+    `BodyType`, `V2G_Message`, etc., which silently collide on import order.
 """
 
 import json
 
-from EXIProcessor import EXIProcessor, Namespace
-from V2Gjson import din, iso20_common, sap
+from expy import EXIProcessor, Namespace
+from expy.v2gjson import din, iso20_common, sap
 
 
 # ---------------------------------------------------------------------------

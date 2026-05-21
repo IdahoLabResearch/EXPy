@@ -26,7 +26,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import EXIProcessor, Namespace  # noqa: E402
+from expy import EXIProcessor, Namespace  # noqa: E402
 
 BUILD = REPO_ROOT / "build"
 
@@ -73,7 +73,7 @@ def test_python_processor_surface(protocol):
 
 @pytest.mark.parametrize("protocol", list(Namespace), ids=lambda p: p.name)
 def test_v2gjson_module_surface(protocol):
-    module_name = f"V2Gjson.{protocol.name.lower()}"
+    module_name = f"expy.v2gjson.{protocol.name.lower()}"
     module = importlib.import_module(module_name)
     constructor = _v2gjson_constructor_for(protocol.name)
     assert callable(getattr(module, constructor, None)), (

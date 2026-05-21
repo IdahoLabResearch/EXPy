@@ -8,7 +8,7 @@ import os
 
 from enum import Enum
 
-from _version import __version__
+from ._version import __version__
 
 
 class Namespace(Enum):
@@ -106,10 +106,26 @@ _ROOT_BY_SYMBOL = {
 }
 
 
+def _resolve_so_path(namespaceString: str) -> str:
+    """Locate the per-Namespace ``lib-<ns>Processor.so``.
+
+    ADR-0013 ships the eight ``.so`` files inside ``expy/v2gjson/`` as wheel
+    package data. Pre-wheel source-tree builds still emit them into
+    ``<repo>/build/``; both layouts are searched here so the source tree stays
+    runnable while the pyproject build slice lands separately.
+    """
+    soName = f"lib-{namespaceString}Processor.so"
+    packageData = os.path.join(os.path.dirname(__file__), "v2gjson", soName)
+    if os.path.exists(packageData):
+        return packageData
+    sourceTreeBuild = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "build", soName))
+    return sourceTreeBuild
+
+
 class EXIProcessor():
     def __init__(self, namespace: Namespace):
         namespaceString = namespace.value
-        soFilePath = os.path.abspath(__file__ + f"/../build/lib-{namespaceString}Processor.so")
+        soFilePath = _resolve_so_path(namespaceString)
         self.lib = CDLL(soFilePath)
         self._namespace = namespace.name
 

@@ -19,7 +19,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import EXIProcessor, Namespace  # noqa: E402
+from expy import EXIProcessor, Namespace  # noqa: E402
 
 BUILD = REPO_ROOT / "build"
 

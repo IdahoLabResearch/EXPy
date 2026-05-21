@@ -24,7 +24,7 @@ from conftest import assert_roundtrip  # noqa: E402
 
 
 def test_sap_supported_app_protocol_req_roundtrip():
-    from V2Gjson import sap
+    from expy.v2gjson import sap
 
     protocols = [
         sap.AppProtocolType(
@@ -40,7 +40,7 @@ def test_sap_supported_app_protocol_req_roundtrip():
 
 
 def test_din_session_stop_req_roundtrip():
-    from V2Gjson import din
+    from expy.v2gjson import din
 
     header = din.MessageHeaderType(SessionID=bytearray(b"DECAFBAD"))
     body = din.BodyType(SessionStopReq=din.SessionStopType())
@@ -49,7 +49,7 @@ def test_din_session_stop_req_roundtrip():
 
 
 def test_iso2_session_stop_req_roundtrip():
-    from V2Gjson import iso2
+    from expy.v2gjson import iso2
 
     header = iso2.MessageHeaderType(SessionID=bytearray(b"DECAFBAD"))
     body = iso2.BodyType(
@@ -62,7 +62,7 @@ def test_iso2_session_stop_req_roundtrip():
 
 
 def test_iso20_common_session_setup_req_roundtrip():
-    from V2Gjson import iso20_common
+    from expy.v2gjson import iso20_common
 
     header = iso20_common.MessageHeaderType(
         SessionID=bytearray(b"DECAFBAD"), TimeStamp=0
@@ -76,7 +76,7 @@ def test_iso20_common_session_setup_req_roundtrip():
 
 
 def test_iso20_ac_charge_parameter_discovery_req_roundtrip():
-    from V2Gjson import iso20_ac
+    from expy.v2gjson import iso20_ac
 
     header = iso20_ac.MessageHeaderType(
         SessionID=bytearray(b"DECAFBAD"), TimeStamp=0
@@ -94,7 +94,7 @@ def test_iso20_ac_charge_parameter_discovery_req_roundtrip():
 
 
 def test_iso20_dc_charge_parameter_discovery_req_roundtrip():
-    from V2Gjson import iso20_dc
+    from expy.v2gjson import iso20_dc
 
     header = iso20_dc.MessageHeaderType(
         SessionID=bytearray(b"DECAFBAD"), TimeStamp=0
@@ -116,7 +116,7 @@ def test_iso20_dc_charge_parameter_discovery_req_roundtrip():
 
 
 def test_iso20_wpt_pairing_req_roundtrip():
-    from V2Gjson import iso20_wpt
+    from expy.v2gjson import iso20_wpt
 
     header = iso20_wpt.MessageHeaderType(
         SessionID=bytearray(b"DECAFBAD"), TimeStamp=0
@@ -132,7 +132,7 @@ def test_iso20_wpt_pairing_req_roundtrip():
 
 
 def test_iso20_acdp_connect_req_roundtrip():
-    from V2Gjson import iso20_acdp
+    from expy.v2gjson import iso20_acdp
 
     header = iso20_acdp.MessageHeaderType(
         SessionID=bytearray(b"DECAFBAD"), TimeStamp=0

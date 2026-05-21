@@ -219,7 +219,7 @@ def test_element_name_casing_is_preserved_verbatim():
     """Top-level element structs in libcbv2g use the element's XSD name
     verbatim, which is lowercase-first for elements like
     ``supportedAppProtocolReq``. The emitter must NOT normalize these to
-    PascalCase — `from V2Gjson.sap import supportedAppProtocolReq` is the
+    PascalCase — `from expy.v2gjson.sap import supportedAppProtocolReq` is the
     public surface we ship per ADR-0012.
     """
     header = """
@@ -426,7 +426,7 @@ def test_typedef_struct_constructor_keeps_namespace_prefix():
     the typedef name *is* the canonical Python public symbol. Unlike
     XSD-derived struct names (`iso2_BodyType` → `BodyType`), the prefix
     here is part of the type's identity — consumers do
-    ``from V2Gjson.common import exi_unsigned_t``. So the emitter must NOT
+    ``from expy.v2gjson.common import exi_unsigned_t``. So the emitter must NOT
     strip the namespace prefix from constructor names for typedef-struct
     specs.
     """

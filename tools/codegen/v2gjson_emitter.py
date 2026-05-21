@@ -1,4 +1,4 @@
-"""Emit `V2Gjson/<namespace>.py` modules from libcbv2g `*_Datatypes.h`.
+"""Emit `expy/v2gjson/<namespace>.py` modules from libcbv2g `*_Datatypes.h`.
 
 Output covers both surfaces consumers need:
 
