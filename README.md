@@ -41,20 +41,29 @@ Add testing for each specification
 ```bash
 git clone --recurse-submodules <giturl>
 cd EXPy
-make
+pip install .
 ```
 
-If you clone the project without the `--recurse-submodules` flag you can run the following command to initialized the submodules
+If you clone the project without the `--recurse-submodules` flag you can run the following command to initialize the submodules
 
 ```bash
 git submodule update --init --recursive
 ```
 
+`pip install .` invokes the `scikit-build-core` backend declared in
+`pyproject.toml`, which drives the CMake build of `libcbv2g` and the eight
+per-Namespace `.so` and CLI binaries, then bundles them into the installed
+`expy` package. The legacy `make` build is retained for source-tree
+development and produces the same `.so` files under `./build/`; the ctypes
+loader resolves either location.
+
 ## Usage from CMD
 
-For CMD help output
+The eight per-Namespace CLIs are installed as console scripts; once `pip
+install .` has run they are on `PATH` directly. For CMD help output:
+
 ```bash
-./build/DINProcessor -h
+DINProcessor -h
 ```
 
 ```
@@ -62,10 +71,10 @@ Encode and decode DIN EXI messages
 If no arguement specified for input/outfile, will default to stdin/stdout
 MUST use double quotes (") and lower case true/false
 Usage:
-  ./DINProcessor --[encode/decode]='STRING_OPTIONAL' -i FILE_INPUT -o FILE_OUTPUT
-  ./DINProcessor --decode='809a021050908c0c0c0c0c51e000040080'
-  ./DINProcessor -e -i input.json -o output.txt
-  ./DINProcessor [OPTION...]
+  DINProcessor --[encode/decode]='STRING_OPTIONAL' -i FILE_INPUT -o FILE_OUTPUT
+  DINProcessor --decode='809a021050908c0c0c0c0c51e000040080'
+  DINProcessor -e -i input.json -o output.txt
+  DINProcessor [OPTION...]
 
   -h, --help                 Show help
   -e, --encode [=arg(=cmd)]  Encode EXI message from JSON to EXI bytes
@@ -77,10 +86,10 @@ Usage:
 ### Encoding
 #### User Input
 ```bash
-./build/DINProcessor --encode='{"Body": {"SessionSetupRes": {"EVSEID": {"bytes": [0, 127, 0, 0, 16, 255, 119, 61, 253, 127, 0, 0, 90, 120, 167, 154, 129, 127, 0, 0, 92, 191, 184, 154, 129, 127, 0, 0, 176, 220, 184, 154], "bytesLen": 1}, "ResponseCode": 0, "isUsed": true}}, "Header": {"SessionID": {"bytes": [65, 66, 66, 48, 48, 48, 48, 49], "bytesLen": 8}}}'
+DINProcessor --encode='{"Body": {"SessionSetupRes": {"EVSEID": {"bytes": [0, 127, 0, 0, 16, 255, 119, 61, 253, 127, 0, 0, 90, 120, 167, 154, 129, 127, 0, 0, 92, 191, 184, 154, 129, 127, 0, 0, 176, 220, 184, 154], "bytesLen": 1}, "ResponseCode": 0, "isUsed": true}}, "Header": {"SessionID": {"bytes": [65, 66, 66, 48, 48, 48, 48, 49], "bytesLen": 8}}}'
 ```
 ```bash
-./build/DINProcessor --encode --input='inputFile.json'
+DINProcessor --encode --input='inputFile.json'
 ```
 #### Program Output
 ```
@@ -90,10 +99,10 @@ Usage:
 ### Decoding
 #### User Input
 ```bash
-./build/DINProcessor --decode='809a021050908c0c0c0c0c51e000040080'
+DINProcessor --decode='809a021050908c0c0c0c0c51e000040080'
 ```
 ```bash
-./build/DINProcessor --decode --input='inputFile.txt'
+DINProcessor --decode --input='inputFile.txt'
 ```
 #### Program Output
 ```
@@ -135,7 +144,7 @@ A more comprehensive example is shown in the example.py script. A small snipped 
 #### Python File
 
 ```python
-from EXIProcessor import *
+from expy import EXIProcessor, Namespace
 import json
 
 # EXI string for PreChargeRequest
