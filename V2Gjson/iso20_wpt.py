@@ -130,7 +130,7 @@ def TransformType(Algorithm:str, *, ANY:bytearray|None=None, XPath:str|None=None
         j["XPath"] = {"characters": [ord(c) for c in XPath], "charactersLen": len(XPath)}
     return j
 
-def TransformsType(Transform:int)->dict[str, Any]:
+def TransformsType(Transform:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Transform": Transform
     }
@@ -154,7 +154,7 @@ def DSAKeyValueType(Y:bytearray, *, P:bytearray|None=None, Q:bytearray|None=None
         j["PgenCounter"] = {"bytes": list(PgenCounter), "bytesLen": len(PgenCounter)}
     return j
 
-def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:int)->dict[str, Any]:
+def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "X509IssuerName": {"characters": [ord(c) for c in X509IssuerName], "charactersLen": len(X509IssuerName)},
         "X509SerialNumber": X509SerialNumber
@@ -191,7 +191,7 @@ def WPT_TxRxPulseOrderType(IndexNumber:int, TxRxIdentifier:int)->dict[str, Any]:
     }
     return j
 
-def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def SignatureMethodType(Algorithm:str, *, HMACOutputLength:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Algorithm": {"characters": [ord(c) for c in Algorithm], "charactersLen": len(Algorithm)}
     }
@@ -201,7 +201,7 @@ def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:by
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def KeyValueType(*, DSAKeyValue:int|None=None, RSAKeyValue:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyValueType(*, DSAKeyValue:dict[str, Any]|None=None, RSAKeyValue:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if DSAKeyValue is not None:
         j["DSAKeyValue"] = DSAKeyValue
@@ -219,7 +219,7 @@ def WPT_CoordinateXYZType(Coord_X:int, Coord_Y:int, Coord_Z:int)->dict[str, Any]
     }
     return j
 
-def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def ReferenceType(DigestMethod:dict[str, Any], DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DigestMethod": DigestMethod,
         "DigestValue": {"bytes": list(DigestValue), "bytesLen": len(DigestValue)}
@@ -234,7 +234,7 @@ def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, 
         j["Transforms"] = Transforms
     return j
 
-def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Type is not None:
         j["Type"] = {"characters": [ord(c) for c in Type], "charactersLen": len(Type)}
@@ -244,7 +244,7 @@ def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:int
         j["Transforms"] = Transforms
     return j
 
-def X509DataType(*, X509IssuerSerial:int|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def X509DataType(*, X509IssuerSerial:dict[str, Any]|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if X509IssuerSerial is not None:
         j["X509IssuerSerial"] = X509IssuerSerial
@@ -276,7 +276,7 @@ def SPKIDataType(SPKISexp:bytearray, *, ANY:bytearray|None=None)->dict[str, Any]
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignedInfoType(CanonicalizationMethod:int, SignatureMethod:int, Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
+def SignedInfoType(CanonicalizationMethod:dict[str, Any], SignatureMethod:dict[str, Any], Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "CanonicalizationMethod": CanonicalizationMethod,
         "SignatureMethod": SignatureMethod,
@@ -301,40 +301,40 @@ def RationalNumberType(Exponent:int, Value:int)->dict[str, Any]:
     }
     return j
 
-def WPT_LF_RxRSSIType(TxIdentifier:int, RSSI:int)->dict[str, Any]:
+def WPT_LF_RxRSSIType(TxIdentifier:int, RSSI:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "TxIdentifier": TxIdentifier,
         "RSSI": RSSI
     }
     return j
 
-def WPT_LF_RxRSSIListType(RSSIDataList:int)->dict[str, Any]:
+def WPT_LF_RxRSSIListType(RSSIDataList:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "RSSIDataList": RSSIDataList
     }
     return j
 
-def WPT_LF_TxDataType(TxIdentifier:int, EIRP:int)->dict[str, Any]:
+def WPT_LF_TxDataType(TxIdentifier:int, EIRP:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "TxIdentifier": TxIdentifier,
         "EIRP": EIRP
     }
     return j
 
-def WPT_LF_RxDataType(RxIdentifier:int, RSSIData:int)->dict[str, Any]:
+def WPT_LF_RxDataType(RxIdentifier:int, RSSIData:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "RxIdentifier": RxIdentifier,
         "RSSIData": RSSIData
     }
     return j
 
-def WPT_LF_TxDataListType(WPT_LF_TxDataList:int)->dict[str, Any]:
+def WPT_LF_TxDataListType(WPT_LF_TxDataList:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "WPT_LF_TxDataList": WPT_LF_TxDataList
     }
     return j
 
-def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:int|None=None, RetrievalMethod:int|None=None, X509Data:int|None=None, PGPData:int|None=None, SPKIData:int|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:dict[str, Any]|None=None, RetrievalMethod:dict[str, Any]|None=None, X509Data:dict[str, Any]|None=None, PGPData:dict[str, Any]|None=None, SPKIData:dict[str, Any]|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Id is not None:
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
@@ -356,7 +356,7 @@ def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:int|None=No
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def WPT_TxRxSpecDataType(TxRxIdentifier:int, TxRxPosition:int, TxRxOrientation:int)->dict[str, Any]:
+def WPT_TxRxSpecDataType(TxRxIdentifier:int, TxRxPosition:dict[str, Any], TxRxOrientation:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "TxRxIdentifier": TxRxIdentifier,
         "TxRxPosition": TxRxPosition,
@@ -364,7 +364,7 @@ def WPT_TxRxSpecDataType(TxRxIdentifier:int, TxRxPosition:int, TxRxOrientation:i
     }
     return j
 
-def WPT_LF_RxDataListType(WPT_LF_RxDataList:int)->dict[str, Any]:
+def WPT_LF_RxDataListType(WPT_LF_RxDataList:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "WPT_LF_RxDataList": WPT_LF_RxDataList
     }
@@ -391,7 +391,7 @@ def WPT_TxRxPackageSpecDataType(PulseSequenceOrder:list[dict[str, Any]], PulseSe
     }
     return j
 
-def WPT_LF_TransmitterDataType(NumberOfTransmitters:int, SignalFrequency:int, TxSpecData:list[dict[str, Any]], *, TxPackageSpecData:int|None=None)->dict[str, Any]:
+def WPT_LF_TransmitterDataType(NumberOfTransmitters:int, SignalFrequency:dict[str, Any], TxSpecData:list[dict[str, Any]], *, TxPackageSpecData:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "NumberOfTransmitters": NumberOfTransmitters,
         "SignalFrequency": SignalFrequency,
@@ -420,7 +420,7 @@ def WPT_LF_ReceiverDataType(NumberOfReceivers:int, RxSpecData:list[dict[str, Any
     }
     return j
 
-def WPT_LF_DataPackageType(PackageIndex:int, *, LF_TxData:int|None=None, LF_RxData:int|None=None)->dict[str, Any]:
+def WPT_LF_DataPackageType(PackageIndex:int, *, LF_TxData:dict[str, Any]|None=None, LF_RxData:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "PackageIndex": PackageIndex
     }
@@ -430,14 +430,14 @@ def WPT_LF_DataPackageType(PackageIndex:int, *, LF_TxData:int|None=None, LF_RxDa
         j["LF_RxData"] = LF_RxData
     return j
 
-def DetailedCostType(Amount:int, CostPerUnit:int)->dict[str, Any]:
+def DetailedCostType(Amount:dict[str, Any], CostPerUnit:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Amount": Amount,
         "CostPerUnit": CostPerUnit
     }
     return j
 
-def SignatureType(SignedInfo:int, SignatureValue:int, *, Id:str|None=None, KeyInfo:int|None=None, Object:int|None=None)->dict[str, Any]:
+def SignatureType(SignedInfo:dict[str, Any], SignatureValue:dict[str, Any], *, Id:str|None=None, KeyInfo:dict[str, Any]|None=None, Object:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SignedInfo": SignedInfo,
         "SignatureValue": SignatureValue
@@ -450,14 +450,14 @@ def SignatureType(SignedInfo:int, SignatureValue:int, *, Id:str|None=None, KeyIn
         j["Object"] = Object
     return j
 
-def DetailedTaxType(TaxRuleID:int, Amount:int)->dict[str, Any]:
+def DetailedTaxType(TaxRuleID:int, Amount:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "TaxRuleID": TaxRuleID,
         "Amount": Amount
     }
     return j
 
-def MessageHeaderType(SessionID:bytearray, TimeStamp:int, *, Signature:int|None=None)->dict[str, Any]:
+def MessageHeaderType(SessionID:bytearray, TimeStamp:int, *, Signature:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SessionID": {"bytes": list(SessionID), "bytesLen": len(SessionID)},
         "TimeStamp": TimeStamp
@@ -476,7 +476,7 @@ def SignaturePropertyType(Target:str, *, Id:str|None=None, ANY:bytearray|None=No
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def DisplayParametersType(*, PresentSOC:int|None=None, MinimumSOC:int|None=None, TargetSOC:int|None=None, MaximumSOC:int|None=None, RemainingTimeToMinimumSOC:int|None=None, RemainingTimeToTargetSOC:int|None=None, RemainingTimeToMaximumSOC:int|None=None, ChargingComplete:int|None=None, BatteryEnergyCapacity:int|None=None, InletHot:int|None=None)->dict[str, Any]:
+def DisplayParametersType(*, PresentSOC:int|None=None, MinimumSOC:int|None=None, TargetSOC:int|None=None, MaximumSOC:int|None=None, RemainingTimeToMinimumSOC:int|None=None, RemainingTimeToTargetSOC:int|None=None, RemainingTimeToMaximumSOC:int|None=None, ChargingComplete:int|None=None, BatteryEnergyCapacity:dict[str, Any]|None=None, InletHot:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if PresentSOC is not None:
         j["PresentSOC"] = PresentSOC
@@ -544,7 +544,7 @@ def WPT_AlignmentCheckMethodListType(WPT_AlignmentCheckMethod:list[WPT_Alignment
     }
     return j
 
-def WPT_LF_DataPackageListType(NumPackages:int, WPT_LF_DataPackage:int)->dict[str, Any]:
+def WPT_LF_DataPackageListType(NumPackages:int, WPT_LF_DataPackage:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "NumPackages": NumPackages,
         "WPT_LF_DataPackage": WPT_LF_DataPackage
@@ -557,7 +557,7 @@ def AlternativeSECCListType(AlternativeSECC:list[dict[str, Any]])->dict[str, Any
     }
     return j
 
-def ReceiptType(TimeAnchor:int, TaxCosts:list[dict[str, Any]], *, EnergyCosts:int|None=None, OccupancyCosts:int|None=None, AdditionalServicesCosts:int|None=None, OverstayCosts:int|None=None)->dict[str, Any]:
+def ReceiptType(TimeAnchor:int, TaxCosts:list[dict[str, Any]], *, EnergyCosts:dict[str, Any]|None=None, OccupancyCosts:dict[str, Any]|None=None, AdditionalServicesCosts:dict[str, Any]|None=None, OverstayCosts:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "TimeAnchor": TimeAnchor,
         "TaxCosts": {"arrayLen": len(TaxCosts), "array": TaxCosts}
@@ -572,7 +572,7 @@ def ReceiptType(TimeAnchor:int, TaxCosts:list[dict[str, Any]], *, EnergyCosts:in
         j["OverstayCosts"] = OverstayCosts
     return j
 
-def WPT_LF_SystemSetupDataType(*, LF_TransmitterSetupData:int|None=None, LF_ReceiverSetupData:int|None=None)->dict[str, Any]:
+def WPT_LF_SystemSetupDataType(*, LF_TransmitterSetupData:dict[str, Any]|None=None, LF_ReceiverSetupData:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if LF_TransmitterSetupData is not None:
         j["LF_TransmitterSetupData"] = LF_TransmitterSetupData
@@ -580,7 +580,7 @@ def WPT_LF_SystemSetupDataType(*, LF_TransmitterSetupData:int|None=None, LF_Rece
         j["LF_ReceiverSetupData"] = LF_ReceiverSetupData
     return j
 
-def WPT_EVPCPowerControlParameterType(EVPCCoilCurrentRequest:int, EVPCCoilCurrentInformation:int, EVPCCurrentOutputInformation:int, EVPCVoltageOutputInformation:int)->dict[str, Any]:
+def WPT_EVPCPowerControlParameterType(EVPCCoilCurrentRequest:dict[str, Any], EVPCCoilCurrentInformation:dict[str, Any], EVPCCurrentOutputInformation:dict[str, Any], EVPCVoltageOutputInformation:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "EVPCCoilCurrentRequest": EVPCCoilCurrentRequest,
         "EVPCCoilCurrentInformation": EVPCCoilCurrentInformation,
@@ -589,13 +589,13 @@ def WPT_EVPCPowerControlParameterType(EVPCCoilCurrentRequest:int, EVPCCoilCurren
     }
     return j
 
-def WPT_SPCPowerControlParameterType(SPCPrimaryDeviceCoilCurrentInformation:int)->dict[str, Any]:
+def WPT_SPCPowerControlParameterType(SPCPrimaryDeviceCoilCurrentInformation:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "SPCPrimaryDeviceCoilCurrentInformation": SPCPrimaryDeviceCoilCurrentInformation
     }
     return j
 
-def WPT_FinePositioningSetupReqType(Header:int, EVProcessing:processingType, EVDeviceFinePositioningMethodList:int, EVDevicePairingMethodList:int, EVDeviceAlignmentCheckMethodList:int, NaturalOffset:int, *, VendorSpecificDataContainer:list[bytearray]|None=None, LF_SystemSetupData:int|None=None)->dict[str, Any]:
+def WPT_FinePositioningSetupReqType(Header:dict[str, Any], EVProcessing:processingType, EVDeviceFinePositioningMethodList:dict[str, Any], EVDevicePairingMethodList:dict[str, Any], EVDeviceAlignmentCheckMethodList:dict[str, Any], NaturalOffset:int, *, VendorSpecificDataContainer:list[bytearray]|None=None, LF_SystemSetupData:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVProcessing": EVProcessing.value,
@@ -610,7 +610,7 @@ def WPT_FinePositioningSetupReqType(Header:int, EVProcessing:processingType, EVD
         j["LF_SystemSetupData"] = LF_SystemSetupData
     return j
 
-def WPT_FinePositioningSetupResType(Header:int, ResponseCode:responseCodeType, PrimaryDeviceFinePositioningMethodList:int, PrimaryDevicePairingMethodList:int, PrimaryDeviceAlignmentCheckMethodList:int, NaturalOffset:int, *, VendorSpecificDataContainer:list[bytearray]|None=None, LF_SystemSetupData:int|None=None)->dict[str, Any]:
+def WPT_FinePositioningSetupResType(Header:dict[str, Any], ResponseCode:responseCodeType, PrimaryDeviceFinePositioningMethodList:dict[str, Any], PrimaryDevicePairingMethodList:dict[str, Any], PrimaryDeviceAlignmentCheckMethodList:dict[str, Any], NaturalOffset:int, *, VendorSpecificDataContainer:list[bytearray]|None=None, LF_SystemSetupData:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -625,7 +625,7 @@ def WPT_FinePositioningSetupResType(Header:int, ResponseCode:responseCodeType, P
         j["LF_SystemSetupData"] = LF_SystemSetupData
     return j
 
-def WPT_FinePositioningReqType(Header:int, EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, VendorSpecificDataContainer:list[bytearray]|None=None, WPT_LF_DataPackageList:int|None=None)->dict[str, Any]:
+def WPT_FinePositioningReqType(Header:dict[str, Any], EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, VendorSpecificDataContainer:list[bytearray]|None=None, WPT_LF_DataPackageList:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVProcessing": EVProcessing.value,
@@ -637,7 +637,7 @@ def WPT_FinePositioningReqType(Header:int, EVProcessing:processingType, EVResult
         j["WPT_LF_DataPackageList"] = WPT_LF_DataPackageList
     return j
 
-def WPT_FinePositioningResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing:processingType, *, VendorSpecificDataContainer:list[bytearray]|None=None, WPT_LF_DataPackageList:int|None=None)->dict[str, Any]:
+def WPT_FinePositioningResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEProcessing:processingType, *, VendorSpecificDataContainer:list[bytearray]|None=None, WPT_LF_DataPackageList:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -649,7 +649,7 @@ def WPT_FinePositioningResType(Header:int, ResponseCode:responseCodeType, EVSEPr
         j["WPT_LF_DataPackageList"] = WPT_LF_DataPackageList
     return j
 
-def WPT_PairingReqType(Header:int, EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, ObservedIDCode:int|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_PairingReqType(Header:dict[str, Any], EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, ObservedIDCode:int|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVProcessing": EVProcessing.value,
@@ -661,7 +661,7 @@ def WPT_PairingReqType(Header:int, EVProcessing:processingType, EVResultCode:WPT
         j["VendorSpecificDataContainer"] = {"arrayLen": len(VendorSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in VendorSpecificDataContainer]}
     return j
 
-def WPT_PairingResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing:processingType, *, ObservedIDCode:int|None=None, AlternativeSECCList:int|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_PairingResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEProcessing:processingType, *, ObservedIDCode:int|None=None, AlternativeSECCList:dict[str, Any]|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -675,7 +675,7 @@ def WPT_PairingResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing
         j["VendorSpecificDataContainer"] = {"arrayLen": len(VendorSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in VendorSpecificDataContainer]}
     return j
 
-def WPT_ChargeParameterDiscoveryReqType(Header:int, EVPCMaxReceivablePower:int, SDMaxGroundClearence:int, SDMinGroundClearence:int, EVPCNaturalFrequency:int, EVPCDeviceLocalControl:int, *, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_ChargeParameterDiscoveryReqType(Header:dict[str, Any], EVPCMaxReceivablePower:dict[str, Any], SDMaxGroundClearence:int, SDMinGroundClearence:int, EVPCNaturalFrequency:dict[str, Any], EVPCDeviceLocalControl:int, *, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVPCMaxReceivablePower": EVPCMaxReceivablePower,
@@ -688,7 +688,7 @@ def WPT_ChargeParameterDiscoveryReqType(Header:int, EVPCMaxReceivablePower:int, 
         j["VendorSpecificDataContainer"] = {"arrayLen": len(VendorSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in VendorSpecificDataContainer]}
     return j
 
-def WPT_ChargeParameterDiscoveryResType(Header:int, ResponseCode:responseCodeType, PDInputPowerClass:WPT_PowerClassType, SDMinOutputPower:int, SDMaxOutputPower:int, SDMaxGroundClearanceSupport:int, SDMinGroundClearanceSupport:int, PDMinCoilCurrent:int, PDMaxCoilCurrent:int, *, SDManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_ChargeParameterDiscoveryResType(Header:dict[str, Any], ResponseCode:responseCodeType, PDInputPowerClass:WPT_PowerClassType, SDMinOutputPower:dict[str, Any], SDMaxOutputPower:dict[str, Any], SDMaxGroundClearanceSupport:int, SDMinGroundClearanceSupport:int, PDMinCoilCurrent:dict[str, Any], PDMaxCoilCurrent:dict[str, Any], *, SDManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -704,7 +704,7 @@ def WPT_ChargeParameterDiscoveryResType(Header:int, ResponseCode:responseCodeTyp
         j["SDManufacturerSpecificDataContainer"] = {"arrayLen": len(SDManufacturerSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in SDManufacturerSpecificDataContainer]}
     return j
 
-def WPT_AlignmentCheckReqType(Header:int, EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, TargetCoilCurrent:int|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_AlignmentCheckReqType(Header:dict[str, Any], EVProcessing:processingType, EVResultCode:WPT_EVResultType, *, TargetCoilCurrent:dict[str, Any]|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVProcessing": EVProcessing.value,
@@ -716,7 +716,7 @@ def WPT_AlignmentCheckReqType(Header:int, EVProcessing:processingType, EVResultC
         j["VendorSpecificDataContainer"] = {"arrayLen": len(VendorSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in VendorSpecificDataContainer]}
     return j
 
-def WPT_AlignmentCheckResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing:processingType, *, PowerTransmitted:int|None=None, SupplyDeviceCurrent:int|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_AlignmentCheckResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEProcessing:processingType, *, PowerTransmitted:dict[str, Any]|None=None, SupplyDeviceCurrent:dict[str, Any]|None=None, VendorSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -730,7 +730,7 @@ def WPT_AlignmentCheckResType(Header:int, ResponseCode:responseCodeType, EVSEPro
         j["VendorSpecificDataContainer"] = {"arrayLen": len(VendorSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in VendorSpecificDataContainer]}
     return j
 
-def WPT_ChargeLoopReqType(Header:int, MeterInfoRequested:int, EVPCPowerRequest:int, EVPCPowerOutput:int, EVPCChargeDiagnostics:WPT_EVPCChargeDiagnosticsType, *, DisplayParameters:int|None=None, EVPCOperatingFrequency:int|None=None, EVPCPowerControlParameter:int|None=None, ManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_ChargeLoopReqType(Header:dict[str, Any], MeterInfoRequested:int, EVPCPowerRequest:dict[str, Any], EVPCPowerOutput:dict[str, Any], EVPCChargeDiagnostics:WPT_EVPCChargeDiagnosticsType, *, DisplayParameters:dict[str, Any]|None=None, EVPCOperatingFrequency:dict[str, Any]|None=None, EVPCPowerControlParameter:dict[str, Any]|None=None, ManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "MeterInfoRequested": MeterInfoRequested,
@@ -748,7 +748,7 @@ def WPT_ChargeLoopReqType(Header:int, MeterInfoRequested:int, EVPCPowerRequest:i
         j["ManufacturerSpecificDataContainer"] = {"arrayLen": len(ManufacturerSpecificDataContainer), "array": [{"bytes": list(_b), "bytesLen": len(_b)} for _b in ManufacturerSpecificDataContainer]}
     return j
 
-def WPT_ChargeLoopResType(Header:int, ResponseCode:responseCodeType, EVPCPowerRequest:int, SPCMaxOutputPowerLimit:int, SPCMinOutputPowerLimit:int, SPCChargeDiagnostics:WPT_SPCChargeDiagnosticsType, *, EVSEStatus:int|None=None, MeterInfo:int|None=None, Receipt:int|None=None, SDPowerInput:int|None=None, SPCOperatingFrequency:int|None=None, SPCPowerControlParameter:int|None=None, ManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
+def WPT_ChargeLoopResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVPCPowerRequest:dict[str, Any], SPCMaxOutputPowerLimit:dict[str, Any], SPCMinOutputPowerLimit:dict[str, Any], SPCChargeDiagnostics:WPT_SPCChargeDiagnosticsType, *, EVSEStatus:dict[str, Any]|None=None, MeterInfo:dict[str, Any]|None=None, Receipt:dict[str, Any]|None=None, SDPowerInput:dict[str, Any]|None=None, SPCOperatingFrequency:dict[str, Any]|None=None, SPCPowerControlParameter:dict[str, Any]|None=None, ManufacturerSpecificDataContainer:list[bytearray]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -789,7 +789,7 @@ def ManifestType(Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str,
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
     return j
 
-def SignaturePropertiesType(SignatureProperty:int, *, Id:str|None=None)->dict[str, Any]:
+def SignaturePropertiesType(SignatureProperty:dict[str, Any], *, Id:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SignatureProperty": SignatureProperty
     }

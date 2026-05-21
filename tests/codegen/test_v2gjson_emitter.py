@@ -498,6 +498,40 @@ def test_exi_signed_t_passes_nested_exi_unsigned_t_dict_through():
     }
 
 
+def test_nested_struct_field_is_typed_as_dict():
+    """A ``struct ns_Inner NAME;`` field — the parser tags it ``kind="struct"``
+    — corresponds at runtime to the dict returned by the matching nested
+    constructor. The emitter must annotate the parameter as
+    ``dict[str, Any]`` (required) or ``dict[str, Any] | None = None`` (optional),
+    not fall through to ``int``. Mirrors the existing ``kind="array"`` →
+    ``list[dict[str, Any]]`` typing and matches the C++ marshaler contract
+    (``getJson_<Inner>(...)`` emits a JSON object).
+    """
+    header = """
+    struct ns_Inner {
+        int16_t v;
+    };
+    struct ns_Outer {
+        struct ns_Inner Required;
+        struct ns_Inner Optional;
+        unsigned int Optional_isUsed:1;
+    };
+    """
+    src = emit(header, namespace_prefix="ns_", module_doc="x")
+    assert (
+        "def Outer(Required:dict[str, Any], *, Optional:dict[str, Any]|None=None)"
+        in src
+    )
+    ns = _exec(src)
+    ctor = ns["Outer"]
+    inner = ns["Inner"](1)  # type: ignore[operator]
+    assert ctor(inner) == {"Required": {"v": 1}}  # type: ignore[operator]
+    assert ctor(inner, Optional=inner) == {  # type: ignore[operator]
+        "Required": {"v": 1},
+        "Optional": {"v": 1},
+    }
+
+
 def test_struct_array_field_wraps_into_arrayLen_envelope():
     """An anon ``{ struct ns_Entry array[N]; uint16_t arrayLen; } Field;``
     member accepts a ``list[dict]`` and emits the EVerest array shape:

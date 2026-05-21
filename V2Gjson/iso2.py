@@ -166,7 +166,7 @@ def IntervalType()->dict[str, Any]:
     j:dict[str, Any] = {}
     return j
 
-def TransformsType(Transform:int)->dict[str, Any]:
+def TransformsType(Transform:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Transform": Transform
     }
@@ -190,7 +190,7 @@ def DSAKeyValueType(Y:bytearray, *, P:bytearray|None=None, Q:bytearray|None=None
         j["PgenCounter"] = {"bytes": list(PgenCounter), "bytesLen": len(PgenCounter)}
     return j
 
-def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:int)->dict[str, Any]:
+def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "X509IssuerName": {"characters": [ord(c) for c in X509IssuerName], "charactersLen": len(X509IssuerName)},
         "X509SerialNumber": X509SerialNumber
@@ -228,7 +228,7 @@ def CanonicalizationMethodType(Algorithm:str, *, ANY:bytearray|None=None)->dict[
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def SignatureMethodType(Algorithm:str, *, HMACOutputLength:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Algorithm": {"characters": [ord(c) for c in Algorithm], "charactersLen": len(Algorithm)}
     }
@@ -238,7 +238,7 @@ def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:by
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def KeyValueType(*, DSAKeyValue:int|None=None, RSAKeyValue:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyValueType(*, DSAKeyValue:dict[str, Any]|None=None, RSAKeyValue:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if DSAKeyValue is not None:
         j["DSAKeyValue"] = DSAKeyValue
@@ -256,14 +256,14 @@ def PhysicalValueType(Multiplier:int, Unit:unitSymbolType, Value:int)->dict[str,
     }
     return j
 
-def ConsumptionCostType(startValue:int, Cost:list[dict[str, Any]])->dict[str, Any]:
+def ConsumptionCostType(startValue:dict[str, Any], Cost:list[dict[str, Any]])->dict[str, Any]:
     j:dict[str, Any] = {
         "startValue": startValue,
         "Cost": {"arrayLen": len(Cost), "array": Cost}
     }
     return j
 
-def PMaxScheduleEntryType(PMax:int, *, RelativeTimeInterval:int|None=None, TimeInterval:int|None=None)->dict[str, Any]:
+def PMaxScheduleEntryType(PMax:dict[str, Any], *, RelativeTimeInterval:dict[str, Any]|None=None, TimeInterval:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "PMax": PMax
     }
@@ -273,7 +273,7 @@ def PMaxScheduleEntryType(PMax:int, *, RelativeTimeInterval:int|None=None, TimeI
         j["TimeInterval"] = TimeInterval
     return j
 
-def SalesTariffEntryType(ConsumptionCost:list[dict[str, Any]], *, RelativeTimeInterval:int|None=None, TimeInterval:int|None=None, EPriceLevel:int|None=None)->dict[str, Any]:
+def SalesTariffEntryType(ConsumptionCost:list[dict[str, Any]], *, RelativeTimeInterval:dict[str, Any]|None=None, TimeInterval:dict[str, Any]|None=None, EPriceLevel:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ConsumptionCost": {"arrayLen": len(ConsumptionCost), "array": ConsumptionCost}
     }
@@ -285,7 +285,7 @@ def SalesTariffEntryType(ConsumptionCost:list[dict[str, Any]], *, RelativeTimeIn
         j["EPriceLevel"] = EPriceLevel
     return j
 
-def ParameterType(Name:str, *, boolValue:int|None=None, byteValue:int|None=None, shortValue:int|None=None, intValue:int|None=None, physicalValue:int|None=None, stringValue:str|None=None)->dict[str, Any]:
+def ParameterType(Name:str, *, boolValue:int|None=None, byteValue:int|None=None, shortValue:int|None=None, intValue:int|None=None, physicalValue:dict[str, Any]|None=None, stringValue:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Name": {"characters": [ord(c) for c in Name], "charactersLen": len(Name)}
     }
@@ -309,7 +309,7 @@ def PMaxScheduleType(PMaxScheduleEntry:list[dict[str, Any]])->dict[str, Any]:
     }
     return j
 
-def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def ReferenceType(DigestMethod:dict[str, Any], DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DigestMethod": DigestMethod,
         "DigestValue": {"bytes": list(DigestValue), "bytesLen": len(DigestValue)}
@@ -324,7 +324,7 @@ def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, 
         j["Transforms"] = Transforms
     return j
 
-def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Type is not None:
         j["Type"] = {"characters": [ord(c) for c in Type], "charactersLen": len(Type)}
@@ -347,7 +347,7 @@ def SalesTariffType(SalesTariffID:int, SalesTariffEntry:list[dict[str, Any]], *,
         j["NumEPriceLevels"] = NumEPriceLevels
     return j
 
-def X509DataType(*, X509IssuerSerial:int|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def X509DataType(*, X509IssuerSerial:dict[str, Any]|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if X509IssuerSerial is not None:
         j["X509IssuerSerial"] = X509IssuerSerial
@@ -379,7 +379,7 @@ def SPKIDataType(SPKISexp:bytearray, *, ANY:bytearray|None=None)->dict[str, Any]
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignedInfoType(CanonicalizationMethod:int, SignatureMethod:int, Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
+def SignedInfoType(CanonicalizationMethod:dict[str, Any], SignatureMethod:dict[str, Any], Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "CanonicalizationMethod": CanonicalizationMethod,
         "SignatureMethod": SignatureMethod,
@@ -389,7 +389,7 @@ def SignedInfoType(CanonicalizationMethod:int, SignatureMethod:int, Reference:li
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
     return j
 
-def ProfileEntryType(ChargingProfileEntryStart:int, ChargingProfileEntryMaxPower:int, *, ChargingProfileEntryMaxNumberOfPhasesInUse:int|None=None)->dict[str, Any]:
+def ProfileEntryType(ChargingProfileEntryStart:int, ChargingProfileEntryMaxPower:dict[str, Any], *, ChargingProfileEntryMaxNumberOfPhasesInUse:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ChargingProfileEntryStart": ChargingProfileEntryStart,
         "ChargingProfileEntryMaxPower": ChargingProfileEntryMaxPower
@@ -413,7 +413,7 @@ def ParameterSetType(ParameterSetID:int, Parameter:list[dict[str, Any]])->dict[s
     }
     return j
 
-def SAScheduleTupleType(SAScheduleTupleID:int, PMaxSchedule:int, *, SalesTariff:int|None=None)->dict[str, Any]:
+def SAScheduleTupleType(SAScheduleTupleID:int, PMaxSchedule:dict[str, Any], *, SalesTariff:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SAScheduleTupleID": SAScheduleTupleID,
         "PMaxSchedule": PMaxSchedule
@@ -456,7 +456,7 @@ def SubCertificatesType(Certificate:list[bytearray])->dict[str, Any]:
     }
     return j
 
-def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:int|None=None, RetrievalMethod:int|None=None, X509Data:int|None=None, PGPData:int|None=None, SPKIData:int|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:dict[str, Any]|None=None, RetrievalMethod:dict[str, Any]|None=None, X509Data:dict[str, Any]|None=None, PGPData:dict[str, Any]|None=None, SPKIData:dict[str, Any]|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Id is not None:
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
@@ -496,7 +496,7 @@ def SupportedEnergyTransferModeType(EnergyTransferMode:list[EnergyTransferModeTy
     }
     return j
 
-def CertificateChainType(Certificate:bytearray, *, Id:str|None=None, SubCertificates:int|None=None)->dict[str, Any]:
+def CertificateChainType(Certificate:bytearray, *, Id:str|None=None, SubCertificates:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Certificate": {"bytes": list(Certificate), "bytesLen": len(Certificate)}
     }
@@ -540,7 +540,7 @@ def PaymentOptionListType(PaymentOption:list[paymentOptionType])->dict[str, Any]
     }
     return j
 
-def SignatureType(SignedInfo:int, SignatureValue:int, *, Id:str|None=None, KeyInfo:int|None=None, Object:int|None=None)->dict[str, Any]:
+def SignatureType(SignedInfo:dict[str, Any], SignatureValue:dict[str, Any], *, Id:str|None=None, KeyInfo:dict[str, Any]|None=None, Object:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SignedInfo": SignedInfo,
         "SignatureValue": SignatureValue
@@ -571,7 +571,7 @@ def ListOfRootCertificateIDsType(RootCertificateID:list[dict[str, Any]])->dict[s
     }
     return j
 
-def AC_EVChargeParameterType(EAmount:int, EVMaxVoltage:int, EVMaxCurrent:int, EVMinCurrent:int, *, DepartureTime:int|None=None)->dict[str, Any]:
+def AC_EVChargeParameterType(EAmount:dict[str, Any], EVMaxVoltage:dict[str, Any], EVMaxCurrent:dict[str, Any], EVMinCurrent:dict[str, Any], *, DepartureTime:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "EAmount": EAmount,
         "EVMaxVoltage": EVMaxVoltage,
@@ -582,7 +582,7 @@ def AC_EVChargeParameterType(EAmount:int, EVMaxVoltage:int, EVMaxCurrent:int, EV
         j["DepartureTime"] = DepartureTime
     return j
 
-def DC_EVChargeParameterType(DC_EVStatus:int, EVMaximumCurrentLimit:int, EVMaximumVoltageLimit:int, *, DepartureTime:int|None=None, EVMaximumPowerLimit:int|None=None, EVEnergyCapacity:int|None=None, EVEnergyRequest:int|None=None, FullSOC:int|None=None, BulkSOC:int|None=None)->dict[str, Any]:
+def DC_EVChargeParameterType(DC_EVStatus:dict[str, Any], EVMaximumCurrentLimit:dict[str, Any], EVMaximumVoltageLimit:dict[str, Any], *, DepartureTime:int|None=None, EVMaximumPowerLimit:dict[str, Any]|None=None, EVEnergyCapacity:dict[str, Any]|None=None, EVEnergyRequest:dict[str, Any]|None=None, FullSOC:int|None=None, BulkSOC:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus,
         "EVMaximumCurrentLimit": EVMaximumCurrentLimit,
@@ -602,7 +602,7 @@ def DC_EVChargeParameterType(DC_EVStatus:int, EVMaximumCurrentLimit:int, EVMaxim
         j["BulkSOC"] = BulkSOC
     return j
 
-def EVChargeParameterType(AC_EVChargeParameter:int, DC_EVChargeParameter:int, *, DepartureTime:int|None=None)->dict[str, Any]:
+def EVChargeParameterType(AC_EVChargeParameter:dict[str, Any], DC_EVChargeParameter:dict[str, Any], *, DepartureTime:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "AC_EVChargeParameter": AC_EVChargeParameter,
         "DC_EVChargeParameter": DC_EVChargeParameter
@@ -621,7 +621,7 @@ def SAScheduleListType(SAScheduleTuple:list[dict[str, Any]])->dict[str, Any]:
     }
     return j
 
-def ChargeServiceType(ServiceID:int, ServiceCategory:serviceCategoryType, FreeService:int, SupportedEnergyTransferMode:int, *, ServiceName:str|None=None, ServiceScope:str|None=None)->dict[str, Any]:
+def ChargeServiceType(ServiceID:int, ServiceCategory:serviceCategoryType, FreeService:int, SupportedEnergyTransferMode:dict[str, Any], *, ServiceName:str|None=None, ServiceScope:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ServiceID": ServiceID,
         "ServiceCategory": ServiceCategory.value,
@@ -638,7 +638,7 @@ def EVPowerDeliveryParameterType()->dict[str, Any]:
     j:dict[str, Any] = {}
     return j
 
-def DC_EVPowerDeliveryParameterType(DC_EVStatus:int, ChargingComplete:int, *, BulkChargingComplete:int|None=None)->dict[str, Any]:
+def DC_EVPowerDeliveryParameterType(DC_EVStatus:dict[str, Any], ChargingComplete:int, *, BulkChargingComplete:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus,
         "ChargingComplete": ChargingComplete
@@ -658,7 +658,7 @@ def EVSEChargeParameterType()->dict[str, Any]:
     j:dict[str, Any] = {}
     return j
 
-def DC_EVSEChargeParameterType(DC_EVSEStatus:int, EVSEMaximumCurrentLimit:int, EVSEMaximumPowerLimit:int, EVSEMaximumVoltageLimit:int, EVSEMinimumCurrentLimit:int, EVSEMinimumVoltageLimit:int, EVSEPeakCurrentRipple:int, *, EVSECurrentRegulationTolerance:int|None=None, EVSEEnergyToBeDelivered:int|None=None)->dict[str, Any]:
+def DC_EVSEChargeParameterType(DC_EVSEStatus:dict[str, Any], EVSEMaximumCurrentLimit:dict[str, Any], EVSEMaximumPowerLimit:dict[str, Any], EVSEMaximumVoltageLimit:dict[str, Any], EVSEMinimumCurrentLimit:dict[str, Any], EVSEMinimumVoltageLimit:dict[str, Any], EVSEPeakCurrentRipple:dict[str, Any], *, EVSECurrentRegulationTolerance:dict[str, Any]|None=None, EVSEEnergyToBeDelivered:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVSEStatus": DC_EVSEStatus,
         "EVSEMaximumCurrentLimit": EVSEMaximumCurrentLimit,
@@ -702,7 +702,7 @@ def AC_EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificatio
     }
     return j
 
-def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationType, AC_EVSEStatus:int, DC_EVSEStatus:int)->dict[str, Any]:
+def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationType, AC_EVSEStatus:dict[str, Any], DC_EVSEStatus:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "NotificationMaxDelay": NotificationMaxDelay,
         "EVSENotification": EVSENotification.value,
@@ -711,7 +711,7 @@ def EVSEStatusType(NotificationMaxDelay:int, EVSENotification:EVSENotificationTy
     }
     return j
 
-def AC_EVSEChargeParameterType(AC_EVSEStatus:int, EVSENominalVoltage:int, EVSEMaxCurrent:int)->dict[str, Any]:
+def AC_EVSEChargeParameterType(AC_EVSEStatus:dict[str, Any], EVSENominalVoltage:dict[str, Any], EVSEMaxCurrent:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "AC_EVSEStatus": AC_EVSEStatus,
         "EVSENominalVoltage": EVSENominalVoltage,
@@ -733,7 +733,7 @@ def MeterInfoType(MeterID:str, *, MeterReading:int|None=None, SigMeterReading:by
         j["TMeter"] = TMeter
     return j
 
-def MessageHeaderType(SessionID:bytearray, *, Notification:int|None=None, Signature:int|None=None)->dict[str, Any]:
+def MessageHeaderType(SessionID:bytearray, *, Notification:dict[str, Any]|None=None, Signature:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SessionID": {"bytes": list(SessionID), "bytesLen": len(SessionID)}
     }
@@ -743,7 +743,7 @@ def MessageHeaderType(SessionID:bytearray, *, Notification:int|None=None, Signat
         j["Signature"] = Signature
     return j
 
-def PowerDeliveryReqType(ChargeProgress:chargeProgressType, SAScheduleTupleID:int, *, ChargingProfile:int|None=None, DC_EVPowerDeliveryParameter:int|None=None, EVPowerDeliveryParameter:int|None=None)->dict[str, Any]:
+def PowerDeliveryReqType(ChargeProgress:chargeProgressType, SAScheduleTupleID:int, *, ChargingProfile:dict[str, Any]|None=None, DC_EVPowerDeliveryParameter:dict[str, Any]|None=None, EVPowerDeliveryParameter:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ChargeProgress": ChargeProgress.value,
         "SAScheduleTupleID": SAScheduleTupleID
@@ -756,7 +756,7 @@ def PowerDeliveryReqType(ChargeProgress:chargeProgressType, SAScheduleTupleID:in
         j["EVPowerDeliveryParameter"] = EVPowerDeliveryParameter
     return j
 
-def CurrentDemandResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEPresentVoltage:int, EVSEPresentCurrent:int, EVSECurrentLimitAchieved:int, EVSEVoltageLimitAchieved:int, EVSEPowerLimitAchieved:int, EVSEID:str, SAScheduleTupleID:int, *, EVSEMaximumVoltageLimit:int|None=None, EVSEMaximumCurrentLimit:int|None=None, EVSEMaximumPowerLimit:int|None=None, MeterInfo:int|None=None, ReceiptRequired:int|None=None)->dict[str, Any]:
+def CurrentDemandResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any], EVSEPresentCurrent:dict[str, Any], EVSECurrentLimitAchieved:int, EVSEVoltageLimitAchieved:int, EVSEPowerLimitAchieved:int, EVSEID:str, SAScheduleTupleID:int, *, EVSEMaximumVoltageLimit:dict[str, Any]|None=None, EVSEMaximumCurrentLimit:dict[str, Any]|None=None, EVSEMaximumPowerLimit:dict[str, Any]|None=None, MeterInfo:dict[str, Any]|None=None, ReceiptRequired:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "DC_EVSEStatus": DC_EVSEStatus,
@@ -780,7 +780,7 @@ def CurrentDemandResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEP
         j["ReceiptRequired"] = ReceiptRequired
     return j
 
-def ChargingStatusResType(ResponseCode:responseCodeType, EVSEID:str, SAScheduleTupleID:int, AC_EVSEStatus:int, *, EVSEMaxCurrent:int|None=None, MeterInfo:int|None=None, ReceiptRequired:int|None=None)->dict[str, Any]:
+def ChargingStatusResType(ResponseCode:responseCodeType, EVSEID:str, SAScheduleTupleID:int, AC_EVSEStatus:dict[str, Any], *, EVSEMaxCurrent:dict[str, Any]|None=None, MeterInfo:dict[str, Any]|None=None, ReceiptRequired:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "EVSEID": {"characters": [ord(c) for c in EVSEID], "charactersLen": len(EVSEID)},
@@ -803,7 +803,7 @@ def AuthorizationReqType(*, Id:str|None=None, GenChallenge:bytearray|None=None)-
         j["GenChallenge"] = {"bytes": list(GenChallenge), "bytesLen": len(GenChallenge)}
     return j
 
-def PreChargeReqType(DC_EVStatus:int, EVTargetVoltage:int, EVTargetCurrent:int)->dict[str, Any]:
+def PreChargeReqType(DC_EVStatus:dict[str, Any], EVTargetVoltage:dict[str, Any], EVTargetCurrent:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus,
         "EVTargetVoltage": EVTargetVoltage,
@@ -811,7 +811,7 @@ def PreChargeReqType(DC_EVStatus:int, EVTargetVoltage:int, EVTargetCurrent:int)-
     }
     return j
 
-def ServiceDetailResType(ResponseCode:responseCodeType, ServiceID:int, *, ServiceParameterList:int|None=None)->dict[str, Any]:
+def ServiceDetailResType(ResponseCode:responseCodeType, ServiceID:int, *, ServiceParameterList:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "ServiceID": ServiceID
@@ -826,7 +826,7 @@ def PaymentServiceSelectionResType(ResponseCode:responseCodeType)->dict[str, Any
     }
     return j
 
-def CertificateUpdateReqType(Id:str, ContractSignatureCertChain:int, eMAID:str, ListOfRootCertificateIDs:int)->dict[str, Any]:
+def CertificateUpdateReqType(Id:str, ContractSignatureCertChain:dict[str, Any], eMAID:str, ListOfRootCertificateIDs:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Id": {"characters": [ord(c) for c in Id], "charactersLen": len(Id)},
         "ContractSignatureCertChain": ContractSignatureCertChain,
@@ -844,7 +844,7 @@ def SessionSetupResType(ResponseCode:responseCodeType, EVSEID:str, *, EVSETimeSt
         j["EVSETimeStamp"] = EVSETimeStamp
     return j
 
-def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOfRootCertificateIDs:int)->dict[str, Any]:
+def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOfRootCertificateIDs:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Id": {"characters": [ord(c) for c in Id], "charactersLen": len(Id)},
         "OEMProvisioningCert": {"bytes": list(OEMProvisioningCert), "bytesLen": len(OEMProvisioningCert)},
@@ -852,7 +852,7 @@ def CertificateInstallationReqType(Id:str, OEMProvisioningCert:bytearray, ListOf
     }
     return j
 
-def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioningCertificateChain:int, ContractSignatureCertChain:int, ContractSignatureEncryptedPrivateKey:int, DHpublickey:int, eMAID:int)->dict[str, Any]:
+def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioningCertificateChain:dict[str, Any], ContractSignatureCertChain:dict[str, Any], ContractSignatureEncryptedPrivateKey:dict[str, Any], DHpublickey:dict[str, Any], eMAID:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "SAProvisioningCertificateChain": SAProvisioningCertificateChain,
@@ -863,7 +863,7 @@ def CertificateInstallationResType(ResponseCode:responseCodeType, SAProvisioning
     }
     return j
 
-def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEPresentVoltage:int)->dict[str, Any]:
+def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "DC_EVSEStatus": DC_EVSEStatus,
@@ -871,7 +871,7 @@ def WeldingDetectionResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EV
     }
     return j
 
-def CurrentDemandReqType(DC_EVStatus:int, EVTargetCurrent:int, ChargingComplete:int, EVTargetVoltage:int, *, EVMaximumVoltageLimit:int|None=None, EVMaximumCurrentLimit:int|None=None, EVMaximumPowerLimit:int|None=None, BulkChargingComplete:int|None=None, RemainingTimeToFullSoC:int|None=None, RemainingTimeToBulkSoC:int|None=None)->dict[str, Any]:
+def CurrentDemandReqType(DC_EVStatus:dict[str, Any], EVTargetCurrent:dict[str, Any], ChargingComplete:int, EVTargetVoltage:dict[str, Any], *, EVMaximumVoltageLimit:dict[str, Any]|None=None, EVMaximumCurrentLimit:dict[str, Any]|None=None, EVMaximumPowerLimit:dict[str, Any]|None=None, BulkChargingComplete:int|None=None, RemainingTimeToFullSoC:dict[str, Any]|None=None, RemainingTimeToBulkSoC:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus,
         "EVTargetCurrent": EVTargetCurrent,
@@ -892,7 +892,7 @@ def CurrentDemandReqType(DC_EVStatus:int, EVTargetCurrent:int, ChargingComplete:
         j["RemainingTimeToBulkSoC"] = RemainingTimeToBulkSoC
     return j
 
-def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEPresentVoltage:int)->dict[str, Any]:
+def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEPresentVoltage:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "DC_EVSEStatus": DC_EVSEStatus,
@@ -900,7 +900,7 @@ def PreChargeResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEPrese
     }
     return j
 
-def CertificateUpdateResType(ResponseCode:responseCodeType, SAProvisioningCertificateChain:int, ContractSignatureCertChain:int, ContractSignatureEncryptedPrivateKey:int, DHpublickey:int, eMAID:int, *, RetryCounter:int|None=None)->dict[str, Any]:
+def CertificateUpdateResType(ResponseCode:responseCodeType, SAProvisioningCertificateChain:dict[str, Any], ContractSignatureCertChain:dict[str, Any], ContractSignatureEncryptedPrivateKey:dict[str, Any], DHpublickey:dict[str, Any], eMAID:dict[str, Any], *, RetryCounter:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "SAProvisioningCertificateChain": SAProvisioningCertificateChain,
@@ -913,7 +913,7 @@ def CertificateUpdateResType(ResponseCode:responseCodeType, SAProvisioningCertif
         j["RetryCounter"] = RetryCounter
     return j
 
-def MeteringReceiptReqType(SessionID:bytearray, MeterInfo:int, *, Id:str|None=None, SAScheduleTupleID:int|None=None)->dict[str, Any]:
+def MeteringReceiptReqType(SessionID:bytearray, MeterInfo:dict[str, Any], *, Id:str|None=None, SAScheduleTupleID:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SessionID": {"bytes": list(SessionID), "bytesLen": len(SessionID)},
         "MeterInfo": MeterInfo
@@ -934,7 +934,7 @@ def SessionStopResType(ResponseCode:responseCodeType)->dict[str, Any]:
     }
     return j
 
-def ChargeParameterDiscoveryReqType(RequestedEnergyTransferMode:EnergyTransferModeType, *, MaxEntriesSAScheduleTuple:int|None=None, AC_EVChargeParameter:int|None=None, DC_EVChargeParameter:int|None=None, EVChargeParameter:int|None=None)->dict[str, Any]:
+def ChargeParameterDiscoveryReqType(RequestedEnergyTransferMode:EnergyTransferModeType, *, MaxEntriesSAScheduleTuple:int|None=None, AC_EVChargeParameter:dict[str, Any]|None=None, DC_EVChargeParameter:dict[str, Any]|None=None, EVChargeParameter:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "RequestedEnergyTransferMode": RequestedEnergyTransferMode.value
     }
@@ -948,19 +948,19 @@ def ChargeParameterDiscoveryReqType(RequestedEnergyTransferMode:EnergyTransferMo
         j["EVChargeParameter"] = EVChargeParameter
     return j
 
-def CableCheckReqType(DC_EVStatus:int)->dict[str, Any]:
+def CableCheckReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus
     }
     return j
 
-def WeldingDetectionReqType(DC_EVStatus:int)->dict[str, Any]:
+def WeldingDetectionReqType(DC_EVStatus:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "DC_EVStatus": DC_EVStatus
     }
     return j
 
-def PowerDeliveryResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:int|None=None, DC_EVSEStatus:int|None=None, EVSEStatus:int|None=None)->dict[str, Any]:
+def PowerDeliveryResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:dict[str, Any]|None=None, DC_EVSEStatus:dict[str, Any]|None=None, EVSEStatus:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value
     }
@@ -972,7 +972,7 @@ def PowerDeliveryResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:int|Non
         j["EVSEStatus"] = EVSEStatus
     return j
 
-def ChargeParameterDiscoveryResType(ResponseCode:responseCodeType, EVSEProcessing:EVSEProcessingType, *, SAScheduleList:int|None=None, SASchedules:int|None=None, AC_EVSEChargeParameter:int|None=None, DC_EVSEChargeParameter:int|None=None, EVSEChargeParameter:int|None=None)->dict[str, Any]:
+def ChargeParameterDiscoveryResType(ResponseCode:responseCodeType, EVSEProcessing:EVSEProcessingType, *, SAScheduleList:dict[str, Any]|None=None, SASchedules:dict[str, Any]|None=None, AC_EVSEChargeParameter:dict[str, Any]|None=None, DC_EVSEChargeParameter:dict[str, Any]|None=None, EVSEChargeParameter:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "EVSEProcessing": EVSEProcessing.value
@@ -989,14 +989,14 @@ def ChargeParameterDiscoveryResType(ResponseCode:responseCodeType, EVSEProcessin
         j["EVSEChargeParameter"] = EVSEChargeParameter
     return j
 
-def PaymentServiceSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:int)->dict[str, Any]:
+def PaymentServiceSelectionReqType(SelectedPaymentOption:paymentOptionType, SelectedServiceList:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "SelectedPaymentOption": SelectedPaymentOption.value,
         "SelectedServiceList": SelectedServiceList
     }
     return j
 
-def MeteringReceiptResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:int|None=None, DC_EVSEStatus:int|None=None, EVSEStatus:int|None=None)->dict[str, Any]:
+def MeteringReceiptResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:dict[str, Any]|None=None, DC_EVSEStatus:dict[str, Any]|None=None, EVSEStatus:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value
     }
@@ -1008,7 +1008,7 @@ def MeteringReceiptResType(ResponseCode:responseCodeType, *, AC_EVSEStatus:int|N
         j["EVSEStatus"] = EVSEStatus
     return j
 
-def CableCheckResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEProcessing:EVSEProcessingType)->dict[str, Any]:
+def CableCheckResType(ResponseCode:responseCodeType, DC_EVSEStatus:dict[str, Any], EVSEProcessing:EVSEProcessingType)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "DC_EVSEStatus": DC_EVSEStatus,
@@ -1016,7 +1016,7 @@ def CableCheckResType(ResponseCode:responseCodeType, DC_EVSEStatus:int, EVSEProc
     }
     return j
 
-def ServiceDiscoveryResType(ResponseCode:responseCodeType, PaymentOptionList:int, ChargeService:int, *, ServiceList:int|None=None)->dict[str, Any]:
+def ServiceDiscoveryResType(ResponseCode:responseCodeType, PaymentOptionList:dict[str, Any], ChargeService:dict[str, Any], *, ServiceList:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "ResponseCode": ResponseCode.value,
         "PaymentOptionList": PaymentOptionList,
@@ -1059,7 +1059,7 @@ def AuthorizationResType(ResponseCode:responseCodeType, EVSEProcessing:EVSEProce
     }
     return j
 
-def PaymentDetailsReqType(eMAID:str, ContractSignatureCertChain:int)->dict[str, Any]:
+def PaymentDetailsReqType(eMAID:str, ContractSignatureCertChain:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "eMAID": {"characters": [ord(c) for c in eMAID], "charactersLen": len(eMAID)},
         "ContractSignatureCertChain": ContractSignatureCertChain
@@ -1074,7 +1074,7 @@ def PaymentDetailsResType(ResponseCode:responseCodeType, GenChallenge:bytearray,
     }
     return j
 
-def BodyType(*, AuthorizationReq:int|None=None, AuthorizationRes:int|None=None, BodyElement:int|None=None, CableCheckReq:int|None=None, CableCheckRes:int|None=None, CertificateInstallationReq:int|None=None, CertificateInstallationRes:int|None=None, CertificateUpdateReq:int|None=None, CertificateUpdateRes:int|None=None, ChargeParameterDiscoveryReq:int|None=None, ChargeParameterDiscoveryRes:int|None=None, ChargingStatusReq:int|None=None, ChargingStatusRes:int|None=None, CurrentDemandReq:int|None=None, CurrentDemandRes:int|None=None, MeteringReceiptReq:int|None=None, MeteringReceiptRes:int|None=None, PaymentDetailsReq:int|None=None, PaymentDetailsRes:int|None=None, PaymentServiceSelectionReq:int|None=None, PaymentServiceSelectionRes:int|None=None, PowerDeliveryReq:int|None=None, PowerDeliveryRes:int|None=None, PreChargeReq:int|None=None, PreChargeRes:int|None=None, ServiceDetailReq:int|None=None, ServiceDetailRes:int|None=None, ServiceDiscoveryReq:int|None=None, ServiceDiscoveryRes:int|None=None, SessionSetupReq:int|None=None, SessionSetupRes:int|None=None, SessionStopReq:int|None=None, SessionStopRes:int|None=None, WeldingDetectionReq:int|None=None, WeldingDetectionRes:int|None=None)->dict[str, Any]:
+def BodyType(*, AuthorizationReq:dict[str, Any]|None=None, AuthorizationRes:dict[str, Any]|None=None, BodyElement:dict[str, Any]|None=None, CableCheckReq:dict[str, Any]|None=None, CableCheckRes:dict[str, Any]|None=None, CertificateInstallationReq:dict[str, Any]|None=None, CertificateInstallationRes:dict[str, Any]|None=None, CertificateUpdateReq:dict[str, Any]|None=None, CertificateUpdateRes:dict[str, Any]|None=None, ChargeParameterDiscoveryReq:dict[str, Any]|None=None, ChargeParameterDiscoveryRes:dict[str, Any]|None=None, ChargingStatusReq:dict[str, Any]|None=None, ChargingStatusRes:dict[str, Any]|None=None, CurrentDemandReq:dict[str, Any]|None=None, CurrentDemandRes:dict[str, Any]|None=None, MeteringReceiptReq:dict[str, Any]|None=None, MeteringReceiptRes:dict[str, Any]|None=None, PaymentDetailsReq:dict[str, Any]|None=None, PaymentDetailsRes:dict[str, Any]|None=None, PaymentServiceSelectionReq:dict[str, Any]|None=None, PaymentServiceSelectionRes:dict[str, Any]|None=None, PowerDeliveryReq:dict[str, Any]|None=None, PowerDeliveryRes:dict[str, Any]|None=None, PreChargeReq:dict[str, Any]|None=None, PreChargeRes:dict[str, Any]|None=None, ServiceDetailReq:dict[str, Any]|None=None, ServiceDetailRes:dict[str, Any]|None=None, ServiceDiscoveryReq:dict[str, Any]|None=None, ServiceDiscoveryRes:dict[str, Any]|None=None, SessionSetupReq:dict[str, Any]|None=None, SessionSetupRes:dict[str, Any]|None=None, SessionStopReq:dict[str, Any]|None=None, SessionStopRes:dict[str, Any]|None=None, WeldingDetectionReq:dict[str, Any]|None=None, WeldingDetectionRes:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if AuthorizationReq is not None:
         j["AuthorizationReq"] = AuthorizationReq
@@ -1148,14 +1148,14 @@ def BodyType(*, AuthorizationReq:int|None=None, AuthorizationRes:int|None=None, 
         j["WeldingDetectionRes"] = WeldingDetectionRes
     return j
 
-def V2G_Message(Header:int, Body:int)->dict[str, Any]:
+def V2G_Message(Header:dict[str, Any], Body:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "Body": Body
     }
     return j
 
-def exiFragment(*, AuthorizationReq:int|None=None, CertificateInstallationReq:int|None=None, CertificateUpdateReq:int|None=None, ContractSignatureCertChain:int|None=None, ContractSignatureEncryptedPrivateKey:int|None=None, DHpublickey:int|None=None, MeteringReceiptReq:int|None=None, SalesTariff:int|None=None, SignedInfo:int|None=None, eMAID:int|None=None)->dict[str, Any]:
+def exiFragment(*, AuthorizationReq:dict[str, Any]|None=None, CertificateInstallationReq:dict[str, Any]|None=None, CertificateUpdateReq:dict[str, Any]|None=None, ContractSignatureCertChain:dict[str, Any]|None=None, ContractSignatureEncryptedPrivateKey:dict[str, Any]|None=None, DHpublickey:dict[str, Any]|None=None, MeteringReceiptReq:dict[str, Any]|None=None, SalesTariff:dict[str, Any]|None=None, SignedInfo:dict[str, Any]|None=None, eMAID:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if AuthorizationReq is not None:
         j["AuthorizationReq"] = AuthorizationReq
@@ -1179,7 +1179,7 @@ def exiFragment(*, AuthorizationReq:int|None=None, CertificateInstallationReq:in
         j["eMAID"] = eMAID
     return j
 
-def xmldsigFragment(*, CanonicalizationMethod:int|None=None, DSAKeyValue:int|None=None, DigestMethod:int|None=None, KeyInfo:int|None=None, KeyValue:int|None=None, Object:int|None=None, PGPData:int|None=None, RSAKeyValue:int|None=None, Reference:int|None=None, RetrievalMethod:int|None=None, SPKIData:int|None=None, Signature:int|None=None, SignatureMethod:int|None=None, SignatureValue:int|None=None, SignedInfo:int|None=None, Transform:int|None=None, Transforms:int|None=None, X509Data:int|None=None, X509IssuerSerial:int|None=None)->dict[str, Any]:
+def xmldsigFragment(*, CanonicalizationMethod:dict[str, Any]|None=None, DSAKeyValue:dict[str, Any]|None=None, DigestMethod:dict[str, Any]|None=None, KeyInfo:dict[str, Any]|None=None, KeyValue:dict[str, Any]|None=None, Object:dict[str, Any]|None=None, PGPData:dict[str, Any]|None=None, RSAKeyValue:dict[str, Any]|None=None, Reference:dict[str, Any]|None=None, RetrievalMethod:dict[str, Any]|None=None, SPKIData:dict[str, Any]|None=None, Signature:dict[str, Any]|None=None, SignatureMethod:dict[str, Any]|None=None, SignatureValue:dict[str, Any]|None=None, SignedInfo:dict[str, Any]|None=None, Transform:dict[str, Any]|None=None, Transforms:dict[str, Any]|None=None, X509Data:dict[str, Any]|None=None, X509IssuerSerial:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if CanonicalizationMethod is not None:
         j["CanonicalizationMethod"] = CanonicalizationMethod

@@ -110,7 +110,7 @@ def TransformType(Algorithm:str, *, ANY:bytearray|None=None, XPath:str|None=None
         j["XPath"] = {"characters": [ord(c) for c in XPath], "charactersLen": len(XPath)}
     return j
 
-def TransformsType(Transform:int)->dict[str, Any]:
+def TransformsType(Transform:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Transform": Transform
     }
@@ -134,7 +134,7 @@ def DSAKeyValueType(Y:bytearray, *, P:bytearray|None=None, Q:bytearray|None=None
         j["PgenCounter"] = {"bytes": list(PgenCounter), "bytesLen": len(PgenCounter)}
     return j
 
-def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:int)->dict[str, Any]:
+def X509IssuerSerialType(X509IssuerName:str, X509SerialNumber:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "X509IssuerName": {"characters": [ord(c) for c in X509IssuerName], "charactersLen": len(X509IssuerName)},
         "X509SerialNumber": X509SerialNumber
@@ -164,7 +164,7 @@ def CanonicalizationMethodType(Algorithm:str, *, ANY:bytearray|None=None)->dict[
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def SignatureMethodType(Algorithm:str, *, HMACOutputLength:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "Algorithm": {"characters": [ord(c) for c in Algorithm], "charactersLen": len(Algorithm)}
     }
@@ -174,7 +174,7 @@ def SignatureMethodType(Algorithm:str, *, HMACOutputLength:int|None=None, ANY:by
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def KeyValueType(*, DSAKeyValue:int|None=None, RSAKeyValue:int|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyValueType(*, DSAKeyValue:dict[str, Any]|None=None, RSAKeyValue:dict[str, Any]|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if DSAKeyValue is not None:
         j["DSAKeyValue"] = DSAKeyValue
@@ -184,7 +184,7 @@ def KeyValueType(*, DSAKeyValue:int|None=None, RSAKeyValue:int|None=None, ANY:by
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def ReferenceType(DigestMethod:dict[str, Any], DigestValue:bytearray, *, Id:str|None=None, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "DigestMethod": DigestMethod,
         "DigestValue": {"bytes": list(DigestValue), "bytesLen": len(DigestValue)}
@@ -199,7 +199,7 @@ def ReferenceType(DigestMethod:int, DigestValue:bytearray, *, Id:str|None=None, 
         j["Transforms"] = Transforms
     return j
 
-def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:int|None=None)->dict[str, Any]:
+def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Type is not None:
         j["Type"] = {"characters": [ord(c) for c in Type], "charactersLen": len(Type)}
@@ -209,7 +209,7 @@ def RetrievalMethodType(*, Type:str|None=None, URI:str|None=None, Transforms:int
         j["Transforms"] = Transforms
     return j
 
-def X509DataType(*, X509IssuerSerial:int|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def X509DataType(*, X509IssuerSerial:dict[str, Any]|None=None, X509SKI:bytearray|None=None, X509SubjectName:str|None=None, X509Certificate:bytearray|None=None, X509CRL:bytearray|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if X509IssuerSerial is not None:
         j["X509IssuerSerial"] = X509IssuerSerial
@@ -241,7 +241,7 @@ def SPKIDataType(SPKISexp:bytearray, *, ANY:bytearray|None=None)->dict[str, Any]
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignedInfoType(CanonicalizationMethod:int, SignatureMethod:int, Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
+def SignedInfoType(CanonicalizationMethod:dict[str, Any], SignatureMethod:dict[str, Any], Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "CanonicalizationMethod": CanonicalizationMethod,
         "SignatureMethod": SignatureMethod,
@@ -259,7 +259,7 @@ def SignatureValueType(CONTENT:bytearray, *, Id:str|None=None)->dict[str, Any]:
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
     return j
 
-def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:int|None=None, RetrievalMethod:int|None=None, X509Data:int|None=None, PGPData:int|None=None, SPKIData:int|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
+def KeyInfoType(*, Id:str|None=None, KeyName:str|None=None, KeyValue:dict[str, Any]|None=None, RetrievalMethod:dict[str, Any]|None=None, X509Data:dict[str, Any]|None=None, PGPData:dict[str, Any]|None=None, SPKIData:dict[str, Any]|None=None, MgmtData:str|None=None, ANY:bytearray|None=None)->dict[str, Any]:
     j:dict[str, Any] = {}
     if Id is not None:
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
@@ -293,7 +293,7 @@ def ObjectType(*, Encoding:str|None=None, Id:str|None=None, MimeType:str|None=No
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def SignatureType(SignedInfo:int, SignatureValue:int, *, Id:str|None=None, KeyInfo:int|None=None, Object:int|None=None)->dict[str, Any]:
+def SignatureType(SignedInfo:dict[str, Any], SignatureValue:dict[str, Any], *, Id:str|None=None, KeyInfo:dict[str, Any]|None=None, Object:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SignedInfo": SignedInfo,
         "SignatureValue": SignatureValue
@@ -313,7 +313,7 @@ def RationalNumberType(Exponent:int, Value:int)->dict[str, Any]:
     }
     return j
 
-def MessageHeaderType(SessionID:bytearray, TimeStamp:int, *, Signature:int|None=None)->dict[str, Any]:
+def MessageHeaderType(SessionID:bytearray, TimeStamp:int, *, Signature:dict[str, Any]|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SessionID": {"bytes": list(SessionID), "bytesLen": len(SessionID)},
         "TimeStamp": TimeStamp
@@ -332,7 +332,7 @@ def SignaturePropertyType(Target:str, *, Id:str|None=None, ANY:bytearray|None=No
         j["ANY"] = {"bytes": list(ANY), "bytesLen": len(ANY)}
     return j
 
-def EVTechnicalStatusType(EVReadyToCharge:int, EVImmobilizationRequest:int, *, EVImmobilized:int|None=None, EVWLANStrength:int|None=None, EVCPStatus:cpStatusType|None=None, EVSOC:int|None=None, EVErrorCode:errorCodeType|None=None, EVTimeout:int|None=None)->dict[str, Any]:
+def EVTechnicalStatusType(EVReadyToCharge:int, EVImmobilizationRequest:int, *, EVImmobilized:int|None=None, EVWLANStrength:dict[str, Any]|None=None, EVCPStatus:cpStatusType|None=None, EVSOC:int|None=None, EVErrorCode:errorCodeType|None=None, EVTimeout:int|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "EVReadyToCharge": EVReadyToCharge,
         "EVImmobilizationRequest": EVImmobilizationRequest
@@ -351,7 +351,7 @@ def EVTechnicalStatusType(EVReadyToCharge:int, EVImmobilizationRequest:int, *, E
         j["EVTimeout"] = EVTimeout
     return j
 
-def ACDP_VehiclePositioningReqType(Header:int, EVMobilityStatus:int, EVPositioningSupport:int)->dict[str, Any]:
+def ACDP_VehiclePositioningReqType(Header:dict[str, Any], EVMobilityStatus:int, EVPositioningSupport:int)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVMobilityStatus": EVMobilityStatus,
@@ -359,7 +359,7 @@ def ACDP_VehiclePositioningReqType(Header:int, EVMobilityStatus:int, EVPositioni
     }
     return j
 
-def ACDP_VehiclePositioningResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing:processingType, EVSEPositioningSupport:int, EVRelativeXDeviation:int, EVRelativeYDeviation:int, ContactWindowXc:int, ContactWindowYc:int, EVInChargePosition:int)->dict[str, Any]:
+def ACDP_VehiclePositioningResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEProcessing:processingType, EVSEPositioningSupport:int, EVRelativeXDeviation:int, EVRelativeYDeviation:int, ContactWindowXc:int, ContactWindowYc:int, EVInChargePosition:int)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -373,14 +373,14 @@ def ACDP_VehiclePositioningResType(Header:int, ResponseCode:responseCodeType, EV
     }
     return j
 
-def ACDP_ConnectReqType(Header:int, EVElectricalChargingDeviceStatus:electricalChargingDeviceStatusType)->dict[str, Any]:
+def ACDP_ConnectReqType(Header:dict[str, Any], EVElectricalChargingDeviceStatus:electricalChargingDeviceStatusType)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVElectricalChargingDeviceStatus": EVElectricalChargingDeviceStatus.value
     }
     return j
 
-def ACDP_ConnectResType(Header:int, ResponseCode:responseCodeType, EVSEProcessing:processingType, EVSEElectricalChargingDeviceStatus:electricalChargingDeviceStatusType, EVSEMechanicalChargingDeviceStatus:mechanicalChargingDeviceStatusType)->dict[str, Any]:
+def ACDP_ConnectResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEProcessing:processingType, EVSEElectricalChargingDeviceStatus:electricalChargingDeviceStatusType, EVSEMechanicalChargingDeviceStatus:mechanicalChargingDeviceStatusType)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -390,14 +390,14 @@ def ACDP_ConnectResType(Header:int, ResponseCode:responseCodeType, EVSEProcessin
     }
     return j
 
-def ACDP_SystemStatusReqType(Header:int, EVTechnicalStatus:int)->dict[str, Any]:
+def ACDP_SystemStatusReqType(Header:dict[str, Any], EVTechnicalStatus:dict[str, Any])->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "EVTechnicalStatus": EVTechnicalStatus
     }
     return j
 
-def ACDP_SystemStatusResType(Header:int, ResponseCode:responseCodeType, EVSEMechanicalChargingDeviceStatus:mechanicalChargingDeviceStatusType, EVSEReadyToCharge:int, EVSEIsolationStatus:isolationStatusType, EVSEDisabled:int, EVSEUtilityInterruptEvent:int, EVSEEmergencyShutdown:int, EVSEMalfunction:int, EVInChargePosition:int, EVAssociationStatus:int)->dict[str, Any]:
+def ACDP_SystemStatusResType(Header:dict[str, Any], ResponseCode:responseCodeType, EVSEMechanicalChargingDeviceStatus:mechanicalChargingDeviceStatusType, EVSEReadyToCharge:int, EVSEIsolationStatus:isolationStatusType, EVSEDisabled:int, EVSEUtilityInterruptEvent:int, EVSEEmergencyShutdown:int, EVSEMalfunction:int, EVInChargePosition:int, EVAssociationStatus:int)->dict[str, Any]:
     j:dict[str, Any] = {
         "Header": Header,
         "ResponseCode": ResponseCode.value,
@@ -429,7 +429,7 @@ def ManifestType(Reference:list[dict[str, Any]], *, Id:str|None=None)->dict[str,
         j["Id"] = {"characters": [ord(c) for c in Id], "charactersLen": len(Id)}
     return j
 
-def SignaturePropertiesType(SignatureProperty:int, *, Id:str|None=None)->dict[str, Any]:
+def SignaturePropertiesType(SignatureProperty:dict[str, Any], *, Id:str|None=None)->dict[str, Any]:
     j:dict[str, Any] = {
         "SignatureProperty": SignatureProperty
     }

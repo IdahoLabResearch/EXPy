@@ -167,6 +167,8 @@ def _param_type(
         return "bytearray"
     if field.kind == "characters":
         return "str"
+    if field.kind == "struct":
+        return "dict[str, Any]"
     if field.kind == "scalar" and field.c_type in struct_names:
         return "dict[str, Any]"
     if field.kind == "scalar" and field.c_type in enum_names:
