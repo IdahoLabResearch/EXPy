@@ -24,9 +24,16 @@ def test_iso2_decode_empty_bytes_raises_decode_error():
     processor = EXIProcessor(ProtocolEnum.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
-    # The message must name the namespace and root so an operator can
-    # tell which Processor and entry point failed without a stack trace.
-    msg = str(exc_info.value)
+    err = exc_info.value
+    assert err.namespace == "ISO2"
+    assert err.root == "exiDocument"
+    # Empty bitstream fails inside libcbv2g, so rc is in its negative range
+    # (-1 .. -299), not the EXPy marshaler-input sentinel (-1000).
+    assert isinstance(err.rc, int)
+    assert err.rc < 0
+    assert err.rc != -1000
+    # ADR-0006 message format is preserved for human logs.
+    msg = str(err)
     assert "ISO2" in msg
     assert "exiDocument" in msg
 
@@ -35,36 +42,40 @@ def test_din_decode_empty_bytes_raises_decode_error():
     processor = EXIProcessor(ProtocolEnum.DIN)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
-    msg = str(exc_info.value)
-    assert "DIN" in msg
-    assert "exiDocument" in msg
+    err = exc_info.value
+    assert err.namespace == "DIN"
+    assert err.root == "exiDocument"
+    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
 
 
 def test_sap_decode_empty_bytes_raises_decode_error():
     processor = EXIProcessor(ProtocolEnum.SAP)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
-    msg = str(exc_info.value)
-    assert "SAP" in msg
-    assert "exiDocument" in msg
+    err = exc_info.value
+    assert err.namespace == "SAP"
+    assert err.root == "exiDocument"
+    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
 
 
 def test_iso2_decode_fragment_empty_bytes_raises_decode_error():
     processor = EXIProcessor(ProtocolEnum.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode_fragment(b"")
-    msg = str(exc_info.value)
-    assert "ISO2" in msg
-    assert "exiFragment" in msg
+    err = exc_info.value
+    assert err.namespace == "ISO2"
+    assert err.root == "exiFragment"
+    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
 
 
 def test_iso2_decode_xmldsig_empty_bytes_raises_decode_error():
     processor = EXIProcessor(ProtocolEnum.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode_xmldsig(b"")
-    msg = str(exc_info.value)
-    assert "ISO2" in msg
-    assert "xmldsigFragment" in msg
+    err = exc_info.value
+    assert err.namespace == "ISO2"
+    assert err.root == "xmldsigFragment"
+    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
 
 
 @pytest.mark.parametrize("protocol_name", ["SAP", "DIN", "ISO2"])

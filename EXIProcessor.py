@@ -28,7 +28,30 @@ class EncodeError(Exception):
     Two failure surfaces produce this: libcbv2g's encoder (e.g.
     ``EXI_ERROR__BITSTREAM_OVERFLOW``) and the C++ JSON layer (``json::parse``,
     marshaler accessors). See ADR-0006.
+
+    Typed attributes (ADR-0014):
+
+    - ``rc: int | None`` — integer return code from the C++ entry point.
+      ``-1`` to ``-299`` are libcbv2g's ``EXI_ERROR__*`` constants; ``-1000``
+      is ``EXPY_ERROR__MARSHALER_INPUT`` (caught nlohmann JSON exception at
+      the marshaler boundary). ``None`` only when the exception is
+      constructed manually outside the Processor entry points.
+    - ``namespace: str | None`` — the ``Namespace`` member name
+      (``"SAP"``, ``"DIN"``, ``"ISO2"``, ``"ISO20_COMMON"``, ``"ISO20_AC"``,
+      ``"ISO20_DC"``, ``"ISO20_WPT"``, ``"ISO20_ACDP"``).
+    - ``root: str | None`` — which libcbv2g root the failing call targeted:
+      ``"exiDocument"``, ``"exiFragment"``, or ``"xmldsigFragment"``.
+
+    Consumers discriminating on failure mode should branch on these
+    attributes. The ``str(e)`` message format from ADR-0006 is preserved for
+    human-readable logs but is informational, not contractual.
     """
+
+    def __init__(self, *args, rc=None, namespace=None, root=None):
+        super().__init__(*args)
+        self.rc = rc
+        self.namespace = namespace
+        self.root = root
 
 
 class DecodeError(Exception):
@@ -36,7 +59,30 @@ class DecodeError(Exception):
 
     Two failure surfaces produce this: libcbv2g's decoder (e.g. malformed EXI
     header) and the residual C++ JSON layer path on decode. See ADR-0006.
+
+    Typed attributes (ADR-0014):
+
+    - ``rc: int | None`` — integer return code from the C++ entry point.
+      ``-1`` to ``-299`` are libcbv2g's ``EXI_ERROR__*`` constants; ``-1000``
+      is ``EXPY_ERROR__MARSHALER_INPUT`` (caught nlohmann JSON exception at
+      the marshaler boundary). ``None`` only when the exception is
+      constructed manually outside the Processor entry points.
+    - ``namespace: str | None`` — the ``Namespace`` member name
+      (``"SAP"``, ``"DIN"``, ``"ISO2"``, ``"ISO20_COMMON"``, ``"ISO20_AC"``,
+      ``"ISO20_DC"``, ``"ISO20_WPT"``, ``"ISO20_ACDP"``).
+    - ``root: str | None`` — which libcbv2g root the failing call targeted:
+      ``"exiDocument"``, ``"exiFragment"``, or ``"xmldsigFragment"``.
+
+    Consumers discriminating on failure mode should branch on these
+    attributes. The ``str(e)`` message format from ADR-0006 is preserved for
+    human-readable logs but is informational, not contractual.
     """
+
+    def __init__(self, *args, rc=None, namespace=None, root=None):
+        super().__init__(*args)
+        self.rc = rc
+        self.namespace = namespace
+        self.root = root
 
 
 # Matches `EXPY_ERROR__MARSHALER_INPUT` in include/common.hpp. Surfaced by the
@@ -121,7 +167,12 @@ class EXIProcessor():
             status = res.contents.status
             if status != 0:
                 root = _ROOT_BY_SYMBOL[symbol]
-                raise DecodeError(self._format_error(root, status))
+                raise DecodeError(
+                    self._format_error(root, status),
+                    rc=status,
+                    namespace=self._namespace,
+                    root=root,
+                )
             return json.loads(res.contents.json.decode('utf-8'))
         finally:
             self.lib.free_decoded_data(res)
@@ -139,7 +190,12 @@ class EXIProcessor():
             status = result.contents.status
             if status != 0:
                 root = _ROOT_BY_SYMBOL[symbol]
-                raise EncodeError(self._format_error(root, status))
+                raise EncodeError(
+                    self._format_error(root, status),
+                    rc=status,
+                    namespace=self._namespace,
+                    root=root,
+                )
             return bytes(result.contents.buffer[:result.contents.size])
         finally:
             self.lib.free_encoded_data(result)

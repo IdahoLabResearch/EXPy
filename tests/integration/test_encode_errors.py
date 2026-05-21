@@ -49,9 +49,11 @@ def test_sap_encode_overflow_raises_encode_error():
     processor = EXIProcessor(ProtocolEnum.SAP)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode(payload)
-    msg = str(exc_info.value)
-    assert "SAP" in msg
-    assert "exiDocument" in msg
+    err = exc_info.value
+    assert err.namespace == "SAP"
+    assert err.root == "exiDocument"
+    # libcbv2g buffer-overflow path: rc in -1..-299, not the marshaler sentinel.
+    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
 
 
 def test_iso2_encode_missing_required_field_raises_encode_error():
@@ -62,9 +64,10 @@ def test_iso2_encode_missing_required_field_raises_encode_error():
     processor = EXIProcessor(ProtocolEnum.ISO2)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"V2G_Message": {}})
-    msg = str(exc_info.value)
-    assert "ISO2" in msg
-    assert "exiDocument" in msg
+    err = exc_info.value
+    assert err.namespace == "ISO2"
+    assert err.root == "exiDocument"
+    assert err.rc == -1000
 
 
 def test_iso2_encode_invalid_json_payload_raises_encode_error():
@@ -75,7 +78,13 @@ def test_iso2_encode_invalid_json_payload_raises_encode_error():
     processor = EXIProcessor(ProtocolEnum.ISO2)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"V2G_Message": float("nan")})
-    msg = str(exc_info.value)
+    err = exc_info.value
+    assert err.namespace == "ISO2"
+    assert err.root == "exiDocument"
+    # Marshaler-input failures use the EXPy sentinel rc, distinct from
+    # libcbv2g's -1 .. -299 range.
+    assert err.rc == -1000
+    msg = str(err)
     assert "ISO2" in msg
     assert "exiDocument" in msg
 
@@ -87,6 +96,7 @@ def test_din_encode_wrong_typed_scalar_raises_encode_error():
     processor = EXIProcessor(ProtocolEnum.DIN)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"Header": {"SessionID": "not-bytes"}})
-    msg = str(exc_info.value)
-    assert "DIN" in msg
-    assert "exiDocument" in msg
+    err = exc_info.value
+    assert err.namespace == "DIN"
+    assert err.root == "exiDocument"
+    assert err.rc == -1000
