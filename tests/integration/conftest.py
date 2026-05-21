@@ -20,9 +20,9 @@ def _roundtrip_worker(protocol_name, kind, payload_json, queue):
     # regression scaffolding — any future surface that bypasses the in-process
     # guards will surface here as a non-zero exitcode instead of a crash.
     try:
-        from EXIProcessor import EXIProcessor, ProtocolEnum
+        from EXIProcessor import EXIProcessor, Namespace
 
-        processor = EXIProcessor(ProtocolEnum[protocol_name])
+        processor = EXIProcessor(Namespace[protocol_name])
         encode_attr, decode_attr = _ENCODE_DECODE[kind]
         encode = getattr(processor, encode_attr)
         decode = getattr(processor, decode_attr)

@@ -17,11 +17,11 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import DecodeError, EXIProcessor, ProtocolEnum  # noqa: E402
+from EXIProcessor import DecodeError, EXIProcessor, Namespace  # noqa: E402
 
 
 def test_iso2_decode_empty_bytes_raises_decode_error():
-    processor = EXIProcessor(ProtocolEnum.ISO2)
+    processor = EXIProcessor(Namespace.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
     err = exc_info.value
@@ -39,7 +39,7 @@ def test_iso2_decode_empty_bytes_raises_decode_error():
 
 
 def test_din_decode_empty_bytes_raises_decode_error():
-    processor = EXIProcessor(ProtocolEnum.DIN)
+    processor = EXIProcessor(Namespace.DIN)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
     err = exc_info.value
@@ -49,7 +49,7 @@ def test_din_decode_empty_bytes_raises_decode_error():
 
 
 def test_sap_decode_empty_bytes_raises_decode_error():
-    processor = EXIProcessor(ProtocolEnum.SAP)
+    processor = EXIProcessor(Namespace.SAP)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode(b"")
     err = exc_info.value
@@ -59,7 +59,7 @@ def test_sap_decode_empty_bytes_raises_decode_error():
 
 
 def test_iso2_decode_fragment_empty_bytes_raises_decode_error():
-    processor = EXIProcessor(ProtocolEnum.ISO2)
+    processor = EXIProcessor(Namespace.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode_fragment(b"")
     err = exc_info.value
@@ -69,7 +69,7 @@ def test_iso2_decode_fragment_empty_bytes_raises_decode_error():
 
 
 def test_iso2_decode_xmldsig_empty_bytes_raises_decode_error():
-    processor = EXIProcessor(ProtocolEnum.ISO2)
+    processor = EXIProcessor(Namespace.ISO2)
     with pytest.raises(DecodeError) as exc_info:
         processor.decode_xmldsig(b"")
     err = exc_info.value
@@ -91,7 +91,7 @@ def test_decode_arbitrary_bytes_never_aborts(protocol_name, seed):
     import random
     rng = random.Random(seed)
     buf = bytes(rng.randint(0, 255) for _ in range(rng.randint(1, 64)))
-    processor = EXIProcessor(ProtocolEnum[protocol_name])
+    processor = EXIProcessor(Namespace[protocol_name])
     try:
         result = processor.decode(buf)
     except DecodeError:

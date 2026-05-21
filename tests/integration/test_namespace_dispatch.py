@@ -1,7 +1,7 @@
 """Eight-Namespace dispatch shape — tracer bullet for ADR-0002.
 
 Pins the public Namespace surface: every name listed in `CONTEXT.md` is a
-`ProtocolEnum` member and (when implemented) loads a Processor exposing the
+`Namespace` member and (when implemented) loads a Processor exposing the
 six-method API. Namespaces whose `.so` does not yet exist are marked xfail
 here so the test self-extends as #4-#7 land.
 """
@@ -16,7 +16,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import EXIProcessor, ProtocolEnum  # noqa: E402
+from EXIProcessor import EXIProcessor, Namespace  # noqa: E402
 
 
 _EXPECTED_NAMES = (
@@ -35,9 +35,14 @@ _EXPECTED_NAMES = (
 # .so exists, at which point the entry is removed.
 _PENDING: frozenset[str] = frozenset()
 
+# Namespaces whose libcbv2g schema defines `*_exiFragment` and `xmldsigFragment`
+# roots — feature-gated EXIProcessor methods are present iff a Namespace is
+# listed here (ADR-0014).
+_FRAGMENT_CAPABLE = frozenset({"ISO2", "ISO20_COMMON", "ISO20_AC", "ISO20_DC"})
+
 
 def test_protocol_enum_has_eight_namespaces():
-    assert tuple(p.name for p in ProtocolEnum) == _EXPECTED_NAMES
+    assert tuple(p.name for p in Namespace) == _EXPECTED_NAMES
 
 
 @pytest.mark.parametrize(
@@ -56,13 +61,16 @@ def test_protocol_enum_has_eight_namespaces():
     ],
 )
 def test_processor_loads_and_exposes_six_method_api(name):
-    p = EXIProcessor(ProtocolEnum[name])
+    p = EXIProcessor(Namespace[name])
+    for attr in ("encode", "decode"):
+        assert callable(getattr(p, attr)), attr
+    gated_present = name in _FRAGMENT_CAPABLE
     for attr in (
-        "encode",
-        "decode",
         "encode_fragment",
         "decode_fragment",
         "encode_xmldsig",
         "decode_xmldsig",
     ):
-        assert callable(getattr(p, attr)), attr
+        assert hasattr(p, attr) is gated_present, (
+            f"{name}: {attr} presence mismatch (expected {gated_present})"
+        )

@@ -6,7 +6,7 @@
       - `V2Gjson` builder modules — one per Namespace — for constructing
         EVerest-shape JSON payloads using typed constructors and enums.
 
-    Each Namespace lives at `V2Gjson.<lowercased ProtocolEnum name>` and is
+    Each Namespace lives at `V2Gjson.<lowercased Namespace name>` and is
     imported as a module (`from V2Gjson import din`). Wildcard imports are
     avoided because every Namespace defines `MessageHeaderType`, `BodyType`,
     `V2G_Message`, etc., which silently collide on import order.
@@ -14,7 +14,7 @@
 
 import json
 
-from EXIProcessor import EXIProcessor, ProtocolEnum
+from EXIProcessor import EXIProcessor, Namespace
 from V2Gjson import din, iso20_common, sap
 
 
@@ -23,7 +23,7 @@ from V2Gjson import din, iso20_common, sap
 # V2Gjson.din constructors.
 # ---------------------------------------------------------------------------
 
-dinProcessor = EXIProcessor(ProtocolEnum.DIN)
+dinProcessor = EXIProcessor(Namespace.DIN)
 
 exiBytesPrechargeReq = bytes.fromhex("809a021050908c0c0c0c0c51514002808142807c0c0c0000")
 decodedJson = dinProcessor.decode(exiBytesPrechargeReq)
@@ -45,7 +45,7 @@ print("Encoded DIN CableCheckReq EXI:", encodedDin.hex() if encodedDin else "FAI
 # SAP: decode a supportedAppProtocolReq, then build + encode a Res payload.
 # ---------------------------------------------------------------------------
 
-sapProcessor = EXIProcessor(ProtocolEnum.SAP)
+sapProcessor = EXIProcessor(Namespace.SAP)
 
 exiBytesSAP = bytes.fromhex(
     "8000dbab9371d3234b71d1b981899189d191818991d26b9b3a232b30020000040401"

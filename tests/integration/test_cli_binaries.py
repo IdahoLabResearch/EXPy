@@ -16,7 +16,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import EXIProcessor, ProtocolEnum  # noqa: E402
+from EXIProcessor import EXIProcessor, Namespace  # noqa: E402
 
 BUILD = REPO_ROOT / "build"
 
@@ -26,7 +26,7 @@ _HEADER = {
     "TimeStamp": 0,
 }
 
-# (binary_name, ProtocolEnum name, smoke-test payload). Payloads mirror the
+# (binary_name, Namespace name, smoke-test payload). Payloads mirror the
 # existing per-Namespace tracer fixtures (test_iso20_*_tracer.py) so the CLI
 # smoke test exercises the same shape the lib-level tracer already covers.
 _NEW_BINARIES = [
@@ -111,7 +111,7 @@ def test_cli_binary_responds_to_help(binary_name, _proto, _payload):
 @pytest.mark.parametrize("binary_name,proto,payload", _NEW_BINARIES)
 def test_cli_binary_roundtrips_known_good_hex(binary_name, proto, payload, tmp_path):
     binary = BUILD / binary_name
-    original_hex = EXIProcessor(ProtocolEnum[proto]).encode(payload).hex()
+    original_hex = EXIProcessor(Namespace[proto]).encode(payload).hex()
 
     hex_in = tmp_path / "in.hex"
     hex_in.write_text(original_hex)

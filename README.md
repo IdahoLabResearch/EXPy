@@ -175,7 +175,7 @@ jsonString = """
 }"""
 
 # Create instance of EXIProcessor
-dinProcessor = EXIProcessor(ProtocolEnum.DIN)
+dinProcessor = EXIProcessor(Namespace.DIN)
 
 # Decode the EXI bytes
 decodedJson = dinProcessor.decode(exiBytes)

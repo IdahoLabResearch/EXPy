@@ -28,9 +28,9 @@ def _negative_worker(protocol_name, op, arg_json, queue):
     # The "ready" sentinel on the queue lets the parent tell apart a setup
     # failure (no sentinel) from a native abort *during* encode/decode.
     try:
-        from EXIProcessor import EXIProcessor, ProtocolEnum
+        from EXIProcessor import EXIProcessor, Namespace
 
-        processor = EXIProcessor(ProtocolEnum[protocol_name])
+        processor = EXIProcessor(Namespace[protocol_name])
     except Exception as e:
         queue.put(("setup_error", f"{type(e).__name__}: {e}"))
         return

@@ -19,7 +19,7 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from EXIProcessor import EncodeError, EXIProcessor, ProtocolEnum  # noqa: E402
+from EXIProcessor import EncodeError, EXIProcessor, Namespace  # noqa: E402
 
 
 def _ascii(s: str) -> dict:
@@ -46,7 +46,7 @@ def test_sap_encode_overflow_raises_encode_error():
         }
     }
 
-    processor = EXIProcessor(ProtocolEnum.SAP)
+    processor = EXIProcessor(Namespace.SAP)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode(payload)
     err = exc_info.value
@@ -61,7 +61,7 @@ def test_iso2_encode_missing_required_field_raises_encode_error():
     # accessor would have aborted via nlohmann's const operator[] on a missing
     # key before #21 landed. The hardening turns that abort into a typed
     # EncodeError in the calling process.
-    processor = EXIProcessor(ProtocolEnum.ISO2)
+    processor = EXIProcessor(Namespace.ISO2)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"V2G_Message": {}})
     err = exc_info.value
@@ -75,7 +75,7 @@ def test_iso2_encode_invalid_json_payload_raises_encode_error():
     # literal `NaN`, which nlohmann::json::parse then rejects with parse_error.
     # The hardening converts that C++ exception into EncodeError; previously the
     # exception would have unwound past the extern "C" boundary and aborted.
-    processor = EXIProcessor(ProtocolEnum.ISO2)
+    processor = EXIProcessor(Namespace.ISO2)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"V2G_Message": float("nan")})
     err = exc_info.value
@@ -93,7 +93,7 @@ def test_din_encode_wrong_typed_scalar_raises_encode_error():
     # Header.SessionID expects a {"bytes": [...], "bytesLen": N} object; a bare
     # string violates the typed accessor (`template get<uint16_t>()` on a string
     # value would have aborted). Hardening turns it into EncodeError.
-    processor = EXIProcessor(ProtocolEnum.DIN)
+    processor = EXIProcessor(Namespace.DIN)
     with pytest.raises(EncodeError) as exc_info:
         processor.encode({"Header": {"SessionID": "not-bytes"}})
     err = exc_info.value

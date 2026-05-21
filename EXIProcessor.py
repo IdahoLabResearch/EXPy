@@ -11,7 +11,7 @@ from enum import Enum
 from _version import __version__
 
 
-class ProtocolEnum(Enum):
+class Namespace(Enum):
     SAP = "SupportedAppProtocol"
     DIN = "DIN"
     ISO2 = "ISO2"
@@ -94,7 +94,7 @@ _EXPY_ERROR_MARSHALER_INPUT = -1000
 
 
 # Maps the ctypes entry-point symbol to (namespace_tag, root_tag) for error
-# messages. The namespace_tag is the ProtocolEnum name; the root_tag identifies
+# messages. The namespace_tag is the Namespace name; the root_tag identifies
 # which libcbv2g root the call targets (exiDocument / exiFragment / xmldsigFragment).
 _ROOT_BY_SYMBOL = {
     "decodeFromPythonBytes": "exiDocument",
@@ -107,11 +107,11 @@ _ROOT_BY_SYMBOL = {
 
 
 class EXIProcessor():
-    def __init__(self, protocol: ProtocolEnum):
-        protocolString = protocol.value
-        soFilePath = os.path.abspath(__file__ + f"/../build/lib-{protocolString}Processor.so")
+    def __init__(self, namespace: Namespace):
+        namespaceString = namespace.value
+        soFilePath = os.path.abspath(__file__ + f"/../build/lib-{namespaceString}Processor.so")
         self.lib = CDLL(soFilePath)
-        self._namespace = protocol.name
+        self._namespace = namespace.name
 
         self._bind_decoder("decodeFromPythonBytes")
         self._bind_encoder("encodeFromPythonDict")
@@ -122,14 +122,26 @@ class EXIProcessor():
         self.lib.free_decoded_data.restype = None
 
         # Fragment / XmldsigFragment entry points only exist on Processors whose
-        # underlying libcbv2g schema defines those root types (ISO-2 and the
-        # ISO-20 namespaces). On other Processors (SAP, DIN) the symbol is
-        # missing and the binder silently skips the wiring — the corresponding
-        # Python method then raises NotImplementedError.
-        self._bind_decoder("decode_fragment_FromPythonBytes")
-        self._bind_encoder("encode_fragment_FromPythonDict")
-        self._bind_decoder("decode_xmldsig_FromPythonBytes")
-        self._bind_encoder("encode_xmldsig_FromPythonDict")
+        # underlying libcbv2g schema defines those root types. Bind the Python
+        # method to the instance only when the corresponding ctypes symbol is
+        # present; otherwise the attribute is absent and `hasattr` returns False
+        # (ADR-0014).
+        self._maybe_bind_decode("decode_fragment", "decode_fragment_FromPythonBytes")
+        self._maybe_bind_encode("encode_fragment", "encode_fragment_FromPythonDict")
+        self._maybe_bind_decode("decode_xmldsig", "decode_xmldsig_FromPythonBytes")
+        self._maybe_bind_encode("encode_xmldsig", "encode_xmldsig_FromPythonDict")
+
+    def _maybe_bind_decode(self, method_name: str, symbol: str) -> None:
+        if not hasattr(self.lib, symbol):
+            return
+        self._bind_decoder(symbol)
+        setattr(self, method_name, lambda exiBytes, _s=symbol: self._decode_with(_s, exiBytes))
+
+    def _maybe_bind_encode(self, method_name: str, symbol: str) -> None:
+        if not hasattr(self.lib, symbol):
+            return
+        self._bind_encoder(symbol)
+        setattr(self, method_name, lambda jsonObj, _s=symbol: self._encode_with(_s, jsonObj))
 
     def _format_error(self, root: str, status: int) -> str:
         if status == _EXPY_ERROR_MARSHALER_INPUT:
@@ -137,28 +149,17 @@ class EXIProcessor():
         return f"{self._namespace} {root}: libcbv2g rc={status}"
 
     def _bind_decoder(self, symbol: str) -> None:
-        try:
-            fn = getattr(self.lib, symbol)
-        except AttributeError:
-            return
+        fn = getattr(self.lib, symbol)
         fn.argtypes = [POINTER(c_uint8), c_size_t]
         fn.restype = POINTER(decoded_data)
 
     def _bind_encoder(self, symbol: str) -> None:
-        try:
-            fn = getattr(self.lib, symbol)
-        except AttributeError:
-            return
+        fn = getattr(self.lib, symbol)
         fn.argtypes = [c_char_p]
         fn.restype = POINTER(encoded_data)
 
     def _decode_with(self, symbol: str, exiBytes: bytes) -> dict:
-        try:
-            fn = getattr(self.lib, symbol)
-        except AttributeError:
-            raise NotImplementedError(
-                f"this Processor does not expose {symbol}"
-            )
+        fn = getattr(self.lib, symbol)
         c_input_array = (c_uint8 * len(exiBytes))(*exiBytes)
         c_input_array_size = c_size_t(len(exiBytes))
         c_input_array_ptr = cast(c_input_array, POINTER(c_uint8))
@@ -178,12 +179,7 @@ class EXIProcessor():
             self.lib.free_decoded_data(res)
 
     def _encode_with(self, symbol: str, jsonObj: dict) -> bytes:
-        try:
-            fn = getattr(self.lib, symbol)
-        except AttributeError:
-            raise NotImplementedError(
-                f"this Processor does not expose {symbol}"
-            )
+        fn = getattr(self.lib, symbol)
         c_input = c_char_p(json.dumps(jsonObj).encode('utf-8'))
         result = fn(c_input)
         try:
@@ -205,18 +201,6 @@ class EXIProcessor():
 
     def encode(self, jsonObj: dict) -> bytes:
         return self._encode_with("encodeFromPythonDict", jsonObj)
-
-    def decode_fragment(self, exiBytes: bytes) -> dict:
-        return self._decode_with("decode_fragment_FromPythonBytes", exiBytes)
-
-    def encode_fragment(self, jsonObj: dict) -> bytes:
-        return self._encode_with("encode_fragment_FromPythonDict", jsonObj)
-
-    def decode_xmldsig(self, exiBytes: bytes) -> dict:
-        return self._decode_with("decode_xmldsig_FromPythonBytes", exiBytes)
-
-    def encode_xmldsig(self, jsonObj: dict) -> bytes:
-        return self._encode_with("encode_xmldsig_FromPythonDict", jsonObj)
 
 
 class encoded_data(Structure):
