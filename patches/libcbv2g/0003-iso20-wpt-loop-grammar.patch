@@ -1,0 +1,151 @@
+diff --git a/lib/cbv2g/iso_20/iso20_WPT_Decoder.c b/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
+index 3e3e97a..fcb55ae 100644
+--- a/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
++++ b/lib/cbv2g/iso_20/iso20_WPT_Decoder.c
+@@ -4300,7 +4300,7 @@ static int decode_iso20_wpt_WPT_TxRxPackageSpecDataType(exi_bitstream_t* stream,
+             }
+             break;
+         case 75:
+-            // Grammar: ID=75; read/write bits=1; LOOP (PulseSequenceOrder)
++            // Grammar: ID=75; read/write bits=1; LOOP (PulseSequenceOrder), exit-LOOP
+             error = exi_basetypes_decoder_nbit_uint(stream, 1, &eventCode);
+             if (error == 0)
+             {
+@@ -4328,6 +4328,11 @@ static int decode_iso20_wpt_WPT_TxRxPackageSpecDataType(exi_bitstream_t* stream,
+                         grammar_id = -1;
+                     }
+                     break;
++                case 1:
++                    // EXPy patch (ADR-0009): consume exit-LOOP event and transition
++                    // to grammar 76 (PulseSeparationTime).
++                    grammar_id = 76;
++                    break;
+                 default:
+                     error = EXI_ERROR__UNKNOWN_EVENT_CODE;
+                     break;
+@@ -4554,7 +4559,7 @@ static int decode_iso20_wpt_WPT_LF_TransmitterDataType(exi_bitstream_t* stream,
+             }
+             break;
+         case 82:
+-            // Grammar: ID=82; read/write bits=1; LOOP (TxSpecData)
++            // Grammar: ID=82; read/write bits=1; LOOP (TxSpecData), exit-LOOP
+             error = exi_basetypes_decoder_nbit_uint(stream, 1, &eventCode);
+             if (error == 0)
+             {
+@@ -4582,6 +4587,12 @@ static int decode_iso20_wpt_WPT_LF_TransmitterDataType(exi_bitstream_t* stream,
+                         grammar_id = -1;
+                     }
+                     break;
++                case 1:
++                    // EXPy patch (ADR-0009): consume exit-LOOP event written by the
++                    // patched encoder and transition to grammar 83 (TxPackageSpecData /
++                    // END Element).
++                    grammar_id = 83;
++                    break;
+                 default:
+                     error = EXI_ERROR__UNKNOWN_EVENT_CODE;
+                     break;
+@@ -5206,7 +5217,7 @@ static int decode_iso20_wpt_WPT_LF_ReceiverDataType(exi_bitstream_t* stream, str
+             }
+             break;
+         case 90:
+-            // Grammar: ID=90; read/write bits=1; LOOP (RxSpecData)
++            // Grammar: ID=90; read/write bits=1; LOOP (RxSpecData), exit-LOOP
+             error = exi_basetypes_decoder_nbit_uint(stream, 1, &eventCode);
+             if (error == 0)
+             {
+@@ -5234,6 +5245,12 @@ static int decode_iso20_wpt_WPT_LF_ReceiverDataType(exi_bitstream_t* stream, str
+                         grammar_id = -1;
+                     }
+                     break;
++                case 1:
++                    // EXPy patch (ADR-0009): consume exit-LOOP event and complete the
++                    // element — RxSpecData is the final particle of WPT_LF_ReceiverDataType.
++                    done = 1;
++                    grammar_id = 3;
++                    break;
+                 default:
+                     error = EXI_ERROR__UNKNOWN_EVENT_CODE;
+                     break;
+diff --git a/lib/cbv2g/iso_20/iso20_WPT_Encoder.c b/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
+index 48be8e7..332b3e5 100644
+--- a/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
++++ b/lib/cbv2g/iso_20/iso20_WPT_Encoder.c
+@@ -3964,7 +3964,7 @@ static int encode_iso20_wpt_WPT_TxRxPackageSpecDataType(exi_bitstream_t* stream,
+             }
+             break;
+         case 75:
+-            // Grammar: ID=75; read/write bits=1; LOOP (PulseSequenceOrder)
++            // Grammar: ID=75; read/write bits=1; LOOP (PulseSequenceOrder), exit-LOOP
+             if (PulseSequenceOrder_currentIndex < WPT_TxRxPackageSpecDataType->PulseSequenceOrder.arrayLen)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+@@ -3980,7 +3980,15 @@ static int encode_iso20_wpt_WPT_TxRxPackageSpecDataType(exi_bitstream_t* stream,
+             }
+             else
+             {
+-                error = EXI_ERROR__UNKNOWN_EVENT_CODE;
++                // EXPy patch (ADR-0009): upstream emitted EXI_ERROR__UNKNOWN_EVENT_CODE
++                // here. Emit the exit-LOOP event (1-bit value 1) and transition to
++                // grammar 76 (PulseSeparationTime) so the next required particle
++                // is reached after the array completes.
++                error = exi_basetypes_encoder_nbit_uint(stream, 1, 1);
++                if (error == EXI_ERROR__NO_ERROR)
++                {
++                    grammar_id = 76;
++                }
+             }
+             break;
+         case 76:
+@@ -4147,7 +4155,7 @@ static int encode_iso20_wpt_WPT_LF_TransmitterDataType(exi_bitstream_t* stream,
+             }
+             break;
+         case 82:
+-            // Grammar: ID=82; read/write bits=1; LOOP (TxSpecData)
++            // Grammar: ID=82; read/write bits=1; LOOP (TxSpecData), exit-LOOP
+             if (TxSpecData_currentIndex < WPT_LF_TransmitterDataType->TxSpecData.arrayLen)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+@@ -4163,7 +4171,15 @@ static int encode_iso20_wpt_WPT_LF_TransmitterDataType(exi_bitstream_t* stream,
+             }
+             else
+             {
+-                error = EXI_ERROR__UNKNOWN_EVENT_CODE;
++                // EXPy patch (ADR-0009): upstream emitted EXI_ERROR__UNKNOWN_EVENT_CODE
++                // here, leaving the LOOP unable to exit. Emit the exit-LOOP event
++                // (1-bit value 1) and transition to grammar 83 (TxPackageSpecData /
++                // END Element) so the array can terminate.
++                error = exi_basetypes_encoder_nbit_uint(stream, 1, 1);
++                if (error == EXI_ERROR__NO_ERROR)
++                {
++                    grammar_id = 83;
++                }
+             }
+             break;
+         case 83:
+@@ -4620,7 +4636,7 @@ static int encode_iso20_wpt_WPT_LF_ReceiverDataType(exi_bitstream_t* stream, con
+             }
+             break;
+         case 90:
+-            // Grammar: ID=90; read/write bits=1; LOOP (RxSpecData)
++            // Grammar: ID=90; read/write bits=1; LOOP (RxSpecData), exit-LOOP
+             if (RxSpecData_currentIndex < WPT_LF_ReceiverDataType->RxSpecData.arrayLen)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+@@ -4636,7 +4652,15 @@ static int encode_iso20_wpt_WPT_LF_ReceiverDataType(exi_bitstream_t* stream, con
+             }
+             else
+             {
+-                error = EXI_ERROR__UNKNOWN_EVENT_CODE;
++                // EXPy patch (ADR-0009): upstream emitted EXI_ERROR__UNKNOWN_EVENT_CODE
++                // here. Emit the exit-LOOP event (1-bit value 1) and complete the
++                // element — RxSpecData is the final particle of WPT_LF_ReceiverDataType.
++                error = exi_basetypes_encoder_nbit_uint(stream, 1, 1);
++                if (error == EXI_ERROR__NO_ERROR)
++                {
++                    done = 1;
++                    grammar_id = 3;
++                }
+             }
+             break;
+         case 2:

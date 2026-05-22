@@ -1,0 +1,45 @@
+[build-system]
+requires = ["scikit-build-core>=0.8"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "expy"
+description = "Python and C/C++ bindings over libcbv2g for V2G EXI codecs."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Battelle Energy Alliance, LLC" }]
+dynamic = ["version"]
+
+[project.scripts]
+# One console script per Namespace (ADR-0012, ADR-0013). pip generates the
+# wrapper at install time; the wrapper imports expy._cli and calls the
+# matching launcher, which os.execv's into the bundled binary under expy/_bin/.
+SupportedAppProtocolProcessor = "expy._cli:SupportedAppProtocolProcessor"
+DINProcessor = "expy._cli:DINProcessor"
+ISO2Processor = "expy._cli:ISO2Processor"
+ISO20CommonProcessor = "expy._cli:ISO20CommonProcessor"
+ISO20ACProcessor = "expy._cli:ISO20ACProcessor"
+ISO20DCProcessor = "expy._cli:ISO20DCProcessor"
+ISO20WPTProcessor = "expy._cli:ISO20WPTProcessor"
+ISO20ACDPProcessor = "expy._cli:ISO20ACDPProcessor"
+
+[tool.scikit-build]
+# Pin the build backend's minimum cmake/ninja; the user must have these
+# available since libcbv2g is built from source. ADR-0013.
+cmake.version = ">=3.20"
+ninja.version = ">=1.10"
+wheel.packages = ["expy"]
+
+[tool.scikit-build.metadata.version]
+# Single source of truth for the version string lives in expy/_version.py
+# (ADR-0012's single-canonical-version rule); scikit-build-core reads it
+# back into project metadata at build time.
+provider = "scikit_build_core.metadata.regex"
+input = "expy/_version.py"
+regex = '__version__ = "(?P<value>[^"]+)"'
+
+[tool.pytest.ini_options]
+markers = [
+    "slow: marks tests that build/install a wheel (deselect with '-m \"not slow\"')",
+]

@@ -1,0 +1,180 @@
+diff --git a/include/cbv2g/iso_20/iso20_ACDP_Datatypes.h b/include/cbv2g/iso_20/iso20_ACDP_Datatypes.h
+index 0922bba..0bd7542 100644
+--- a/include/cbv2g/iso_20/iso20_ACDP_Datatypes.h
++++ b/include/cbv2g/iso_20/iso20_ACDP_Datatypes.h
+@@ -503,6 +503,10 @@ struct iso20_acdp_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0010): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso20_acdp_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -529,7 +533,6 @@ struct iso20_acdp_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -548,10 +551,11 @@ struct iso20_acdp_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}SPKIData; type={http://www.w3.org/2000/09/xmldsig#}SPKIDataType; base type=; content type=ELEMENT-ONLY;
+diff --git a/include/cbv2g/iso_20/iso20_AC_Datatypes.h b/include/cbv2g/iso_20/iso20_AC_Datatypes.h
+index b1bb9c6..979f095 100644
+--- a/include/cbv2g/iso_20/iso20_AC_Datatypes.h
++++ b/include/cbv2g/iso_20/iso20_AC_Datatypes.h
+@@ -466,6 +466,10 @@ struct iso20_ac_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0010): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso20_ac_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -492,7 +496,6 @@ struct iso20_ac_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -511,10 +514,11 @@ struct iso20_ac_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}SPKIData; type={http://www.w3.org/2000/09/xmldsig#}SPKIDataType; base type=; content type=ELEMENT-ONLY;
+diff --git a/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h b/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h
+index 2721cbc..b576a54 100644
+--- a/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h
++++ b/include/cbv2g/iso_20/iso20_CommonMessages_Datatypes.h
+@@ -616,6 +616,10 @@ struct iso20_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0010): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso20_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -642,7 +646,6 @@ struct iso20_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -661,10 +664,11 @@ struct iso20_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={urn:iso:std:iso:15118:-20:CommonMessages}rationalNumber; type={urn:iso:std:iso:15118:-20:CommonTypes}RationalNumberType; base type=; content type=ELEMENT-ONLY;
+diff --git a/include/cbv2g/iso_20/iso20_DC_Datatypes.h b/include/cbv2g/iso_20/iso20_DC_Datatypes.h
+index ec7c5e1..c13f2c9 100644
+--- a/include/cbv2g/iso_20/iso20_DC_Datatypes.h
++++ b/include/cbv2g/iso_20/iso20_DC_Datatypes.h
+@@ -480,6 +480,10 @@ struct iso20_dc_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0010): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso20_dc_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -506,7 +510,6 @@ struct iso20_dc_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -525,10 +528,11 @@ struct iso20_dc_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}SPKIData; type={http://www.w3.org/2000/09/xmldsig#}SPKIDataType; base type=; content type=ELEMENT-ONLY;
+diff --git a/include/cbv2g/iso_20/iso20_WPT_Datatypes.h b/include/cbv2g/iso_20/iso20_WPT_Datatypes.h
+index 3021980..53b192c 100644
+--- a/include/cbv2g/iso_20/iso20_WPT_Datatypes.h
++++ b/include/cbv2g/iso_20/iso20_WPT_Datatypes.h
+@@ -571,6 +571,10 @@ struct iso20_wpt_X509DataType {
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}PGPData; type={http://www.w3.org/2000/09/xmldsig#}PGPDataType; base type=; content type=ELEMENT-ONLY;
+ //          abstract=False; final=False; choice=True; sequence=True (2;
+ // Particle: PGPKeyID, base64Binary (1, 1); PGPKeyPacket, base64Binary (0, 1); ANY, anyType (0, 1); PGPKeyPacket, base64Binary (1, 1); ANY, anyType (0, 1);
++// EXPy patch (ADR-0010): the upstream generator emitted choice_N_isUsed
++// as members of the same anonymous union as the choice_N substructs, so
++// the dispatch flags physically aliased the data and the encoder could
++// not disambiguate the active branch. Hoist the flags out of the union.
+ struct iso20_wpt_PGPDataType {
+     union {
+         // sequence of choice 1
+@@ -597,7 +601,6 @@ struct iso20_wpt_PGPDataType {
+ 
+ 
+         } choice_1;
+-        unsigned int choice_1_isUsed:1;
+ 
+         // sequence of choice 2
+         struct {
+@@ -616,10 +619,11 @@ struct iso20_wpt_PGPDataType {
+ 
+ 
+         } choice_2;
+-        unsigned int choice_2_isUsed:1;
+ 
+ 
+     };
++    unsigned int choice_1_isUsed:1;
++    unsigned int choice_2_isUsed:1;
+ };
+ 
+ // Element: definition=complex; name={http://www.w3.org/2000/09/xmldsig#}SPKIData; type={http://www.w3.org/2000/09/xmldsig#}SPKIDataType; base type=; content type=ELEMENT-ONLY;

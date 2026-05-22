@@ -1,0 +1,120 @@
+diff --git a/lib/cbv2g/iso_2/iso2_msgDefEncoder.c b/lib/cbv2g/iso_2/iso2_msgDefEncoder.c
+--- a/lib/cbv2g/iso_2/iso2_msgDefEncoder.c
++++ b/lib/cbv2g/iso_2/iso2_msgDefEncoder.c
+@@ -3278,24 +3278,31 @@ static int encode_iso2_PGPDataType(exi_bitstream_t* stream, const struct iso2_PG
+             }
+             else
+             {
++                // EXPy patch (ADR-0008): upstream emitted the seq-2 entry
++                // (PGPKeyPacket as the first element) by reading from
++                // choice_1.PGPKeyPacket and transitioning to grammar 67 (the
++                // "after PGPKeyPacket in seq 1" state). Read from
++                // choice_2.PGPKeyPacket and transition to grammar 69 (the
++                // "after PGPKeyPacket in seq 2" state, which accepts the
++                // optional ANY or END).
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 1);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (PGPKeyPacket, base64Binary); next=67
++                    // Event: START (PGPKeyPacket, base64Binary); next=69
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+-                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_1.PGPKeyPacket.bytesLen);
++                        error = exi_basetypes_encoder_uint_16(stream, (uint16_t)PGPDataType->choice_2.PGPKeyPacket.bytesLen);
+                         if (error == EXI_ERROR__NO_ERROR)
+                         {
+-                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_1.PGPKeyPacket.bytesLen, PGPDataType->choice_1.PGPKeyPacket.bytes, iso2_base64Binary_BYTES_SIZE);
++                            error = exi_basetypes_encoder_bytes(stream, PGPDataType->choice_2.PGPKeyPacket.bytesLen, PGPDataType->choice_2.PGPKeyPacket.bytes, iso2_base64Binary_BYTES_SIZE);
+                             if (error == EXI_ERROR__NO_ERROR)
+                             {
+                                 // encode END Element
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 67;
++                                    grammar_id = 69;
+                                 }
+                             }
+                         }
+@@ -3450,12 +3457,19 @@ static int encode_iso2_PGPDataType(exi_bitstream_t* stream, const struct iso2_PG
+                 // No code for unsupported generic event: ANY (index=0)
+             //{
+             // ***** //
+-            if (PGPDataType->choice_2_isUsed == 1u)
++            // EXPy patch (ADR-0008): upstream gated this branch on
++            // choice_2_isUsed (always 1 in seq 2) and transitioned to grammar
++            // 68 after emitting ANY, which would re-enter the PGPKeyPacket
++            // emitter and loop forever. Gate on choice_2.ANY_isUsed so ANY is
++            // emitted only when present, and complete the PGPData element
++            // after ANY (seq 2's last optional particle) by transitioning to
++            // the done/END state instead of grammar 68.
++            if (PGPDataType->choice_2.ANY_isUsed == 1u)
+             {
+                 error = exi_basetypes_encoder_nbit_uint(stream, 2, 2);
+                 if (error == EXI_ERROR__NO_ERROR)
+                 {
+-                    // Event: START (ANY, base64Binary); next=68
++                    // Event: START (ANY, base64Binary); next=4 (done)
+                     error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                     if (error == EXI_ERROR__NO_ERROR)
+                     {
+@@ -3469,7 +3483,8 @@ static int encode_iso2_PGPDataType(exi_bitstream_t* stream, const struct iso2_PG
+                                 error = exi_basetypes_encoder_nbit_uint(stream, 1, 0);
+                                 if (error == EXI_ERROR__NO_ERROR)
+                                 {
+-                                    grammar_id = 68;
++                                    done = 1;
++                                    grammar_id = 4;
+                                 }
+                             }
+                         }
+diff --git a/lib/cbv2g/iso_2/iso2_msgDefDecoder.c b/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
+--- a/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
++++ b/lib/cbv2g/iso_2/iso2_msgDefDecoder.c
+@@ -3923,13 +3923,19 @@ static int decode_iso2_PGPDataType(exi_bitstream_t* stream, struct iso2_PGPDataT
+                     }
+                     break;
+                 case 1:
+-                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=67
++                    // EXPy patch (ADR-0008): the upstream decoder mirrored the
++                    // encoder bug — it wrote PGPKeyPacket-as-first-element into
++                    // choice_1.PGPKeyPacket and transitioned to grammar 67. In
++                    // the XSD this byte pattern is only emitted as the entry
++                    // of sequence 2, so write into choice_2.PGPKeyPacket, mark
++                    // choice_2 active, and transition to grammar 69.
++                    // Event: START (PGPKeyPacket, base64Binary (base64Binary)); next=69
+                     // decode exi type: base64Binary
+-                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_1.PGPKeyPacket.bytesLen, &PGPDataType->choice_1.PGPKeyPacket.bytes[0], iso2_base64Binary_BYTES_SIZE);
++                    error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.PGPKeyPacket.bytesLen, &PGPDataType->choice_2.PGPKeyPacket.bytes[0], iso2_base64Binary_BYTES_SIZE);
+                     if (error == 0)
+                     {
+-                        PGPDataType->choice_1.PGPKeyPacket_isUsed = 1u;
+-                        grammar_id = 67;
++                        PGPDataType->choice_2_isUsed = 1u;
++                        grammar_id = 69;
+                     }
+                     break;
+                 default:
+@@ -4059,13 +4065,19 @@ static int decode_iso2_PGPDataType(exi_bitstream_t* stream, struct iso2_PGPDataT
+                     grammar_id = 4;
+                     break;
+                 case 2:
+-                    // Event: START (ANY, anyType (base64Binary)); next=68
++                    // EXPy patch (ADR-0008): upstream transitioned to grammar
++                    // 68 after consuming the seq-2 ANY, which expects another
++                    // PGPKeyPacket and would have decoded garbage past EOF.
++                    // ANY is the last optional particle in seq 2, so complete
++                    // the element here.
++                    // Event: START (ANY, anyType (base64Binary)); next=4 (done)
+                     // decode exi type: base64Binary
+                     error = decode_exi_type_hex_binary(stream, &PGPDataType->choice_2.ANY.bytesLen, &PGPDataType->choice_2.ANY.bytes[0], iso2_anyType_BYTES_SIZE);
+                     if (error == 0)
+                     {
+                         PGPDataType->choice_2.ANY_isUsed = 1u;
+-                        grammar_id = 68;
++                        done = 1;
++                        grammar_id = 4;
+                     }
+                     break;
+                 default:
