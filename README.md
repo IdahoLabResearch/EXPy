@@ -235,13 +235,17 @@ Example:
 `EXIProcessor` raises `EncodeError` and `DecodeError` on non-zero status
 from the underlying C entry points. Both carry typed attributes:
 
-- `rc: int | None` — return code. `-1` through `-299` are libcbv2g's
+- `rc: int` — return code. `-1` through `-299` are libcbv2g's
   `EXI_ERROR__*` constants; `-1000` is `EXPY_ERROR__MARSHALER_INPUT`
   (caught nlohmann JSON exception at the marshaler boundary).
-- `namespace: str | None` — Namespace member name (e.g. `"DIN"`,
+- `namespace: str` — Namespace member name (e.g. `"DIN"`,
   `"ISO20_COMMON"`).
-- `root: str | None` — `"exiDocument"`, `"exiFragment"`, or
-  `"xmldsigFragment"`.
+- `root: Literal["exiDocument", "exiFragment", "xmldsigFragment"]` —
+  which libcbv2g root the failing call targeted.
+
+When raised by `EXIProcessor`, all three attributes are guaranteed set.
+The constructor accepts `None` defaults for manual construction (e.g. in
+tests), but that path is not part of the v1.0 contract.
 
 Discriminate on the attributes, not by substring-matching `str(e)`:
 

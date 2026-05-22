@@ -43,14 +43,17 @@ of ADR-0012 + ADR-0014.
   `RelativeTimeIntervalType`, `EVSE_NotReady`). Constructors emit dicts in
   the EVerest JSON shape, ready to pass to a Processor's encode methods.
 - **Typed exception attributes** on `EncodeError` and `DecodeError`:
-  - `rc: int | None` — integer return code from the C++ entry point.
+  - `rc: int` — integer return code from the C++ entry point.
     `-1` through `-299` are libcbv2g's `EXI_ERROR__*` constants; `-1000`
     is `EXPY_ERROR__MARSHALER_INPUT` (caught nlohmann JSON exception at
     the marshaler boundary).
-  - `namespace: str | None` — the `Namespace` member name (`"SAP"`,
+  - `namespace: str` — the `Namespace` member name (`"SAP"`,
     `"DIN"`, `"ISO2"`, `"ISO20_COMMON"`, etc.).
-  - `root: str | None` — `"exiDocument"`, `"exiFragment"`, or
-    `"xmldsigFragment"`.
+  - `root: Literal["exiDocument", "exiFragment", "xmldsigFragment"]` —
+    which libcbv2g root the failing call targeted.
+  - When raised by `EXIProcessor`, all three attributes are guaranteed
+    set. The constructor accepts `None` defaults for manual construction
+    (e.g. in tests), but that path is not part of the v1.0 contract.
   - The `str(e)` message format from ADR-0006 is preserved for
     human-readable logs but is **informational, not contractual**.
     Consumers discriminating on failure mode branch on the attributes.
