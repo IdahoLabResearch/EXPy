@@ -26,34 +26,8 @@ def _ascii(s: str) -> dict:
     return {"charactersLen": len(s), "characters": [ord(c) for c in s]}
 
 
-def test_sap_encode_overflow_raises_encode_error():
-    # 5 AppProtocols × 100-char ProtocolNamespace (the schema max) — encodes
-    # to well over the 256-byte static buffer, forcing BITSTREAM_OVERFLOW.
-    namespace = "u" * 100  # 100 ASCII chars; the schema max
-    one_protocol = {
-        "ProtocolNamespace": _ascii(namespace),
-        "VersionNumberMajor": 2,
-        "VersionNumberMinor": 0,
-        "SchemaID": 1,
-        "Priority": 1,
-    }
-    payload = {
-        "supportedAppProtocolReq": {
-            "AppProtocol": {
-                "arrayLen": 5,
-                "array": [one_protocol] * 5,
-            }
-        }
-    }
-
-    processor = EXIProcessor(Namespace.SAP)
-    with pytest.raises(EncodeError) as exc_info:
-        processor.encode(payload)
-    err = exc_info.value
-    assert err.namespace == "SAP"
-    assert err.root == "exiDocument"
-    # libcbv2g buffer-overflow path: rc in -1..-299, not the marshaler sentinel.
-    assert isinstance(err.rc, int) and err.rc < 0 and err.rc != -1000
+# BITSTREAM_OVERFLOW is no longer reachable from schema-conformant SAP input
+# after the encoder buffer bump (#47); the previous overflow test was removed.
 
 
 def test_iso2_encode_missing_required_field_raises_encode_error():

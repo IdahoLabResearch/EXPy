@@ -7,7 +7,7 @@ The six Processor methods (Document, Fragment, XmldsigFragment × encode, decode
 **encode (`encode`, `encode_fragment`, `encode_xmldsig`)**
 
 - Returns `bytes` on success.
-- Raises `EncodeError` when libcbv2g returns a non-zero status (e.g., `EXI_ERROR__BITSTREAM_OVERFLOW` when a valid payload exceeds the 256-byte static buffer). Message: `"{namespace} {root}: libcbv2g rc={status}"`.
+- Raises `EncodeError` when libcbv2g returns a non-zero status (e.g., `EXI_ERROR__BITSTREAM_OVERFLOW` when a valid payload exceeds the static encoder buffer). Message: `"{namespace} {root}: libcbv2g rc={status}"`.
 - Raises `EncodeError` when the C++ JSON layer rejects the input — `json::parse` failure on the serialized dict, marshaler `operator[]` on a missing required field, marshaler `template get<T>()` on a wrong-typed value. Message: `"{namespace} {root}: invalid JSON input (rc=-1000)"`.
 - Raises `NotImplementedError` if the Processor's schema does not define the requested root (`EXIProcessor.py`).
 - Propagates `TypeError` / `ValueError` from `json.dumps` when the input is not JSON-serializable. Caller-bug errors at the Python boundary, not contract failures.

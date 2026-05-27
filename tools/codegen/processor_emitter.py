@@ -189,11 +189,11 @@ def _encode_block(policy: NamespacePolicy, root: str, fn_name: str) -> str:
 {wrap_lines}            {cp}_{root} inDoc;
             inDoc = getDoc_{mp}{root}({marshaler_arg});
 
-            uint8_t* stream = new uint8_t[256];
+            uint8_t* stream = new uint8_t[65536];
             exi_bitstream_t outEXI;
             size_t pos1 = 0;
 
-            exi_bitstream_init(&outEXI, stream, 256, pos1, nullptr);
+            exi_bitstream_init(&outEXI, stream, 65536, pos1, nullptr);
             int rc = encode_{cp}_{root}(&outEXI, &inDoc);
 
             encoded_data* result = new encoded_data;
